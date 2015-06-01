@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+
+  "name": "Search activity logger",
+  "description": "This extension logs user search/browsing activities with chrome.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icons/icon_19.png",
+    "default_popup": "popup.html",
+    "default_title": "My activities"
+  },
+
+
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js" ]
+
+  },
+
+
+  "permissions": [
+    "tabs"
+  ]
+}
