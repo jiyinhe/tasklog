@@ -21,11 +21,16 @@ For following activities are recorded:
  - bing 
  - yahoo
 ===================================*/ 
+// TODO: find a way to set user_id
+var user_id = "tester";
+var device = "chrome";
+// TODO: set the url of the server
+var data_storage_url = 'http://localhost:3000/savedata'
+
 
 // Global variables persistent as the script runs
 var previousTab = null;
 var activeTabId = 0;
-var data_storage_url = 'http://localhost:3000/savedata'
 
 //Set current active tab for traceback
 chrome.tabs.query({'active': true}, function(tabs){
@@ -34,13 +39,16 @@ chrome.tabs.query({'active': true}, function(tabs){
 
 //function for send post request to store data
 function savedata(logdata){
-    console.log('save data now')
+    logdata['user_id'] = user_id;
+    logdata['device'] = device;
+
     $.ajax({
         type: "POST",
         url: data_storage_url,
         data: logdata,
         success: function(msg){
-            console.log(msg);
+            if (msg != "success")
+                console.log(msg);
         }
     });
 }
@@ -56,7 +64,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
     var ts = (new Date()).getTime();
     var new_tab = tab
     log = {'event': e, 'timestamp': ts, 'new_tab': new_tab};
-    console.log(log);
+    console.log(tab.url);
     savedata(log);
 });
 
