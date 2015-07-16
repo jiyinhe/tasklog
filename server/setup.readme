@@ -1,0 +1,83 @@
+# Naming convention
+----------------
+- databasename: db_tasklog
+- collections in db:
+    for chrome: log_chrome
+    for desktop: log_desktop (for example)
+    for mobile: log_mobile (for example)
+- app: tasklogger
+
+- urls:
+    /logpeek: a page for querying the db content
+    /savedata: url for posting save-logged-entry request
+
+# Data format:
+{
+    "user_id": userid,
+    "device": chrome/desktop/mobile 
+    "event": event name,
+    "timestamp": timestamp of the event,
+    "details": details of the event,
+    "query": true/false - for quick access to query log
+}
+
+# Code setup 
+
+I node.js and express-generator
+-----------------------------------
+1. Install node.js
+2. Install express-generator
+    >npm install -g express-generator
+
+3. Create an express project, e.g.,
+    >express $projectname
+
+4. Add dependencies in $projectname/package.json
+    {
+        "mongodb": "~2.0.33",
+        "monk": "~1.0.1" 
+    }
+    to "dependencies"
+
+5. Install dependencies
+    >cd $projectname
+    >npm install
+
+6. Start server under $projectname
+    >npm start
+    Default page is visiable at localhost:3000
+
+File structure under $projectname:
+ - app.js : setups for the project, similar to settings.py in django
+ - package.json: descriptions for the app, and dependencies
+ - node_modules/: dependencies
+ - public/: seems to be for static files
+ - views/: jade files, view templates
+ - routers/: for processing requests and render html files, similar to views in django
+
+
+II. connect to mongodb
+-------------------------------------------------
+0. run mongo db
+    mongod --dbpath $path/to/data/storage
+
+1. create a database $database
+    >mongo
+    >use $database    
+
+2. add lines to app.js for connection
+    var mongo = require('mongodb');
+    var monk = require('monk');
+    var db = monk('localhost:27017/$database');
+change the hostname and portname given specific db settings.
+
+3. add lines to app.js to make db accesiable to router
+    app.use(function(req, res, next){
+        req.db = db; //db is defined above
+        next();
+    });
+Due to chaining, it needs to go BEFORE the statement:
+    app.use('/', routes);
+
+4. codes for processing db related reuqests go to routes/*.js
+

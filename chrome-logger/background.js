@@ -10,38 +10,40 @@ For following activities are recorded:
  - tab status change
 
 2. User navigation/requests
+ - transitions between different urls 
+ - handle formsubmit, link click messages from content.js
 
+3. Search engine related (for a specific list of SEs)
+  This is coupled with tab-changeUrl event, mainly
+  because when the navigation action happens (e.g., through
+    "generated", the search url is not set yet)
+ - google
+ - bing 
+ - yahoo
 ===================================*/ 
 
 // Global variables persistent as the script runs
 var previousTab = null;
 var activeTabId = 0;
+var data_storage_url = 'http://localhost:3000/savedata'
+
+//Set current active tab for traceback
 chrome.tabs.query({'active': true}, function(tabs){
         previousTab = tabs[0];
     });
 
-var onmiquery = false;
-
-/*===  Utitily functions === */
-
-/* Simply log everything. 
-// Extract tab info that we want to store
-function extract_tabInfo(tab){
-    // tab may not be ready yet, wait for a while
-    var timeout = 5000
-    var start = (new Date()).getTime()
-    while (tab.status != 'complete'){
-        if ((new Date()).getTime()-start > timeout)
-            break
-    };
-    return  {'tabId': tab.id, 
-        'windowId': tab.windowId, 
-        'title': tab.title,
-        'url': tab.url,  
-        'status': tab.status
+//function for send post request to store data
+function savedata(logdata){
+    console.log('save data now')
+    $.ajax({
+        type: "POST",
+        url: data_storage_url,
+        data: logdata,
+        success: function(msg){
+            console.log(msg);
         }
+    });
 }
-*/
 
 // When a new tab is open, record:
 // - timestamp
@@ -55,6 +57,7 @@ chrome.tabs.onCreated.addListener(function(tab) {
     var new_tab = tab
     log = {'event': e, 'timestamp': ts, 'new_tab': new_tab};
     console.log(log);
+    savedata(log);
 });
 
 // When a tab is closed, record:
@@ -126,10 +129,12 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, replacedTabId){
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
     var ts = (new Date()).getTime();
     var e = ''
+    var search = {'search': false}
     if ('status' in changeInfo && changeInfo.status == 'complete')
         e = 'tab-loaded';
     if ('url' in changeInfo){
         e = 'tab-changeURL';
+        search = check_searchEngine(tab.url);
     }
    
     if (e == 'tab-loaded' || e == 'tab-changeURL'){ 
@@ -137,11 +142,36 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
             'current_tab': tab,
             'previous_tab': previousTab,
             }
+        if (e == 'tab-changeURL')
+            log['search'] = search
         // set the tab tracker to the current tab
         previousTag = tab;
         console.log(log)
     }
 });
+
+// Handle different search engines
+function check_searchEngine(url){
+    //look for search engine query urls
+    var google_reg = /.+?\.google\..+?q=.+/;
+    var yahoo_reg = /.+?\.search\.yahoo\..+?p=.+/
+    var bing_reg = /.+?\.bing\..+?q=.+/ 
+    var query = ''
+    var se = ''
+    if (google_reg.test(url)){
+        query = url.split('q=')[1].split('&')[0];
+        se = 'google'
+    }
+    else if (yahoo_reg.test(url)){
+        query = url.split('p=')[1].split('&')[0];
+        se = 'yahoo'
+    }
+    else if (bing_reg.test(url)){
+        query = url.split('q=')[1].split('&')[0];
+        se = 'bing'
+    }
+    return {'se': se, 'query': query, 'search': true}
+}
 
 /* ======== user navigation requests ========*/
 chrome.webNavigation.onCommitted.addListener(function(details){

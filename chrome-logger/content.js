@@ -39,7 +39,7 @@ function get_form_content(form){
     return data
 }
 
-
+// Listen to url click events
 $(document).on('click', 'a', function(){
     var ts = (new Date()).getTime();
     var data = {
@@ -51,4 +51,3 @@ $(document).on('click', 'a', function(){
         'timestamp': ts
     });
 })
-
