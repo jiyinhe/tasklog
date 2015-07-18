@@ -39,9 +39,10 @@ chrome.tabs.query({'active': true}, function(tabs){
 
 //function for send post request to store data
 function savedata(logdata){
+    console.log(logdata);
+
     logdata['user_id'] = user_id;
     logdata['device'] = device;
-
     $.ajax({
         type: "POST",
         url: data_storage_url,
@@ -60,11 +61,14 @@ function savedata(logdata){
 chrome.tabs.onCreated.addListener(function(tab) {
     // Event name
     var e = 'tab-new';
+    if (tab.url != "chrome://newtab/")
+        e = 'open-in-new-tab'
     //timestamp
     var ts = (new Date()).getTime();
-    var new_tab = tab
-    log = {'event': e, 'timestamp': ts, 'new_tab': new_tab};
-    console.log(tab.url);
+    var details = {'previous_tab': previousTab, 
+            'current_tab': tab}
+    log = {'event': e, 'timestamp': ts, 
+            'details': details, 'query': false};
     savedata(log);
 });
 
@@ -78,10 +82,13 @@ chrome.tabs.onCreated.addListener(function(tab) {
 chrome.tabs.onRemoved.addListener(function(tabId){
     var e = 'tab-close';
     var ts = (new Date()).getTime();
+    var details = {
+        'closed_tabId': tabId
+    }
     var closedTab = previousTab;
     log = {'event': e, 'timestamp': ts, 
-        'closed_tabId': tabId};
-    console.log(log);
+        'details': details, 'query': false};
+    savedata(log);
 });
 
 
@@ -110,7 +117,7 @@ chrome.tabs.onActivated.addListener(function(tab){
             'current_tab': current_tab, 
             'previous_tab': previous_tab,
             }
-        console.log(log);
+  //      console.log(log);
     });
 });
 
@@ -125,7 +132,7 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, replacedTabId){
     log = {'event': e, 'timestamp': ts, 
             'addedTabId': addedTabId, 
             'replacedTabId': replacedTabId};
-    console.log(log);
+ //   console.log(log);
 });
 
 
@@ -154,7 +161,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
             log['search'] = search
         // set the tab tracker to the current tab
         previousTag = tab;
-        console.log(log)
+   //     console.log(log)
     }
 });
 
@@ -219,7 +226,7 @@ chrome.webNavigation.onCommitted.addListener(function(details){
         log = {'event': e, 'timestamp': ts, 
             'inputtype': inputtype,
             'details': details}
-        console.log(log)
+     //   console.log(log)
     }
 });
 
@@ -242,7 +249,7 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
                 'senderTab': sender.tab
         }
     }
-    console.log(log)
+//    console.log(log)
 });
 
 
