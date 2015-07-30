@@ -29,7 +29,10 @@ function get_form_content(form){
         var value = inputs[i].value;
         var name = ''
         if (!(inputs[i].name === ''))
-            name = inputs[i].name 
+            name = inputs[i].name  
+        // check if the user is typing password, if so, don't record it.
+        if (type == 'password')
+            value = '********'
         data.push({
             'type': type,
             'value': value,
