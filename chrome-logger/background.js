@@ -43,7 +43,7 @@ function savedata(logdata){
     logdata['user_id'] = user_id;
     logdata['device'] = device;
     console.log(logdata);
-    console.log(previousTab);
+//    console.log(previousTab);
     $.ajax({
         type: "POST",
         url: data_storage_url,
@@ -89,7 +89,9 @@ chrome.tabs.onCreated.addListener(function(tab) {
     }
     log = {'event': e, 'timestamp': ts, 
             'affected_tab_id': tab.id,
-            'details': details, 'search': false};
+            'details': details, 
+            //'search': false
+            };
     previousEvent = log;
     savedata(log);
 });
@@ -105,7 +107,9 @@ chrome.tabs.onRemoved.addListener(function(tabId){
     var details = {}
     log = {'event': e, 'timestamp': ts, 
         'affected_tab_id': tabId,
-        'details': details, 'search': false};
+        'details': details, 
+        //'search': false
+        };
     // PreviousTab has 2 possibilities:
     // - close a tab that is not active, previousTab remain the same
     // - close a tab that is active, addressed by tab-close-switch
@@ -143,7 +147,8 @@ chrome.tabs.onActivated.addListener(function(tab){
                     'current_tab': current_tab}
         log = {'event': e, 'timestamp': ts, 
             'affected_tab_id': current_tab.id,
-            'details': details, 'search': false,
+            'details': details, 
+            //'search': false,
             };
         // set the current tab to previous tab, preparing for next move
         previousTab = current_tab;
@@ -166,7 +171,9 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, replacedTabId){
                     };
     var log = {'event': e, 'timestamp': ts, 
                 'affected_tab_id': replacedTabId,
-                'details': details, 'search': false};
+                'details': details, 
+                //'search': false
+                };
     previousEvent = log;
     savedata(log);
 });
@@ -177,12 +184,17 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, replacedTabId){
 // - url change
 // - status switch to complete 
 // URL change can be triggered by the following situations:
-// - open a new tab (ignore, tab-new is sufficient)
-// - user type in url
-// - user search
-// - ...
+// 1. open a new tab (ignore, tab-new is sufficient)
+// 2. user type in url
+// 3. user search
+// 4. user click a link
+// 5. user submit a form
+// WebNavigation captures 2, 4, 5.
+// We only record when it's a search on one of the search engines.
+//
 // For the following cases we also ignore tab complete loading:
 // - open a new tab (tab-new is sufficient) 
+// A completely loaded tab can provides info such as title
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
     var ts = (new Date()).getTime();
     var e = ''
@@ -204,17 +216,20 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
             e = 'tab-changeURL';
             // Check if this is a search on a search engine
             search_check = check_searchEngine(tab.url);
+            if (search_check['search'] == true)
+                e = 'tab-search';
         }
     }
     details = {'current_tab': tab,
                 'previous_tab': previousTab}
 
     //only record events that are not ignored
-    if (e == 'tab-loaded' || e == 'tab-changeURL'){ 
+    if (e == 'tab-loaded' || e == 'tab-search'){ 
         var log = {'event': e, 'timestamp': ts,
+            'affected_tab': tab.id,
             'details': details
             }
-        if (e == 'tab-changeURL'){
+        if (e == 'tab-search'){
             log['search'] = search_check['search'];
             if (search_check['search'] == true)
                 log['query'] = search_check['query'];
@@ -263,6 +278,7 @@ chrome.webNavigation.onCommitted.addListener(function(details){
         var inputtype = '';
         // In omnibox:
         // if transitionType is "generated", user typed in keywords
+        // pattern: tab-changeURL -> omni_query -> tab-loaded
         if (details.transitionType == 'generated'){
             //This should show up as input from a form in the search engine page
             //Get it from the content
@@ -285,10 +301,15 @@ chrome.webNavigation.onCommitted.addListener(function(details){
             // form
             inputtype = ['form_submit']
         }
+        // pattern:
+        // link-click (not if it's a back/forward) -> tab_changeUrl
+        // -> navigation-link -> tab_loaded
         else if (details.transitionType == 'link'){
             // From this url we can find the title of the page
             // after it's loaded
             inputtype = ['link']
+            if (details.transitionQualifiers.indexOf('forward_back')>-1)
+                inputtype.push('forward_back');
         }
         else
             inputtype = [details.transitionType]
@@ -306,17 +327,23 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
     if (request.name == 'form_submit'){
         log = {'event': 'form_submit',
                'timestamp': request.timestamp,
+               'affacted_tab_id': sender.tab.id,
+               'details': {
                'form_data': request.data,
                'senderId': sender.id,
-               'senderTab': sender.tab
+               'senderTab': sender.tab,
+                }
         }
     }
     else if (request.name == 'link_click'){
         log = {'event': 'link_click', 
                 'timestamp': request.timestamp,
+                'affected_tab_id': sender.tab.id,
+                'details': {
                 'link_data': request.data,
                 'senderId': sender.id,
-                'senderTab': sender.tab
+                'senderTab': sender.tab,
+                }
         }
     }
     previousEvent = log;
