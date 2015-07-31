@@ -225,16 +225,15 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 
     //only record events that are not ignored
     if (e == 'tab-loaded' || e == 'tab-search'){ 
+        if (e == 'tab-search'){
+                details['query'] = search_check['query'];
+                details['engine'] = search_check['se'];
+        }
+
         var log = {'event': e, 'timestamp': ts,
             'affected_tab': tab.id,
             'details': details
             }
-        if (e == 'tab-search'){
-            log['search'] = search_check['search'];
-            if (search_check['search'] == true)
-                log['query'] = search_check['query'];
-                log['engine'] = search_check['se'];
-        }
         // set the tab tracker to the current tab
         previousTag = tab;
         previousEvent = log;
