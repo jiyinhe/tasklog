@@ -23,8 +23,9 @@ router.post('/savedata', function(req, res){
     var db = req.db;
 
     //set the collection
-    if (req.body.device == "chrome")
+    if (req.body.device == "chrome"){
         var collection = db.get('log_chrome');
+    }
     //TODO: add for other devices and collections 
  
     //store the entry to db

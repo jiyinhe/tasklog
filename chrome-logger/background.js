@@ -44,6 +44,7 @@ function savedata(logdata){
     logdata['device'] = device;
     console.log(logdata);
 //    console.log(previousTab);
+    /*
     $.ajax({
         type: "POST",
         url: data_storage_url,
@@ -53,6 +54,7 @@ function savedata(logdata){
                 console.log(msg);
         }
     });
+    */
 }
 
 // When a new tab is open, record.

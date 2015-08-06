@@ -6,3 +6,31 @@ body {
 a {
   color: #00B7FF;
 }
+
+.space30 {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.err {
+	font-size:13px;
+	color: red;
+}
+
+.errsign-valid {
+	visibility: hidden;
+}
+
+.errsign-err {
+	visibility: visible;
+}
+
+.errorlist{
+	font-size:13px;
+	color: red;
+}
+
+.todo{
+    font-size: 15px;
+    color: #FF6600;
+}

@@ -18,8 +18,16 @@
     "event": event name,
     "timestamp": timestamp of the event,
     "details": details of the event,
-    "query": true/false - for quick access to query log
+    "affected_tab_id": for quick acces to check tab changes
 }
+
+# Install a few extra middleware
+1. passport
+
+> npm install passport
+ - authentication strategies
+ - middleware
+ - session
 
 # Code setup 
 
