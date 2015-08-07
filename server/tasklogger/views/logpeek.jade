@@ -1,0 +1,8 @@
+extends layout
+
+block content
+    h1.
+        DB query
+    ul
+        each e, i in entries
+            li= e.user_id + '; ' + e.event + '; ' + e.timestamp
