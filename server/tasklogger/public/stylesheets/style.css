@@ -12,6 +12,11 @@ a {
     margin-bottom: 30px;
 }
 
+.space5 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .err {
 	font-size:13px;
 	color: red;

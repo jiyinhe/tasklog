@@ -23,8 +23,15 @@
 
 # Install a few extra middleware
 1. passport
-
 > npm install passport
+> npm install passport-local
+# for flash error messages
+> npm install connect-flash
+# also need to install express-session
+> npm install express-session
+> npm install connect-mongo
+
+Configure passport in app.js: 
  - authentication strategies
  - middleware
  - session

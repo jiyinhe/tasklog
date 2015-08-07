@@ -15,10 +15,14 @@ router.get('/registration', function(req, res, next) {
 
 /* GET login page */
 router.get('/login', function(req, res, next){
-    //
+    var err = req.flash();
+    if (err['error'] === undefined ){
+        res.render('login', {});
+    }
+    else {
+        res.render('login', {'err': "Login faild: " + err['error']});
+    }
 });
-
-
 
 //process registration data
 router.post('/register_user', function(req, res){
@@ -38,7 +42,7 @@ router.post('/register_user', function(req, res){
                 'pass': req.body.pass,
             }, function(err, doc){
                  // DB error
-                console.log(err)
+                //console.log(err)
                 if (err){
                     res.send({
                         'emsg': 'An error occurred when creating user account, please try again.',
@@ -68,6 +72,17 @@ router.post('/register_user', function(req, res){
             });
     });
 });
+
+/* GET registration page. */
+router.get('/dashboard', function(req, res, next) {
+    //console.log(req.user)
+    res.render('dashboard', {
+        "user": req.user
+    });
+});
+
+
+
 
 //util functions
 var alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
