@@ -12,13 +12,13 @@ var flash = require('connect-flash')
 var dbname = "db_tasklog";
 var host = "localhost";
 var port = "27017";
-//var host = "localhost:27017"; 
+//var host = "localhost:27017";
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk(host + ":"+ port + '/' +dbname);
+var db = monk(host + ":"+ port + '/' +dbname, {w: 1, journal: true, fsync: true});
 
 // Add variables for passport authentication
-var passport = require('passport'); 
+var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 var routes = require('./routes/index');
@@ -39,7 +39,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //middlewares for passport
-app.use(session({secret: 'soncabaret', 
+app.use(session({secret: 'soncabaret',
     //to avoid the warning message
     //expires in 2 weeks
     cookie: {maxAge: 360000*24*14},
@@ -48,7 +48,7 @@ app.use(session({secret: 'soncabaret',
     store: new MongoStore({
         db: dbname,
     }),
-    
+
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -57,7 +57,7 @@ app.use(flash());
 //Add db to every request
 app.use(function(req, res, next){
     req.db = db;
-    //update cookie 
+    //update cookie
     req.session._garbage = Date();
     req.session.touch();
     next();
@@ -73,7 +73,7 @@ app.use('/users', users);
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
- 
+
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });
@@ -87,7 +87,7 @@ passport.use(new LocalStrategy(
     function(username, password, done) {
     //process.nextTick(function(){
         User.findOne({ email: username }, function (err, user) {
-            if (err) { 
+            if (err) {
                 console.log(err);
                 return done(null, false, {message: 'A database error occurred, please try again later.'}); }
             if (!user) {
@@ -108,14 +108,14 @@ app.post('/users/login',
     passport.authenticate('local', {
         successRedirect: '/users/dashboard',
         failureRedirect: '/users/login',
-        failureFlash: true, 
+        failureFlash: true,
     })
 );
 
 app.get('/loginFailure', function(req, res, next) {
   res.send('Failed to authenticate');
 });
- 
+
 app.get('/loginSuccess', function(req, res, next) {
   console.log(req)
   res.send('Successfully authenticated');
