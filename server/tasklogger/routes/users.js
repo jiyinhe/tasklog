@@ -55,7 +55,7 @@ router.post('/register_user', function(req, res){
                 else{
                     res.send({
                         'err': false,
-                        'uesrid': token,
+                        'userid': token,
                         'name': req.body.user,
                         'email': req.body.email,
                         'pass': req.body.pass
@@ -81,7 +81,22 @@ router.get('/dashboard', function(req, res, next) {
     });
 });
 
-
+//Check if userid exists
+router.post('/checkid', function(req, res){
+    // get db connection
+    var db = req.db;
+    //set the collection
+    var collection = db.get('user');
+    //check if the userid exists
+    collection.find({userid: req.body.userid}, {}, function(e, docs){
+         if (docs.length == 0){
+            res.send({'err': true, 'emsg': 'UserID does not exists'})
+         }
+         else{
+            res.send({'err': false, 'user': docs[0]});
+         }
+    });
+});
 
 
 //util functions

@@ -21,12 +21,93 @@ For following activities are recorded:
  - bing 
  - yahoo
 ===================================*/ 
-// TODO: find a way to set user_id
-var user_id = "tester";
 var device = "chrome";
 // TODO: set the url of the server
-var data_storage_url = 'http://localhost:3000/savedata'
+var domain = 'http://localhost:3000'
+var data_storage_url = domain + '/savedata';
+var check_userid_url = domain + '/users/checkid';
 
+/* Functions communicating with Popup */
+// TODO: For testing purpose, should be commented out
+chrome.storage.sync.clear();
+// check userid when starting
+var user_id = '';
+//when starting try to get userid
+get_user_id();
+
+function get_user_id(){
+    chrome.storage.sync.get('userid', function(item){
+        if (item["userid"] === undefined){
+            //Userid not set, show a notification
+            chrome.notifications.create(
+                "userid",
+                {
+                    "type": "basic",
+                    "iconUrl": "icons/icon_38.png",
+                    "title": "WARNING: UserID is not set",
+                    "message": "Please set your unique userID for chrome logger",
+                    "priority": 2,
+                });
+            //Also put a sign on the popup
+            chrome.browserAction.setBadgeText({"text": "!"}) 
+        }
+        else
+            user_id = item['userid'];
+    });
+}
+
+//check user id called from popup
+var check_userid = function(){
+//    var user_id = '0QDWIJ';
+    return user_id;
+}
+
+//set userid that is input from popup
+var set_userid = function(userid, callback){
+    //check if the userid exists in db
+    $.ajax({
+        type: "POST",
+        url: check_userid_url,
+        data: {"userid": userid},
+        success: function(response){
+            if (response.err){
+                //notify the user with a notification
+                chrome.notifications.clear('userid');
+                chrome.notifications.create(
+                    "userid",
+                    {
+                        "type": "basic",
+                        "iconUrl": "icons/icon_38.png",
+                        "title": "ERROR: UserID does not exist.",
+                        "message": "Please try again, or retrieve your UserID following the link below",
+                        "priority": 2,
+                    });
+                // Clear the badge
+                chrome.browserAction.setBadgeText({"text": ""});
+            }
+            else {
+                chrome.storage.sync.set({'userid': response.user.userid});
+                user_id = response.user.userid;
+                // Send notification
+                chrome.notifications.clear('userid');
+                chrome.notifications.create(
+                    "userid_set",
+                    {
+                        "type": "basic",
+                        "iconUrl": "icons/icon_38.png",
+                        "title": "THANKS: UserId successfully set.",
+                        "message": "Your UserId has been set for chrome logger",
+                        "priority": 2,
+                    });
+                // Clear the badge
+                chrome.browserAction.setBadgeText({"text": ""});
+            }
+            if (typeof callback == 'function'){
+                callback.call(this, response);
+            }
+        }
+    });
+}
 
 // Global variables persistent as the script runs
 var previousTab = {};
@@ -43,6 +124,7 @@ function savedata(logdata){
     logdata['user_id'] = user_id;
     logdata['device'] = device;
     console.log(logdata);
+//TODO: uncomment to enable data storage
 //    console.log(previousTab);
     /*
     $.ajax({
@@ -324,7 +406,8 @@ chrome.webNavigation.onCommitted.addListener(function(details){
     }
 });
 
-chrome.extension.onMessage.addListener(function(request, sender, callback){
+chrome.runtime.onMessage.addListener(function(request, sender, callback){
+    var log = {}
     if (request.name == 'form_submit'){
         log = {'event': 'form_submit',
                'timestamp': request.timestamp,
@@ -335,6 +418,8 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
                'senderTab': sender.tab,
                 }
         }
+        previousEvent = log;
+        savedata(log)
     }
     else if (request.name == 'link_click'){
         log = {'event': 'link_click', 
@@ -346,9 +431,11 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
                 'senderTab': sender.tab,
                 }
         }
+        previousEvent = log;
+        savedata(log)
     }
-    previousEvent = log;
-    savedata(log)
 });
+
+
 
 

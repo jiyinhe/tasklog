@@ -42,7 +42,7 @@ function validate_registration_form(){
 }	
 
 function register(user, email, pass){
-        console.log('before register');
+//        console.log('before register');
         $.ajax({
                 type: "POST",
                 url: register_url,

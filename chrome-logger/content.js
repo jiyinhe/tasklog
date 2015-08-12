@@ -12,7 +12,7 @@
 $(document).on('submit', 'form', function(){
     var data = get_form_content($(this));
     var ts = (new Date()).getTime();
-    chrome.extension.sendMessage({
+    chrome.runtime.sendMessage({
        'name': 'form_submit', 'data': data, 'timestamp': ts
     });
 });
@@ -49,7 +49,7 @@ $(document).on('click', 'a', function(){
         'anchor': $(this).text(),
         'url': $(this).attr('href') 
     }   
-    chrome.extension.sendMessage({
+    chrome.runtime.sendMessage({
         'name': 'link_click', 'data': data, 
         'timestamp': ts
     });
