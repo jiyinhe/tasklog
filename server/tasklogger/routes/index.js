@@ -19,32 +19,31 @@ router.get('/logpeek', function(req, res){
 
 /* process data posting request from chrome */
 router.post('/savedata', function(req, res){
+    console.log('here');
     // get db connection
     var db = req.db;
+    var data = JSON.parse(req.body.data);
 
     //set the collection
-    if (req.body.device == "chrome"){
-        var collection = db.get('log_chrome');
+    var collection = null;
+    // we can do this because if it's sent by batch
+    // its sent by the same device, same user
+    if (data[0].device == "chrome"){
+        collection = db.get('log_chrome');
     }
     //TODO: add for other devices and collections 
- 
     //store the entry to db
-    collection.insert({
-        "user_id": req.body.user_id,
-        "event": req.body.event,
-        "timestamp": req.body.timestamp,
-        "details": req.body.details,
-        "query": req.body.query,
-
-    }, function(err, doc){
+    collection.col.insert(data, function(err, doc){
         if (err){
-            res.send("error occurred when inserting record");
+            res.send({
+                "error": true,
+                "emsg": "error occurred when inserting record",
+            });
             console.log(err);
         }
         else
-            res.send("success");
+            res.send({"error": false});
     });
-
 });
 
 

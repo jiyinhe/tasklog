@@ -28,8 +28,9 @@ var data_storage_url = domain + '/savedata';
 var check_userid_url = domain + '/users/checkid';
 
 /* Functions communicating with Popup */
-// TODO: For testing purpose, should be commented out
-chrome.storage.sync.clear();
+// TODO: For testing purpose, this allows reset of userid
+// when reloading the extension 
+chrome.storage.sync.remove('userid');
 // check userid when starting
 var user_id = '';
 //when starting try to get userid
@@ -121,22 +122,41 @@ chrome.tabs.query({'active': true}, function(tabs){
 
 //function for send post request to store data
 function savedata(logdata){
-    logdata['user_id'] = user_id;
+    logdata['userid'] = user_id;
     logdata['device'] = device;
-    console.log(logdata);
-//TODO: uncomment to enable data storage
-//    console.log(previousTab);
-    /*
-    $.ajax({
-        type: "POST",
-        url: data_storage_url,
-        data: logdata,
-        success: function(msg){
-            if (msg != "success")
-                console.log(msg);
+
+    //check if storage is empty
+    chrome.storage.sync.get('logdata', function(item){
+        var stored_log = []
+        if (item['logdata'] === undefined){
+            //nothing in storage
+            stored_log = [logdata];
         }
+        else{
+            //something already in storage
+            stored_log = item['logdata'];
+            stored_log.push(logdata);
+        }
+        //try to store it in db
+        $.ajax({
+            type: "POST",
+            url: data_storage_url,
+            data: {"data": JSON.stringify(stored_log)},
+            dataType: "json",
+            success: function(response){
+                if (response.err){
+                    //error occured, log stay in storage
+                    chrome.storage.sync.set({'logdata': stored_log})
+                    console.log(response.emsg);
+                }
+                else{
+                    //success, clear storage for logdata
+                    chrome.storage.sync.remove('logdata');
+                }
+                console.log(stored_log);
+            }
+        });
     });
-    */
 }
 
 // When a new tab is open, record.
@@ -209,7 +229,7 @@ chrome.tabs.onRemoved.addListener(function(tabId){
 //  3. close a tab 
 //  4. replace a tab (e.g., when type in omnibox, switch to SERP)
 chrome.tabs.onActivated.addListener(function(tab){
-    console.log(previousEvent['event']);
+//    console.log(previousEvent['event']);
     var e = 'tab-switch';
     var ts = (new Date()).getTime();
     var current_tab = null;
