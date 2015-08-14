@@ -19,10 +19,12 @@ router.get('/logpeek', function(req, res){
 
 /* process data posting request from chrome */
 router.post('/savedata', function(req, res){
-    console.log('here');
     // get db connection
     var db = req.db;
     var data = JSON.parse(req.body.data);
+    
+    // TODO: test this in deployment
+    var IP = req.ip;
 
     //set the collection
     var collection = null;
@@ -30,6 +32,8 @@ router.post('/savedata', function(req, res){
     // its sent by the same device, same user
     if (data[0].device == "chrome"){
         collection = db.get('log_chrome');
+        for (var i = 0; i < data.length; i++)
+            data[i]['IP'] = IP;
     }
     //TODO: add for other devices and collections 
     //store the entry to db

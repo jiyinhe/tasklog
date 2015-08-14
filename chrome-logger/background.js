@@ -136,26 +136,48 @@ function savedata(logdata){
             //something already in storage
             stored_log = item['logdata'];
             stored_log.push(logdata);
-        }
-        //try to store it in db
-        $.ajax({
-            type: "POST",
-            url: data_storage_url,
-            data: {"data": JSON.stringify(stored_log)},
-            dataType: "json",
-            success: function(response){
-                if (response.err){
-                    //error occured, log stay in storage
-                    chrome.storage.sync.set({'logdata': stored_log})
-                    console.log(response.emsg);
-                }
-                else{
-                    //success, clear storage for logdata
-                    chrome.storage.sync.remove('logdata');
-                }
-                console.log(stored_log);
+            // check if the delay of storing in DB is due to userid issue
+            for (var i = 0; i < stored_log.length; i++){
+                if ((user_id != '') && (stored_log[i]['userid'] == ''))
+                    stored_log[i]['userid'] = user_id;
             }
-        });
+        }
+        console.log(stored_log);
+        //if userid is not set, send notification
+        if (user_id == ''){
+            //store it in storage
+            chrome.storage.sync.set({'logdata': stored_log})
+
+            chrome.notifications.create(
+                "userid",
+                {
+                    "type": "basic",
+                    "iconUrl": "icons/icon_38.png",
+                    "title": "WARNING: UserID is not set",
+                    "message": "Please set your unique userID for chrome logger",
+                    "priority": 2,
+                });
+        }
+        else{
+            //otherwise try to store it in db
+            $.ajax({
+                type: "POST",
+                url: data_storage_url,
+                data: {"data": JSON.stringify(stored_log)},
+                dataType: "json",
+                success: function(response){
+                    if (response.err){
+                        //error occured, log stay in storage
+                        chrome.storage.sync.set({'logdata': stored_log})
+                        console.log(response.emsg);
+                    }
+                    else{
+                        //success, clear storage for logdata
+                        chrome.storage.sync.remove('logdata');
+                    }
+                }
+            });
+        }
     });
 }
 
