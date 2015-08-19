@@ -23,7 +23,8 @@ For following activities are recorded:
 ===================================*/ 
 var device = "chrome";
 // TODO: set the url of the server
-var domain = 'http://localhost:3000'
+var domain = 'http://localhost:3000';
+//var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
 var check_userid_url = domain + '/users/checkid';
 
@@ -357,11 +358,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
         }
 
         var log = {'event': e, 'timestamp': ts,
-            'affected_tab': tab.id,
+            'affected_tab_id': tab.id,
             'details': details
             }
         // set the tab tracker to the current tab
-        previousTag = tab;
+        previousTab = tab;
         previousEvent = log;
         savedata(log)
     }
@@ -453,7 +454,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback){
     if (request.name == 'form_submit'){
         log = {'event': 'form_submit',
                'timestamp': request.timestamp,
-               'affacted_tab_id': sender.tab.id,
+               'affected_tab_id': sender.tab.id,
                'details': {
                'form_data': request.data,
                'senderId': sender.id,

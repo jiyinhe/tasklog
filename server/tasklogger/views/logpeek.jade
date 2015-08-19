@@ -1,8 +1,58 @@
 extends layout
 
+block headextra
+     link(rel="stylesheet", href='/stylesheets/bootstrap-datepicker.min.css')
+     script(src="/javascripts/bootstrap-datepicker.min.js")
+     script(src="/javascripts/logquery.js")
+       
 block content
-    h1.
-        DB query
-    ul
-        each e, i in entries
-            li= e.user_id + '; ' + e.event + '; ' + e.timestamp
+    .well
+        form#queryform(class="form-inline")
+            .form-group
+                input#inputuserid(type="text", class="form-control", name="userid", placeholder="UserID")
+            =" "     
+            .form-group
+                label(for="from") From
+                =" "
+                input#from(class=["datepicker"], placeholder="From date")
+                input#fromdate(type="hidden", name="from")
+            =" "
+            .form-group
+                label(for="to") To
+                =" "
+                input#to(class=["datepicker"], placeholder="To date")
+                input#todate(type="hidden", name="to")
+            =" "
+            .form-group
+                div#querylog(class=["btn", "btn-primary", "form-control"]) View log
+
+            .err#queryerr
+                            
+    div#log_record(class="log_record")
+        table(class=["table", "table-condensed", "log-table"])
+            tr
+                td(class=["table-header", "log-table-cell-xs"]) #
+                td(class=["table-header", "log-table-cell-xs"]) UserID
+                td(class=["table-header"]) Timestamp
+                td(class=["table-header", "log-table-cell-xs"]) AffectedTab
+                td(class=["table-header"]) Event
+                td(class=["table-header"]) Title
+                td(class=["table-header"]) URL
+                td(class=["table-header"]) Details
+
+            each  doc in docs
+                tr(class=doc.class)
+                    td=doc.count
+                    td=doc.userid
+                    td=doc.timestamp
+                    td=doc.tabId
+                    td=doc.event 
+                    td=doc.title 
+                    td 
+                        a(href=doc.url)=doc.url
+                    td=doc.details 
+
+
+
+                
+         

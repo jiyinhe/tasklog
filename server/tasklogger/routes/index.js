@@ -7,15 +7,40 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET page for check db data*/
-router.get('/logpeek', function(req, res){
+router.get('/logpeek', function(req, res, next){
     var db = req.db;
     var collection = db.get('log_chrome');
-    collection.find({}, {}, function(e, docs){
-        res.render('logpeek', {
-            "entries": docs
-        });
-    });
+
+    var query = {};
+    if (req.query.userid === undefined){}
+    else if (req.query.userid != '')
+        query['userid'] = req.query.userid;
+
+    var query_ts = {}; 
+    if (req.query.from === undefined){}
+    else
+        query_ts.$gte = parseInt(req.query.from);
+
+    if (req.query.to === undefined){}
+    else
+        query_ts.$lte = parseInt(req.query.to);
+
+    if (Object.keys(query_ts).length > 0)
+        query['timestamp'] = query_ts;
+
+    //Query DB
+    if (Object.keys(query).length > 0)
+       collection.find(query, {sort: {timestamp: 1}}, function(e, docs){
+            console.log(docs.length);
+            res.render('logpeek', {
+                "title": "Logview",
+                "docs": format_records(docs),
+                });
+        }); 
+    else
+        res.render('logpeek', {"title": "Logview"});
 });
+
 
 /* process data posting request from chrome */
 router.post('/savedata', function(req, res){
@@ -50,5 +75,67 @@ router.post('/savedata', function(req, res){
     });
 });
 
+function format_records(docs){
+    var D = [];
+    for (var i = 0; i<docs.length; i++){
+        var d = {'count': i+1,
+                 'userid': docs[i].userid, 
+                 'timestamp': docs[i].timestamp,
+                 'event': docs[i]['event'],
+                 'tabId': docs[i]['affected_tab_id'],
+                 'class': ''
+                };
+        if (docs[i]['event'] == 'tab-search'){
+            d['details'] = JSON.stringify({ 
+                'query': docs[i].details.query,
+                'engine': docs[i].details.engine,
+            });
+            d['url'] =  docs[i].details.current_tab.url;
+            d['title'] =  docs[i].details.current_tab.title;
+            d['class'] = 'success';
+        }
+        else if (docs[i]['event'] == 'link_click'){
+            d['details'] = JSON.stringify({'anchor text': docs[i].details.link_data.anchor});
+            d['url'] = docs[i].details.senderTab.url;
+            d['title'] = docs[i].details.senderTab.title;
+            d['class'] = "success";
+        }
+        else if (docs[i]['event'] == 'form_submit'){
+            d['details'] = JSON.stringify(docs[i].details.form_data);
+            d['url'] = docs[i].details.senderTab.url;
+            d['title'] = docs[i].details.senderTab.title;
+            d['class'] = "success";
+        }
+        else if (docs[i]['event'] == 'tab-replaced'){
+            d['details'] = JSON.stringify(docs[i].details);
+            d['url'] = '';
+            d['title'] = '';
+        }
+        else if (docs[i]['event'] == 'tab-close'){
+            d['url'] = '';
+            d['title'] = '';
+            d['details'] = '';
+        }
+        else if (docs[i]['event'].indexOf('tab') > -1){
+            d['url'] = docs[i].details.current_tab.url;
+            d['title'] = docs[i].details.current_tab.title;
+            d['details'] = '';
+            if (docs[i]['event'] == 'tab-open-in-new')
+                d['details'] = JSON.stringify({
+                    'newTabId': docs[i].details.new_tab.id,
+                    'openerTabId': docs[i].details.new_tab.openerTabId,
+                    'newTabTitle': docs[i].details.new_tab.title,
+                    'newTabURL': docs[i].details.new_tab.url,
+                });
+        }
+        else if (docs[i]['event'].indexOf('navigation')>-1){
+            d['url'] = docs[i].details.url;
+            d['details'] = 'TransitionType: '+docs[i].details.transitionType; 
+            d['class'] = 'success';
+        }
+        D.push(d);
+    }
+    return D
+}
 
 module.exports = router;

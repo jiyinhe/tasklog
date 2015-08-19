@@ -39,3 +39,22 @@ a {
     font-size: 15px;
     color: #FF6600;
 }
+
+.log_record{
+    font-size: 13px;
+    padding: 0px;
+}
+
+.table-header{
+    font-weight: bold;
+}
+
+.log-table {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+.log-table-cell-xs {
+    width: 70px;
+}
+
