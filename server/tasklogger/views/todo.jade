@@ -19,9 +19,9 @@ block content
            
             div#tasks_today 
                 for t in tasks_today
-                    div(id=t.taskid, class=["main-task"])
-                        input(type="checkbox", id="checkbox_"+t.taskid)
-                        span(class=t.task_status, id="span_"+t.taskid)
+                    div(id=t.taskid, class=["main-task"], time_done=t.time_done)
+                        input(type="checkbox", id="checkbox_"+t.taskid, checked=t.done)
+                        span(class=t.status, id="span_"+t.taskid)
                             =" " + t.task
                         =" "
                         span(class=["glyphicon", "glyphicon-trash", "rm-task"], id="rm_"+t.taskid)
@@ -31,15 +31,15 @@ block content
                             ="-- "
                             input(type="text", class="form-control", placeholder="New subtask", id="input_newsub_"+t.taskid) 
                             =" "   
-                            span(class=["glyphicon", "glyphicon-plus-sign", "newsubtask"], id="add_newsub_"+t.taskid)
-                            span(class=["glyphicon", "glyphicon-remove-circle", "newsubtask"], id="rm_newsub_"+t.taskid)
+                            span(class=["glyphicon", "glyphicon-plus-sign","add-subtask"], id="add_newsub_"+t.taskid)
+                            span(class=["glyphicon", "glyphicon-remove-circle","rm-subtask"], id="rm_newsub_"+t.taskid)
                             
                     
                         for tt in t.subtasks
-                            div(id=tt.taskid, class="subtask")
+                            div(id=tt.taskid, class="subtask", time_done=tt.time_done)
                                 ="-- "
-                                input(type="checkbox", id="checkbox_"+tt.taskid)
-                                span(class=tt.task_status, id="span_"+tt.taskid)
+                                input(type="checkbox", id="checkbox_"+tt.taskid, checked=tt.done)
+                                span(class=tt.status, id="span_"+tt.taskid)
                                     =" " + tt.task
                                 =" "
                                 span(class=["glyphicon", "glyphicon-trash", "rm-task"], id="rm_"+tt.taskid)
@@ -53,19 +53,19 @@ block content
                 h4(class="header-text") Past tasks
 
             for t in tasks_past
-                div(id=t.taskid, class="main-task")
-                    input(type="checkbox", id="checkbox_"+t.taskid)
-                    span(class=t.task_status, id="span_"+t.taskid)
+                div(id=t.taskid, class="main-task", time_done=t.time_done)
+                    input(type="checkbox", id="checkbox_"+t.taskid, checked=t.done)
+                    span(class=t.status, id="span_"+t.taskid)
                         =" " + t.task
                     =" "
                     span(id="refresh_"+t.taskid, class="refresh-task")
                         =" +To today"
 
                     for tt in t.subtasks
-                        div(id=tt.taskid, class="subtask")
+                        div(id=tt.taskid, class="subtask", time_done=t.time_done)
                             ="-- "
-                            input(type="checkbox", id="checkbox_"+tt.taskid)
-                            span(class=tt.task_status, id="span_"+tt.taskid)
+                            input(type="checkbox", id="checkbox_"+tt.taskid, checked=tt.done)
+                            span(class=tt.status, id="span_"+tt.taskid)
                                 =" " + tt.task
 
 

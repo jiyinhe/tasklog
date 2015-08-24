@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var ObjectId = require('mongodb').ObjectID;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -142,6 +143,8 @@ router.get('/mytodo', function(req, res, next) {
                     'subtasks': [],
                     'refresh': docs[i]['refresh'],
                     'status': task_status,
+                    'done': docs[i].done,
+                    'time_done': docs[i].time_done,
                 }
             parents[d.taskid] = d;
         }
@@ -154,7 +157,10 @@ router.get('/mytodo', function(req, res, next) {
  
                     var d = {'taskid': docs[i]['_id'], 
                             'task': docs[i]['task'],
-                            'task': task_status,
+                            'refresh': docs[i]['refresh'],
+                            'status': task_status,
+                            'done': docs[i].done,
+                            'time_done': docs[i].time_done,
                         };
                     parents[docs[i]['parent_task']].subtasks.push(d);
                 }
@@ -190,8 +196,8 @@ router.post('/submit_todo', function(req, res){
             'time_created': create_time,
             'time_done': 0,
             'task': req.body.task,
-            'task_level': 0,
-            'parent_task': 0,
+            'task_level': req.body.level,
+            'parent_task': req.body['parent'],
             'done': false,
             'refresh': create_time,
         }
@@ -205,16 +211,34 @@ router.post('/submit_todo', function(req, res){
         });
     }
     else if (req.body.event == 'task_status_change'){
-        console.log('here');
-        if (req.body.is_main_task)
-            console.log('main-task')
-        //if a task is done, all its unfinished subtasks are done
+        var tasks = []
+        if (req.body['tasks[]'].constructor === Array){
+            for (var i = 0; i<req.body['tasks[]'].length; i++){
+                tasks.push(new ObjectId(req.body['tasks[]'][i]))
+            }
+        }
+        else
+            tasks.push(new ObjectId(req.body['tasks[]']));
+        var time_done = parseInt(req.body.time);
+        var done = (req.body.done == 'true');
+
+        var task_status = '';
+        if (req.body.done)
+            task_status = 'task-done';
         
-        //if a tasks is undone, all the subtasks that were done at the
-        // same time are undone 
-        // if a subtask is done, only change its own status
-        // if a subtask is undone, its parent becomes undone
- 
+        //save in DB 
+        collection.update({'_id':  {$in: tasks}}, {
+            $set: {'time_done': time_done, 'done': done}}, 
+            {multi: true},
+            function(err, docs){
+                if (err){
+                    console.log('DB ERROR: '+err)
+                    res.send('ERROR: '+err);
+                }
+                else{
+                    res.send('success'); 
+                }
+            });
     }
 });
 
