@@ -38,7 +38,7 @@ router.get('/logpeek', function(req, res, next){
                 });
         }); 
     else
-        res.render('logpeek', {"title": "Logview"});
+        res.render('logpeek', {"title": "Logview", "docs": []});
 });
 
 
