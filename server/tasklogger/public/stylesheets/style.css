@@ -58,3 +58,62 @@ a {
     width: 70px;
 }
 
+.navbar-inverse {
+    background-color: #350808;
+}
+
+.left-nav {
+    padding-top: 100px;
+}
+
+.inpagelink {
+    padding-top: 50px;
+}
+.header-text {
+    color: #350808;
+}
+
+.glyphicon-trash {
+    font-size: 12px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.glyphicon-plus-sign {
+    font-size: 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    color: green
+}
+
+.glyphicon-remove-circle {
+    font-size: 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    color: grey 
+}
+
+.btn-newsub {
+    margin-left: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    color: steelblue;
+}
+.form-add-task {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.main-task {
+    margin-top: 10px;
+}
+.refresh-task {
+    margin-left: 15px;
+    cursor: pointer;
+    color: steelblue;
+    font-size: 13px;
+}
+
+.task-done {
+    color: grey;
+    text-decoration: line-through;
+}

@@ -10,4 +10,26 @@ html
     block headextra
 
   body
+    block navibar
+        nav(class=["navbar", "navbar-inverse", "navbar-fixed-top"])
+            .navbar-brand Tasklog
+            ul(class=["nav", "navbar-nav", "text"])
+                li(class=homeclass)
+                    a(href="/users/dashboard") Home
+
+                li(class=instructionclass)
+                    a(href="/users/instructions") Instructions
+
+                li(class=todoclass)
+                    a(href="/users/mytodo") My to-dos
+
+                li(class=annotationclass)
+                    a(href="/users/annotation") My annotation
+
+                li(class=accountclass)
+                    a(href="/users/account") My account
+
     block content
+                
+
+
