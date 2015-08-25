@@ -196,7 +196,7 @@ router.post('/submit_todo', function(req, res){
             'time_created': create_time,
             'time_done': 0,
             'task': req.body.task,
-            'task_level': req.body.level,
+            'task_level': parseInt(req.body.level),
             'parent_task': req.body['parent'],
             'done': false,
             'refresh': create_time,
@@ -239,6 +239,38 @@ router.post('/submit_todo', function(req, res){
                     res.send('success'); 
                 }
             });
+    }
+    else if (req.body.event == 'refresh'){
+        collection.update({'_id': req.body.taskid},
+            {$set: {'refresh': parseInt(req.body.refresh)}}, 
+            function(err, docs){
+                if (err){
+                    console.log('DB ERROR: '+err);
+                    res.send('ERROR: '+err);
+                }
+                else{
+                    res.send('success');
+                }
+            });
+    }
+    else if (req.body.event == 'rm_task'){
+        var taskids = req.body['tasks[]'];
+        var tasks = [];
+        if (taskids.constructor === Array){
+            for (var i = 0; i<taskids.length; i++){
+                tasks.push(new ObjectId(taskids[i]));
+            }
+        }
+        else
+            tasks.push(new ObjectId(taskids));
+        collection.remove({'_id': {$in: tasks}}, {}, function(err, doc){
+            if (err){
+                console.log("DB ERROR: "+ err)
+                res.send({'err': true, 'emsg': err});
+            }
+            else
+                res.send('success');
+        });
     }
 });
 
