@@ -10,6 +10,7 @@
 
 // jquery version
 $(document).on('submit', 'form', function(){
+//    console.log('form_submit')
     var data = get_form_content($(this));
     var ts = (new Date()).getTime();
     chrome.runtime.sendMessage({

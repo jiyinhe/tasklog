@@ -119,167 +119,13 @@ router.get('/instructions', function(req, res, next) {
 });
 
 
-/* To-do page */
-router.get('/mytodo', function(req, res, next) {
-    if (req.user===undefined){
-        res.redirect('/users/login');
-    }
-    //Get all tasks
-    var collection = req.db.get('user_tasks');
-    //first get all the parents
-    collection.find({'userid': req.user.userid, 'task_level': 0}, 
-        {sort: {timestamp: 1}}, function(e, docs){
-        var tasks_today = [];
-        var tasks_past = [];
-        var today = (new Date()).setHours(0,0,0,0);
-
-        var parents = {}
-        for (var i = 0; i<docs.length; i++){
-            var task_status = '';
-            if (docs[i].done)
-                task_status = 'task-done';
-            var d = {'taskid': docs[i]['_id'],
-                    'task': docs[i]['task'],
-                    'subtasks': [],
-                    'refresh': docs[i]['refresh'],
-                    'status': task_status,
-                    'done': docs[i].done,
-                    'time_done': docs[i].time_done,
-                }
-            parents[d.taskid] = d;
-        }
-        collection.find({'userid': req.user.userid, 'task_level': 1}, 
-            {sort:{timestamp: 1}}, function(e, docs){
-                for(var i = 0; i<docs.length; i++){
-                    var task_status = '';
-                    if (docs[i].done)
-                        task_status = 'task-done';
- 
-                    var d = {'taskid': docs[i]['_id'], 
-                            'task': docs[i]['task'],
-                            'refresh': docs[i]['refresh'],
-                            'status': task_status,
-                            'done': docs[i].done,
-                            'time_done': docs[i].time_done,
-                        };
-                    parents[docs[i]['parent_task']].subtasks.push(d);
-                }
-            //seperate today's task and past tasks
-            for (var key in parents){
-                if (parents[key]['refresh'] > today)
-                   tasks_today.push(parents[key]);
-                else
-                   tasks_past.push(parents[key]);
-            }
-            tasks_today.sort(function(a, b){return  a.refresh - b.refresh;});
-            tasks_past.sort(function(a, b){return  a.refresh - b.refresh;});
-
-            res.render('todo', {
-                "user": req.user,
-                "todoclass": "active",
-                "title": "Tasklog - My todo list",
-                "tasks_today": tasks_today,
-                "tasks_past": tasks_past,
-            });
-        });  
-    }); 
-});
-
-router.post('/submit_todo', function(req, res){
-    var collection = req.db.get('user_tasks');
-    if (req.body.event == 'add_task'){
-        //refresh: when add a past task to today, 
-        //refresh is set to today while create_time is not changed
-        var create_time = parseInt(req.body.create_time);
-        var entry = {
-            'userid': req.user.userid,
-            'time_created': create_time,
-            'time_done': 0,
-            'task': req.body.task,
-            'task_level': parseInt(req.body.level),
-            'parent_task': req.body['parent'],
-            'done': false,
-            'refresh': create_time,
-        }
-        collection.insert(entry, function(err, doc){
-            if (err){
-                console.log('DB error: ' + err)
-                res.send({'err': true, 'emsg': err})
-            }
-            else
-                res.send({'err': false, 'task': doc})
-        });
-    }
-    else if (req.body.event == 'task_status_change'){
-        var tasks = []
-        if (req.body['tasks[]'].constructor === Array){
-            for (var i = 0; i<req.body['tasks[]'].length; i++){
-                tasks.push(new ObjectId(req.body['tasks[]'][i]))
-            }
-        }
-        else
-            tasks.push(new ObjectId(req.body['tasks[]']));
-        var time_done = parseInt(req.body.time);
-        var done = (req.body.done == 'true');
-
-        var task_status = '';
-        if (req.body.done)
-            task_status = 'task-done';
-        
-        //save in DB 
-        collection.update({'_id':  {$in: tasks}}, {
-            $set: {'time_done': time_done, 'done': done}}, 
-            {multi: true},
-            function(err, docs){
-                if (err){
-                    console.log('DB ERROR: '+err)
-                    res.send('ERROR: '+err);
-                }
-                else{
-                    res.send('success'); 
-                }
-            });
-    }
-    else if (req.body.event == 'refresh'){
-        collection.update({'_id': req.body.taskid},
-            {$set: {'refresh': parseInt(req.body.refresh)}}, 
-            function(err, docs){
-                if (err){
-                    console.log('DB ERROR: '+err);
-                    res.send('ERROR: '+err);
-                }
-                else{
-                    res.send('success');
-                }
-            });
-    }
-    else if (req.body.event == 'rm_task'){
-        var taskids = req.body['tasks[]'];
-        var tasks = [];
-        if (taskids.constructor === Array){
-            for (var i = 0; i<taskids.length; i++){
-                tasks.push(new ObjectId(taskids[i]));
-            }
-        }
-        else
-            tasks.push(new ObjectId(taskids));
-        collection.remove({'_id': {$in: tasks}}, {}, function(err, doc){
-            if (err){
-                console.log("DB ERROR: "+ err)
-                res.send({'err': true, 'emsg': err});
-            }
-            else
-                res.send('success');
-        });
-    }
-});
-
+       
 /* Annotation page */
 router.get('/annotation', function(req, res, next) {
     if (req.user===undefined){
         res.redirect('/users/login');
     }
- 
+
     //console.log(req.user)
     res.render('annotation', {
         "user": req.user,
@@ -288,6 +134,86 @@ router.get('/annotation', function(req, res, next) {
     });
 });
 
+/* ajax for annoation page */
+router.post('/ajax_tasks', function(req, res){
+    // get db connection
+    var db = req.db;
+    //set the collection
+    var collection = db.get('user_tasks');
+    if (req.body['event'] == 'retrieve_tasks'){
+        //get unfinished tasks, older goals rank lower
+        collection.find({'userid': req.user.userid, 'done': false}, 
+            {sort: {timestamp: -1}}, function(e, docs){
+                if (e){
+                    console.log('DB ERROR: '+ e) 
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                    //seperate level 0 from level 1 tasks
+                    level0 = docs.filter(function(d){return d.task_level == 0});
+                    level1 = docs.filter(function(d){return d.task_level == 1});
+                    //make map of level 0 tasks
+                    main_tasks = {}
+                    for (var i = 0; i < level0.length; i++){
+                        level0[i]['subtasks'] = []
+                        main_tasks[level0[i]['_id']] = level0[i];
+                     }
+                    // add subtasks in
+                    for (var i = 0; i < level1.length; i++){
+                        main_tasks[level1[i]['parent_task']]['subtasks'].push(level1[i]);
+                    }
+                    res.send({'err': false, 'res': main_tasks})
+                }
+            });
+    }
+    else if (req.body['event'] == 'retrieve_done_tasks'){
+        // get all parent tasks and done tasks
+        collection.find({'userid': req.user.userid, $or: [{'done': true}, {'task_level': 0}]}, 
+            {sort: {timestamp: -1}}, function(e, docs){
+                if (e){
+                    console.log('DB ERROR: '+ e) 
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                    //seperate level 0 from level 1 tasks
+                    level0 = docs.filter(function(d){return d.task_level == 0});
+                    level1 = docs.filter(function(d){return d.task_level == 1});
+                    //make map of level 0 tasks
+                    main_tasks = {}
+                    for (var i = 0; i < level0.length; i++){
+                        level0[i]['subtasks'] = []
+                        main_tasks[level0[i]['_id']] = level0[i];
+                     }
+                    // add subtasks in
+                    for (var i = 0; i < level1.length; i++){
+                        main_tasks[level1[i]['parent_task']]['subtasks'].push(level1[i]);
+                    }
+                    //remove main_tasks that doesn't have subtasks
+                    filtered = {}
+                    for (key in main_tasks){
+                        if (main_tasks[key].done == 1 || main_tasks[key].subtasks.length > 0)
+                            filtered[key] = main_tasks[key]
+                    }     
+                    res.send({'err': false, 'res': filtered})
+                }
+            });
+    }
+    else if (req.body['event'] == 'retrieve_task_counts'){
+        collection.col.aggregate([
+                    {"$match": {'userid': req.user.userid}},
+                    {'$group': {'_id': '$done', 'number':{ '$sum' : 1}}},
+                ], 
+            function(e, docs){
+                if (e){
+                    console.log(e) 
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                    res.send({'err': false, 'res': docs});
+                }
+            });
+    }
+});
 
 /* Account information page */
 router.get('/account', function(req, res, next) {
