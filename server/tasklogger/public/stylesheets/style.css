@@ -72,15 +72,11 @@ a {
 .inpagelink {
     padding-top: 50px;
 }
-.glyphicon-remove {
-    font-size: 10px;
+.glyphicon-trash {
+    font-size: 11px;
     font-weight: lighter;
     margin-left: 10px;
     cursor: pointer;
-    color: #aaa;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #aaa;
 }
 
 .options {
@@ -119,6 +115,11 @@ a {
     font-weight: normal;
 }
 
+.subtask-input {
+    margin-top: 10px;
+    margin-left: 20px;
+    width: 50%;
+}
 .refresh-task {
     margin-left: 15px;
     cursor: pointer;

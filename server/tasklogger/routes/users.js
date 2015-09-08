@@ -213,6 +213,74 @@ router.post('/ajax_tasks', function(req, res){
                 }
             });
     }
+    else if (req.body['event'] == 'add_task'){
+        var create_time = parseInt(req.body.time_create);
+        var entry = {
+            'userid': req.user.userid,
+            'time_created': create_time,
+            'time_done': 0,
+            'task': req.body.task,
+            'task_level': parseInt(req.body.level),
+            'parent_task': req.body['parent'],
+            'done': false,
+            'refresh': create_time,
+        }
+        collection.insert(entry, function(err, doc){
+            if (err){
+                console.log('DB error: ' + err)
+                res.send({'err': true, 'emsg': err})
+            }
+            else
+                res.send({'err': false, 'task': doc})
+        });
+   
+    }
+    else if (req.body['event'] == 'remove_item'){
+        var taskids = req.body['to_remove[]'];
+        var tasks = [];
+        if (taskids.constructor === Array){
+            for (var i = 0; i<taskids.length; i++){
+                tasks.push(new ObjectId(taskids[i]));
+            }
+        }
+        else
+            tasks.push(new ObjectId(taskids));
+        collection.remove({'_id': {$in: tasks}}, {}, function(err, doc){
+            if (err){
+                console.log("DB ERROR: "+ err)
+                res.send({'err': true, 'emsg': err});
+            }
+            else
+                res.send('success');
+        });
+ 
+    }
+    else if (req.body['event'] == 'change_status'){
+        var taskids = req.body['to_change[]'];
+        var time_done = parseInt(req.body['time_done']);
+        var done = (req.body.done === 'true');
+        var tasks = [];
+        if (taskids.constructor === Array){
+            for (var i = 0; i<taskids.length; i++){
+                tasks.push(new ObjectId(taskids[i]));
+            }
+        }
+        else
+            tasks.push(new ObjectId(taskids));
+        
+        collection.update({'_id':  {$in: tasks}}, {
+           $set: {'time_done': time_done, 'done': done}}, 
+            {multi: true},
+            function(err, docs){
+                if (err){
+                    console.log('DB ERROR: '+err)
+                    res.send('ERROR: '+err);
+                }
+                else{
+                    res.send('success'); 
+                }
+        });
+    }
 });
 
 /* Account information page */
