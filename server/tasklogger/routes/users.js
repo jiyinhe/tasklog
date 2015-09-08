@@ -157,7 +157,7 @@ router.post('/ajax_tasks', function(req, res){
                     for (var i = 0; i < level0.length; i++){
                         level0[i]['subtasks'] = []
                         main_tasks[level0[i]['_id']] = level0[i];
-                     }
+                    }
                     // add subtasks in
                     for (var i = 0; i < level1.length; i++){
                         main_tasks[level1[i]['parent_task']]['subtasks'].push(level1[i]);
@@ -281,6 +281,30 @@ router.post('/ajax_tasks', function(req, res){
                 }
         });
     }
+    else if (req.body['event'] == 'archive_done'){
+        var taskids = req.body['to_archive[]'];
+        var tasks = [];
+        if (taskids.constructor === Array){
+            for (var i = 0; i<taskids.length; i++){
+                tasks.push(new ObjectId(taskids[i]));
+            }
+        }
+        else
+            tasks.push(new ObjectId(taskids));
+        //console.log(tasks)
+        collection.update({'_id':  {$in: tasks}}, {
+            $set: {'done': true}}, 
+            {multi: true},
+            function(err, docs){
+                if (err){
+                    console.log('DB ERROR: '+err)
+                    res.send('ERROR: '+err);
+                }
+                else{
+                    res.send('success'); 
+                }
+        });
+    }
 });
 
 /* Account information page */
@@ -289,7 +313,6 @@ router.get('/account', function(req, res, next) {
         res.redirect('/users/login');
     }
  
-    //console.log(req.user)
     res.render('account', {
         "user": req.user,
         "accountclass": "active",

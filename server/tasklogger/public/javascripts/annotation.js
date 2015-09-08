@@ -80,7 +80,7 @@ $(document).ready(function(){
         remove_item(to_remove);
     });
 
-    //TODO: Tick out a task that is done
+    //Tick out a task that is done
     //Set the task done time, css
     //but does not set the "done" status
     //"done" status is for when the task is achived to "done"
@@ -146,10 +146,24 @@ $(document).ready(function(){
         change_status(change, time_done, area);
     });
 
-    //TODO: refresh a done task
-    //TODO: move done tasks to done and update the counts
-    //TODO: expand all subtasks
-    //TODO: collapse all subtasks
+    //Move done tasks to done and update the counts
+    $('#option_archive').click(function(){
+        //Get all done tasks in todo
+        var tasks = $('.task-done');
+        data = []
+        for (var i = 0; i < tasks.length; i++)
+            data.push(tasks[i].id)
+        archive_done(data)
+    });   
+ 
+    //Expand all subtasks
+    $('#option_expand').click(function(){
+        $('.subtask').removeClass('hidden');
+    });
+    //Collapse all subtasks
+    $('#option_collapse').click(function(){
+        $('.subtask').addClass('hidden');
+    });
 });
 
 
@@ -367,6 +381,29 @@ function change_status(to_change, time_done, area){
         }
     });
 }
+
+function archive_done(data){
+    data = {
+        'event': 'archive_done',
+        'to_archive': data
+    }
+    $.ajax({
+    type: "POST",
+        url: url_ajax_tasks,
+        data: data,
+    }).done(function(response) {
+        if (response.err){
+            $('#div_addtask').append(
+                '<div class="err">' + response.emsg + '</div>'
+            );
+        }
+        else{
+            get_counts();
+            load_tasks();
+        } 
+    });
+}
+
 
 //create the main_task element
 //type: todo or done
