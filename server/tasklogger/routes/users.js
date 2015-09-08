@@ -134,7 +134,7 @@ router.get('/annotation', function(req, res, next) {
     });
 });
 
-/* ajax for annoation page */
+/* ajax for todo list (tasks) */
 router.post('/ajax_tasks', function(req, res){
     // get db connection
     var db = req.db;
@@ -306,6 +306,11 @@ router.post('/ajax_tasks', function(req, res){
         });
     }
 });
+
+//Ajax call from log annotation
+router.post('/ajax_annotation', function(req, res){
+})
+ 
 
 /* Account information page */
 router.get('/account', function(req, res, next) {
