@@ -119,6 +119,9 @@ a {
     margin-top: 10px;
     margin-left: 20px;
     width: 50%;
+    color: black;
+    font-weight: normal;
+    display: inline-block;
 }
 .refresh-task {
     margin-left: 15px;

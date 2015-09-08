@@ -99,16 +99,19 @@ $(document).ready(function(){
             var subtasks = $('[parent=' + task_id + ']');
             if (checked){
                //if a main task is done, then all its subtasks should be done
-               for (var i = 0; i<subtasks.length; i++)
-                    change.push(subtasks[i].id);
-               //all items have the same done_time
+               for (var i = 0; i<subtasks.length; i++){
+                    //all items have the same done_time
+                    if (subtasks[i].getAttribute('time_done') == 0)
+                        change.push(subtasks[i].id);
+                }
             }
             else{
                 //if a main task is undone, then the subtasks that were done
                 //at the same time should be undone
                 for (var i = 0; i<subtasks.length; i++){
-                    if (subtasks[i].getAttribute('time_done') == $('#' + task_id).attr('time_done'))
-                       change.push(subtasks[i].id);
+                    if (subtasks[i].getAttribute('time_done') == $('#' + task_id).attr('time_done')){
+                        change.push(subtasks[i].id);
+                    }
                 }
                 //all item time_done should be 0
                 time_done = 0
@@ -197,10 +200,16 @@ function get_counts(){
         if (!response.err){
             if (response.res[0]['_id'] == true){
                 $('#count_done').text('('+response.res[0]['number'] + ')');
-                $('#count_todo').text('('+response.res[1]['number'] + ')');
+                if (response.res.length > 1)
+                    $('#count_todo').text('('+response.res[1]['number'] + ')');
+                else 
+                    $('#count_todo').text('(0)');
             }
             else{
-                $('#count_done').text('('+response.res[1]['number'] + ')');
+                if (response.res.length > 1)
+                    $('#count_done').text('('+response.res[1]['number'] + ')');
+                else
+                    $('#count_done').text('(0)');
                 $('#count_todo').text('('+response.res[0]['number'] + ')');
             }
         }
@@ -249,17 +258,26 @@ function add_task(param){
             );
         }
         else{
-            // refresh the to-do list
+            //regenerate the count and task list
+            get_counts();
             load_tasks();
+            // refresh the to-do list
             if (response.task.task_level == 0){
                 $('#input_addtask').val('');
             }
             else{
-                $('#add_subtask_input_'+response.task.parent).val('');
-                //TODO
+                $('#add_subtask_input_'+response.task.parent_task).val('');
                 //if a main task is "done", added a new subtask, it should be "undone"
-                //if (response.task.task_level == 1 && response.task.time_done > 0){
-                //} 
+                var main_task = response.task.parent_task;
+                if ($('#' + main_task).attr('time_done') > 0){
+                    var to_change = [main_task]
+                    //Note: this "undone" is due to the new subtask added
+                    //subtasks that were "done" when checked the main_task
+                    //done previously should not be changed
+                    var time_done = 0;
+                    var area = 'todo';
+                    change_status(to_change, time_done, area);
+                } 
             }
         }
     });  
@@ -277,17 +295,37 @@ function remove_item(to_remove){
             );
         }
         else{
+            //regenerate counts
+            get_counts();
             //remove it from UI
             var main_task = ''
+            var rm_main = false;
             for (var i = 0; i < to_remove.length; i++){
                 var ele = $('#' + to_remove[i]);
+                //if main_task is removed, no need to change
+                if (ele.hasClass('main-task')){
+                    rm_main = true;
+                }
+                else{
+                    main_task = ele.attr('parent');
+                }
                 ele.remove();
-                if (ele.hasClass('main-task'))
-                    main_task = to_remove[i]
             }
             //if only done subtasks are left, then the main task is done
-            if (main_task != ''){
-                //TODO: find all subtasks, check if they are all done
+            if (main_task != '' && rm_main == false){
+                //Find all subtasks, check if they are all done
+                var subtasks = $('[parent=' + main_task + ']')
+                if (subtasks.length > 0)
+                    var all_done = true;
+                    for(var i = 0; i<subtasks.length; i++){
+                        if (subtasks[i].getAttribute('time_done') == 0)
+                            all_done = false; 
+                    }
+                    if (all_done){
+                        var to_change = [main_task]
+                        var time_done = (new Date()).getTime();
+                        change_status(to_change, time_done, 'todo');
+                    }
             }    
         }
     });   
@@ -316,21 +354,15 @@ function change_status(to_change, time_done, area){
         }
         else{
             if (area == 'archive'){
-                //TODO: remove items that are undone
-                //for (var i = 0; i < to_change.length; i++)
-                //    $('#' + to_change[i]).remove();
+                //The counts would have changed as some tasks are undone
+                get_counts();
+                //reload the tasks
                 load_done_tasks();
             }
             else{
-                load_tasks();
-            /*
-                for(var i = 0; i<to_change.length; i++){
-                    //set the time_done of the changed element
-                    $('#' + to_change[i]).attr('time_done', time_done);
-                    //change the display of the items in "ToDo"
-                    $('#' + to_change[i].addClass('task-done'));
-                }
-            */
+                 for (var i = 0; i<to_change.length; i++){
+                     set_task_status(to_change[i], time_done)                       
+                 }
             }
         }
     });
@@ -385,14 +417,16 @@ function create_main_task(task, type){
     
         //Add the remove sign
         //If the task is completed, then don't remove it
-        if (task.time_done == 0){
-            var remove = document.createElement('span');
-            remove.setAttribute('id', 'rm_'+task['_id']);
-            remove.setAttribute('class', 'glyphicon glyphicon-trash rm-item');
-            remove.setAttribute('data-toggle', 'tooltip');
-            remove.setAttribute('title', 'Remove this item');
-            ele_main_task.appendChild(remove); 
+        var remove = document.createElement('span');
+        remove.setAttribute('id', 'rm_'+task['_id']);
+        remove.setAttribute('class', 'glyphicon glyphicon-trash rm-item');
+        remove.setAttribute('data-toggle', 'tooltip');
+        remove.setAttribute('title', 'Remove this item');
+        if (task.time_done > 0){
+            remove.className += ' hidden';
         }
+        ele_main_task.appendChild(remove); 
+ 
         //Text input area for add subtask, hidden
         var subtask_input_container = document.createElement('div');
         subtask_input_container.setAttribute('class', 'hidden');
@@ -431,14 +465,30 @@ function create_subtask(task, type, parent_id){
     ele_subtask.appendChild(document.createTextNode(' '+task.task));
     // Add the remove sign
     if (type == 'todo'){
-        if (task.time_done == 0){
-            var remove = document.createElement('span');
-            remove.setAttribute('id', 'rm_'+task['_id']);
-            remove.setAttribute('class', 'glyphicon glyphicon-trash rm-item');
-            remove.setAttribute('data-toggle', 'tooltip');
-            remove.setAttribute('title', 'Remove this item');
-            ele_subtask.appendChild(remove);
+        var remove = document.createElement('span');
+        remove.setAttribute('id', 'rm_'+task['_id']);
+        remove.setAttribute('class', 'glyphicon glyphicon-trash rm-item');
+        remove.setAttribute('data-toggle', 'tooltip');
+        remove.setAttribute('title', 'Remove this item');
+        if (task.time_done > 0){
+            remove.className += ' hidden';
         }
+        ele_subtask.appendChild(remove);
     }
     return ele_subtask;
+}
+
+//set the task status in DOM
+function set_task_status(task_id, time_done){
+    $('#'+task_id).attr('time_done', time_done)
+    if (time_done > 0){
+        $('#' + task_id).addClass('task-done');
+        $('#rm_' + task_id).addClass('hidden');
+        $('#checkbox_' + task_id).prop('checked', true)
+    }
+    else{
+        $('#' + task_id).removeClass('task-done');
+        $('#rm_' + task_id).removeClass('hidden');
+        $('#checkbox_' + task_id).prop('checked', false)
+    }
 }
