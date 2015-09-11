@@ -1,5 +1,5 @@
 body {
-  padding: 50px;
+  padding: 100px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -8,7 +8,7 @@ a {
 }
 .affix{
     position:fixed;
-    top: 70px;
+    top: 100px;
 }
 .space30 {
     margin-top: 30px;
@@ -61,6 +61,9 @@ a {
     width: 70px;
 }
 
+.navbar {
+    padding-left: 30px;
+}
 .navbar-inverse {
     background-color: #350808;
 }
@@ -145,10 +148,7 @@ a {
     cursor: pointer;
 }
 
-.log-area {
-    margin-top: 70px;
-    padding-right: 30px;
-}
+
 .plan-options {
     max-width: 350px;
     margin-top: 10px;
@@ -169,3 +169,71 @@ a {
     font-size: 15px;
     cursor: pointer;
 }
+
+
+.log-area {
+    margin-top: 70px;
+    padding-right: 30px;
+}
+
+
+.navbar-extension {
+    background-color: #fff;
+}
+
+.navbar-extension .anno-option {
+    color: #000;
+}
+.navbar-extension .anno-option-tight {
+    color: #000;
+}
+
+.anno-option {
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.cursor-help {
+    cursor: help;
+}
+.glyphicon-global {
+    font-size: 16px;
+    padding-top: 3px;
+}
+
+.spanspace {
+    padding-right: 5px;
+    padding-left: 3px;
+}
+.view-date {
+    padding-top: 3px;
+    font-size: 16px;
+    font-weight: bold;
+}
+.label-maintask-with-subtask {
+    cursor: crosshair;
+}
+
+.scrollable-menu {
+    height: auto;
+    overflow-x: hidden;
+    max-height: 400px;
+}
+
+.task-more {
+}
+.task-more-main {
+    padding-left: 10px;    
+}
+
+.task-more-sub {
+    padding-left: 20px;
+}
+
+.li-more-task {
+    text-decoration: underline;
+}
+
+
+
+

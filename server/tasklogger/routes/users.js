@@ -307,9 +307,86 @@ router.post('/ajax_tasks', function(req, res){
     }
 });
 
+//Ajax call to get annotation data 
+router.post('/ajax_annotation', function(req, res){
+    console.log('here')
+    var db = req.db;
+    var collection = db.get('log_chrome');
+    if (req.body['event'] == 'get_log'){
+        collection.find({'userid': req.user.userid, 
+                'timestamp': {$gt: parseInt(req.body.time_start), $lt: parseInt(req.body.time_end)}, 
+                '$or': true },
+            {sort: {timestamp: -1}},
+            function(e, docs){
+                if (e){
+                    console.log('DB ERROR: ' + e);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                     console.log(docs);
+                }
+        });
+    };
+ 
+});
+
+
+//Ajax call to get annotation options
+router.post('/ajax_annotation_options', function(req, res){
+    // get db connection
+   var db = req.db;
+   if (req.body['event'] == 'retrieve_candidate_tasks'){
+        var collection = db.get('user_tasks');
+        collection.find({'userid': req.user.userid}, 
+            {sort: {timestamp: -1}}, function(e, docs){
+                if (e){
+                    console.log('DB ERROR: '+ e) 
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                    //merge subtasks with main-tasks
+                    var level0 = docs.filter(function(d){return d.task_level == 0});
+                    var level1 = docs.filter(function(d){return d.task_level == 1});
+                    //make map of level 0 tasks
+                    var main_tasks = {}
+                    for (var i = 0; i < level0.length; i++){
+                        level0[i]['subtasks'] = []
+                        main_tasks[level0[i]['_id']] = level0[i];
+                    }
+                    // add subtasks in
+                    var tasks = [];
+                    for (var i = 0; i < level1.length; i++){
+                        main_tasks[level1[i]['parent_task']]['subtasks'].push(level1[i]);
+                    }
+                    res.send({'err': false, 'res': main_tasks});
+                }
+        });
+    }
+    else if (req.body['event'] == 'get_date_range'){
+        var collection = db.get('log_chrome');
+        collection.col.aggregate([
+                   {$match: {'userid': req.user.userid}},
+                   {$group: {'_id': '$userid',  
+                             'min': {$min: '$timestamp'},
+                             'max': {$max: '$timestamp'}
+                            }
+                    },
+            ],
+            function(e, docs){
+                if (e){
+                    console.log(e) 
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                    res.send({'err': false, 'res': docs[0]});
+                } 
+            });
+    }
+});
+
 //Ajax call from log annotation
 router.post('/ajax_annotation', function(req, res){
-})
+});
  
 
 /* Account information page */

@@ -20,11 +20,12 @@ For following activities are recorded:
  - google
  - bing 
  - yahoo
+
 ===================================*/ 
 var device = "chrome";
 // TODO: set the url of the server
-//var domain = 'http://localhost:3000';
-var domain = 'http://tasklog.cs.ucl.ac.uk';
+var domain = 'http://localhost:3000';
+//var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
 var check_userid_url = domain + '/users/checkid';
 
@@ -125,6 +126,13 @@ chrome.tabs.query({'active': true}, function(tabs){
 function savedata(logdata){
     logdata['userid'] = user_id;
     logdata['device'] = device;
+    logdata['annotation'] = {};
+    logdata['to_annotate'] = false; 
+    // We only ask for a few events to be annotated
+    // use tab-loaded for the pages users browsed
+    // use tab-search for Web search users performed with google, bing, yahoo. 
+    if (logdata['event'] == 'tab-loaded' || logdata['event'] == 'tab-search')
+        logdata['to_annotate'] = true;
 
     //check if storage is empty
     chrome.storage.sync.get('logdata', function(item){
@@ -216,8 +224,8 @@ chrome.tabs.onCreated.addListener(function(tab) {
     }
     log = {'event': e, 'timestamp': ts, 
             'affected_tab_id': tab.id,
-            'details': details, 
-            //'search': false
+            'details': details,
+            'url': tab.url,
             };
     previousEvent = log;
     savedata(log);
@@ -235,7 +243,7 @@ chrome.tabs.onRemoved.addListener(function(tabId){
     log = {'event': e, 'timestamp': ts, 
         'affected_tab_id': tabId,
         'details': details, 
-        //'search': false
+        'url':'',
         };
     // PreviousTab has 2 possibilities:
     // - close a tab that is not active, previousTab remain the same
@@ -275,6 +283,7 @@ chrome.tabs.onActivated.addListener(function(tab){
         log = {'event': e, 'timestamp': ts, 
             'affected_tab_id': current_tab.id,
             'details': details, 
+            'url': current_tab.url,
             //'search': false,
             };
         // set the current tab to previous tab, preparing for next move
@@ -299,6 +308,7 @@ chrome.tabs.onReplaced.addListener(function(addedTabId, replacedTabId){
     var log = {'event': e, 'timestamp': ts, 
                 'affected_tab_id': replacedTabId,
                 'details': details, 
+                'url': '',
                 //'search': false
                 };
     previousEvent = log;
@@ -359,7 +369,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 
         var log = {'event': e, 'timestamp': ts,
             'affected_tab_id': tab.id,
-            'details': details
+            'details': details,
+            'url': tab.url,
             }
         // set the tab tracker to the current tab
         previousTab = tab;
@@ -371,9 +382,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 // Handle different search engines
 function check_searchEngine(url){
     //look for search engine query urls
+    //Web search
     var google_reg = /.+?\.google\..+?q=.+/;
     var yahoo_reg = /.+?\.search\.yahoo\..+?p=.+/
     var bing_reg = /.+?\.bing\..+?q=.+/ 
+
     var query = ''
     var se = ''
     var search = false
@@ -443,7 +456,9 @@ chrome.webNavigation.onCommitted.addListener(function(details){
         e = e + '-' + inputtype.join('-');
         log = {'event': e, 'timestamp': ts, 
             'affected_tab_id': details.tabId,
-            'details': details};
+            'details': details, 
+            'url': details.url,
+        };
         previousEvent = log; 
         savedata(log)
     }
@@ -459,7 +474,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback){
                'form_data': request.data,
                'senderId': sender.id,
                'senderTab': sender.tab,
-                }
+                },
+               'url': sender.tab.url
         }
         previousEvent = log;
         savedata(log)
@@ -472,7 +488,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback){
                 'link_data': request.data,
                 'senderId': sender.id,
                 'senderTab': sender.tab,
-                }
+                },
+                'url': sender.tab.url
         }
         previousEvent = log;
         savedata(log)

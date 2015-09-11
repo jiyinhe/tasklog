@@ -1,3 +1,9 @@
+/*===============================
+Dependency: annotation.js
+
+When updateing task list
+update: candidate task labels 
+==================================*/
 var url_ajax_tasks = '/users/ajax_tasks';
 
 $(document).ready(function(){
@@ -176,7 +182,7 @@ function load_tasks(){
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
-                '<div class="err">' + response.emsg + '</div>'
+                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>' 
             );
         }
         else{
@@ -194,7 +200,7 @@ function load_done_tasks(){
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
-                '<div class="err">' + response.emsg + '</div>'
+                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>' 
             );
         }
         else{
@@ -272,7 +278,7 @@ function add_task(param){
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
-                '<div class="err">' + response.emsg + '</div>'
+                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>' 
             );
         }
         else{
@@ -297,6 +303,9 @@ function add_task(param){
                     change_status(to_change, time_done, area);
                 } 
             }
+            //update candidate task labels
+            load_task_labels();
+        
         }
     });  
 }
@@ -309,7 +318,7 @@ function remove_item(to_remove){
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
-                '<div class="err">' + response.emsg + '</div>'
+                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>' 
             );
         }
         else{
@@ -344,7 +353,9 @@ function remove_item(to_remove){
                         var time_done = (new Date()).getTime();
                         change_status(to_change, time_done, 'todo');
                     }
-            }    
+            } 
+            //update candidate tasks
+            load_task_labels();
         }
     });   
 }
@@ -367,7 +378,7 @@ function change_status(to_change, time_done, area){
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
-                '<div class="err">' + response.emsg + '</div>'
+                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>' 
             );
         }
         else{
@@ -398,7 +409,7 @@ function archive_done(data){
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
-                '<div class="err">' + response.emsg + '</div>'
+                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>' 
             );
         }
         else{

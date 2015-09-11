@@ -11,21 +11,24 @@ html
     block headextra
 
   body
-    block navibar
+    block navbar
         nav(class=["navbar", "navbar-inverse", "navbar-fixed-top"])
-            .navbar-brand Tasklog
-            ul(class=["nav", "navbar-nav", "text"])
-                li(class=homeclass)
-                    a(href="/users/dashboard") Home
+            .row
+                .navbar-brand Tasklog
+                ul(class=["nav", "navbar-nav", "text"])
+                    li(class=homeclass)
+                        a(href="/users/dashboard") Home
+    
+                    li(class=instructionclass)
+                        a(href="/users/instructions") Instructions
 
-                li(class=instructionclass)
-                    a(href="/users/instructions") Instructions
+                    li(class=annotationclass)
+                        a(href="/users/annotation") Review my log
 
-                li(class=annotationclass)
-                    a(href="/users/annotation") Review my log
+                     li(class=accountclass)
+                        a(href="/users/account") My account
 
-                li(class=accountclass)
-                    a(href="/users/account") My account
+            block navbar-extension
 
     block content
                 
