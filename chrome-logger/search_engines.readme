@@ -1,0 +1,34 @@
+Different events triggered by different search engines:
+
+1. Bing
+a) search from omni-bar:
+tab-search -> navigation-omni_query -> tab-loaded 
+
+b) search from a bing SERP:
+tab-search -> navigation-link -> tab-loaded
+
+c) search from bing.com:
+tab-search -> navigation-form_submit -> tab-loaded
+
+2. Google
+a) search from omni-bar:
+tab-search -> tab-loaded
+
+b) search from a google SERP
+tab-search -> tab-loaded
+(If click on a verticle, e.g., news)
+link_click -> tab-search (with the same query) -> tab-loaded
+
+c) search from google.com 
+tab-search -> tab-loaded
+
+
+3. Yahoo
+a) search from omni-bar:
+tab-search -> navigation-omni_query -> tab-loaded
+
+b) search from a yahoo SERP
+formr_submit -> tab-search -> navigation-form_submit -> tab-loaded 
+
+c) search from uk.yahoo.com
+tab-search -> navigation-form_submit -> tab-loaded
