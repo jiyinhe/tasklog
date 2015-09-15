@@ -6,57 +6,59 @@ block headextra
 
 block navbar-extension
     .row(class="navbar-extension")
-        div(class=["navbar-text", "anno-option"])
-            div(class="dropdown")
-                input#global_checkbox(type="checkbox", data-toggle="tooltip",
-                    data-placement="bottom", title="Select")
-                =" "
-                span#global_select_option(class="spanspace", data-toggle="dropdown", 
-                    aria-haspopup="true", aria-expanded="false")
-                    span(class="caret")
-                ul(class="dropdown-menu", aria-labelledby="global_select_option")
-                    li#select_all
-                        a All
-                    li#select_none
-                        a None
-                    li#select_labelled
-                        a Labelled
-                    li#select_unlablled
-                        a Unlablled
+        .container 
+            .div(class="col-md-12")
+                div(class=["navbar-text", "anno-option"])
+                    div(class="dropdown")
+                        input#global_checkbox(type="checkbox", data-toggle="tooltip",
+                            data-placement="bottom", title="Select")
+                        =" "
+                        span#global_select_option(class="spanspace", data-toggle="dropdown", 
+                            aria-haspopup="true", aria-expanded="false")
+                            span(class="caret")
+                        ul(class="dropdown-menu", aria-labelledby="global_select_option")
+                            li#select_all
+                                a All
+                            li#select_none
+                                a None
+                            li#select_labelled
+                                a Labelled
+                            li#select_unlablled
+                                a Unlablled
 
-        div(class=["navbar-text", "anno-option"])
-           div(data-toggle="tooltip", data-placement="bottom", title="Remove selected items")
-                span#global_trash(class=["glyphicon glyphicon-trash glyphicon-global"])
+                div(class=["navbar-text", "anno-option"])
+                    div(data-toggle="tooltip", data-placement="bottom", title="Remove selected items")
+                        span#global_trash(class=["glyphicon glyphicon-trash glyphicon-global"])
 
-        div(class=["navbar-text", "anno-option"])
-            div(class="dropdown" id="div_task_dropdown")
-                span#global_tag(class=["glyphicon glyphicon-tag glyphicon-global cursor-help"], 
-                    data-toggle="tooltip", data-placement="bottom", title="Label selected items as")
-                =" "
-                span#global_label_option(class="spanspace", data-toggle="dropdown",
-                    aria-haspopup="true", aria-expanded="false")
-                    span(class="caret")
-                ul#task_dropdown(class="dropdown-menu scrollable-menu", aria-labelledby="global_label_option")
-                    li#divider(class="divider")
+                div(class=["navbar-text", "anno-option"])
+                    div(class="dropdown" id="div_task_dropdown")
+                        span#global_tag(class=["glyphicon glyphicon-tag glyphicon-global cursor-help"], 
+                            data-toggle="tooltip", data-placement="bottom", title="Label selected items as")
+                        =" "
+                        span#global_label_option(class="spanspace", data-toggle="dropdown",
+                            aria-haspopup="true", aria-expanded="false")
+                            span(class="caret")
+                        ul#task_dropdown(class="dropdown-menu scrollable-menu", aria-labelledby="global_label_option")
+                            li#divider(class="divider")
 
-                    li#task_label_new
-                        a Create new label 
+                            //li#task_label_new
+                            //    a Create new label 
 
-                    li#task_label_more(class="li-more-task")
-                        a Show more task labels ...
+                            li#task_label_more(class="li-more-task")
+                                a Show more task labels ...
 
-                    li(class="task-more divider hidden")
+                            li(class="task-more divider hidden")
 
                    
-        div(class=["navbar-text", "anno-option"])
-            div(class="dropdown view-date")
-                span#global_date_selected(class="cursor-help", data-toggle="tooltip", 
-                    data-placement="bottom", title="Select a viewing date") Date
-                =" "
-                span#global_date_option(class="spanspace", data-toggle="dropdown", 
-                    aria-haspopup="true", aria-expanded="false")
-                    span(class="caret")
-                ul#date_dropdown(class="dropdown-menu", aira-labelledby="global_date_option")
+                div(class=["navbar-text", "anno-option"])
+                    div(class="dropdown view-date")
+                        span#global_date_selected(class="cursor-help", data-toggle="tooltip", 
+                            data-placement="bottom", title="Select a viewing date") Date
+                        =" "
+                        span#global_date_option(class="spanspace", data-toggle="dropdown", 
+                            aria-haspopup="true", aria-expanded="false")
+                            span(class="caret")
+                        ul#date_dropdown(class="dropdown-menu", aira-labelledby="global_date_option")
                     
  
 block content

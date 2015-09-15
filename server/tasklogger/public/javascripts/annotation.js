@@ -44,13 +44,15 @@ $(document).ready(function(){
     $('#task_dropdown').on('click', '#task_label_more', function(){
         $('.task-more').toggleClass('hidden');
     });
-    //Create new candidate task labels 
+
+    //TODO: Create new candidate task labels 
     $('#task_dropdown').on('click', '#task_label_new', function(){
     });
 
     /* Handling annotations on logs */
-    //load task labels
+    //load task labels, and load log after that
     load_task_labels();
+
 
     //TODO: Create new task label from label options
     //TODO: Assign color for task labels
@@ -58,44 +60,23 @@ $(document).ready(function(){
     //TODO: Remove selected items
     //TODO: Select a different date to view log 
 
-    //TODO: Load log
-    load_log();
-    //TODO: Per-item remove
+   //TODO: Per-item remove
     //TODO: Global remove
     //TODO: Per-item assign task
     //TODO: Global assign task
     //TODO: Per-item assign relevance
     //TODO: Progress bar
     //TODO: Remove ratio bar
+
+
+    //TODO: Consider general labels, e.g., social networking, 
+    //entertainment, news update
+    //TODO: Consider color code for tasks
 });
 
 /*================================
     Functions for log annoation
 ===================================*/
-//Get log that is recorded on the viewing date
-function load_log(){
-    console.log('here')
-    $.ajax({
-        type: "POST",
-        url: url_ajax_annotation,
-        data: {'event': 'get_log', 
-                'time_start': view_date.start.getTime(),
-                'time_end': view_date.end.getTime(),
-               }
-    }).done(function(response) {
-        if (response.err){
-            console.log(response.emsg)
-            $('#div_logarea').append(
-                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>'
-            );
-        }
-        else{
-            console.log(response.res)
-        }
-    });
-}
-
-
 function set_view_date(hours_from_today){
     //set to today
     view_date.start = new Date();
@@ -184,7 +165,9 @@ function load_task_labels(){
                     candidate_tasks.push(main_sub_undone); 
                 }
             }
-            display_task_options();                            
+            display_task_options();
+            //After that, task opitons are loaded, load log items for annotation 
+            load_log();
         }
     });
    
@@ -211,6 +194,7 @@ function display_task_options(){
         //    }
         //}
     }
+    //Add "more tasks"
     for(var i = 0; i < more_candidate_tasks.length; i++){
         var ele_tasks = create_tasklabel_element(more_candidate_tasks[i]);
         for(var j = 0; j < ele_tasks.length; j++){
@@ -228,6 +212,7 @@ function display_task_options(){
     }
 }
 
+//Show task label in global task candidates
 function create_tasklabel_element(task){
     var ele_tasks = []
     var ele_task = document.createElement('li');
@@ -248,14 +233,15 @@ function create_tasklabel_element(task){
         //set text
         var ele_task_text = document.createElement('a');
         ele_task_text.innerHTML = task.task;
-        if (task.task.length > 25)
-            ele_task_text.innerHTML = task.task.substring(0, 25) + '...'
+        if (task.task.length > 30)
+            ele_task_text.innerHTML = task.task.substring(0, 30) + '...'
         ele_task.appendChild(ele_task_text);
         ele_tasks.push(ele_task);
     }    
     return ele_tasks;
 }
 
+//Show task label in global task candidates
 function create_subtasklabel_element(subtask, maintask){
     var ele_sub = document.createElement('li');
     ele_sub.setAttribute('id', 'label_'+subtask['_id']);
@@ -264,11 +250,266 @@ function create_subtasklabel_element(subtask, maintask){
     var maintask_text = maintask.task;
     if (maintask_text.length > 15)
         maintask_text = maintask_text.substring(0, 15) + '...';
-    var sub_text = subtask.task
+    var sub_text = subtask.task;
     if (sub_text.length > 15)
-        sub_text = sub_text.substring(0, 15) + '...'
-    
+        sub_text = sub_text.substring(0, 15) + '...';
+
     ele_sub_text.innerHTML = maintask_text + '/' + sub_text;
     ele_sub.appendChild(ele_sub_text);
     return ele_sub;
+}
+
+//Get log that is recorded on the viewing date
+function load_log(){
+    $.ajax({
+        type: "POST",
+        url: url_ajax_annotation,
+        data: {'event': 'get_log', 
+                'time_start': view_date.start.getTime(),
+                'time_end': view_date.end.getTime(),
+               }
+    }).done(function(response) {
+        if (response.err){
+            console.log(response.emsg)
+            $('#div_logarea').append(
+                '<div class="err">' + response.emsg.name + ': '+response.emsg.$err + '</div>'
+            );
+        }
+        else{
+            display_log(response.res);
+        }
+    });
+}
+
+
+//Display log items
+function display_log(log){
+    $('#div_logarea').html('');
+    for (var i = 0; i<log.length; i++){
+       var div_item= create_logitem_element(log[i]);
+       $('#div_logarea').append(div_item);
+    }
+}
+
+
+//For each item, the annotation property should have the
+//following structure:
+//{task: {taskid: xx, name: yy}, useful: true/false}
+function create_logitem_element(item){
+    //Logitem area
+    var div_item = document.createElement('div');
+    div_item.setAttribute('id', 'logitem_' + item['_id']);
+    div_item.setAttribute('class', 'panel panel-default');
+
+    //Logitem content
+    var div_item_content = document.createElement('div');
+    div_item_content.setAttribute('id', 'logitem_content_'+item['_id']);
+    div_item_content.setAttribute('class', 'panel-heading');
+
+   //Logitem content - checkbox
+    var checkbox = document.createElement('input');
+    checkbox.setAttribute('type', 'checkbox');
+    checkbox.setAttribute('id', 'logitem_content_checkbox_' + item['_id']);
+    div_item_content.appendChild(checkbox);
+
+    //Logitem content - type icon - to be set
+    var icon = document.createElement('span');
+
+    //Logitem content - Query or Title of page - to be set
+    var text = document.createElement('span');
+    text.setAttribute('class', 'panel-title logitem-title');
+
+    //Logitem content - time
+    var time = document.createElement('span');
+    time.setAttribute('class', 'logitem-time');
+    time.innerHTML = new Date(item.timestamp).toLocaleTimeString();
+
+    //Logitem labels 
+    var div_item_label = document.createElement('div');
+    div_item_label.setAttribute('id', 'logitem_label_' + item['_id']);
+    div_item_label.setAttribute('class', 'panel-body');
+
+    //Logitem label - chosen label
+    var div_chosen_label = document.createElement('div');
+    div_chosen_label.setAttribute('id', 'logitem_label_chosen_' + item['_id']);
+    div_chosen_label.setAttribute('class', 'logitem-label-chosen');
+    div_chosen_label.setAttribute('taskid', '');
+    div_chosen_label.setAttribute('taskname', '');
+
+    //Logitem label - chosen label - explaning text - to be set
+    var span_label_text = document.createElement('span');
+
+    //Logitem label - chosen label - task name - to be set
+    var span_label_task = document.createElement('span');
+    span_label_task.setAttribute('class', 'label label-info');
+
+    //Logitem label - candidates
+    var div_candidates = document.createElement('div');
+    div_candidates.setAttribute('id', 'logitem_label_candidates_'+item['_id']);
+    div_candidates.setAttribute('class', 'logitem-label-candidates');
+    //load_candidate labels
+    logitem_load_candidates(div_candidates);
+
+    //Logitem label - useful
+    var div_useful = document.createElement('div');
+    div_useful.setAttribute('id', 'logitem_label_useful_' + item['_id']); 
+    div_useful.setAttribute('class', 'logitem-label-useful');
+    div_useful.setAttribute('useful', '');
+    //Logitem label - useful - options
+    var span_useful_true = document.createElement('span');
+    span_useful_true.setAttribute('id', 'logitem_useful_true_' + item['_id']); 
+    span_useful_true.setAttribute('class', 'label label-default logitem-useful-option');
+    span_useful_true.innerHTML = 'USEFUL'
+    var span_useful_false = document.createElement('span');
+    span_useful_false.setAttribute('id', 'logitem_usefulr_false_' + item['_id']); 
+    span_useful_false.setAttribute('class', 'label label-default logitem-useful-option');
+    span_useful_false.innerHTML = 'NOT USEFUL';
+ 
+    //Depending on the type of item, and the annotation status, 
+    //set properties and content of the log items 
+    if (item.event == 'tab-search'){
+        //Set icon type
+        icon.setAttribute('class', 'glyphicon glyphicon-search logitem-icon');
+        //Set logitem content
+        text.innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
+        //Set chosen label explaining text
+        span_label_text.innerHTML = 'I was searching for: ';
+        if ('task' in item.annotation){
+            //Set chosen task label
+            span_label_task.innerHTML = item.annotation.task.name;
+            //Set values of chosen label
+            div_chosen_label.setAttribute('taskid', item.annotation.task.taskid);
+            div_chosen_label.setAttribute('taskname', item.annotation.task.name);
+            //Set labeling done
+            div_item.setAttribute('class', 'panel panel-success')
+        } 
+    }
+    else{
+        //Set icon type
+        icon.setAttribute('class', 'glyphicon glyphicon-globe logitem-icon');
+        //Set logitem text
+        text.innerHTML = '<a href="'+item.url+'">' + item.details.current_tab.title + '</a>';
+        //Set chosen label explaining text
+        span_label_text.innerHTML = 'I was browsing for: ';
+        //Set chosen label
+        var task_done = true;
+        if ('task' in item.annotation){
+            //Set chosen task label
+            span_label_task.innerHTML = item.annotation.task.name;
+            //Set values of chosen label
+            div_chosen_label.setAttribute('taskid', item.annotation.task.taskid);
+            div_chosen_label.setAttribute('taskname', item.annotation.task.name);
+            //Set labeling done
+            div_item.setAttribute('class', 'panel panel-success')
+        } 
+        else
+            task_done = false;
+        //Set useful label
+        if ('useful' in item.annotation){
+            if (item.annotation.useful)
+                span_useful_true.setAttribute('class', 'label label-success logitem-useful-option');
+            else
+                span_useful_false.setAttribute('class', 'label label-danger logitem-useful-option');
+            //set chosen useful label
+            div_useful.setAttribute('useful', item.annotation.useful);
+        }
+        else
+            task_done = false;
+        if(task_done)
+            div_item.setAttribute('class', 'panel panel-sucess');
+    }
+
+    //Adding elements into the DOM 
+    div_item_content.appendChild(icon); 
+    div_item_content.appendChild(text);
+    div_item_content.appendChild(time);
+    div_item.appendChild(div_item_content)
+            
+    div_chosen_label.appendChild(span_label_text);
+    div_chosen_label.appendChild(span_label_task);
+
+    div_item_label.appendChild(div_chosen_label);
+    div_item_label.appendChild(div_candidates);
+    if (item.event == 'tab-loaded'){
+        var span_useful_text = document.createElement('span');
+        span_useful_text.setAttribute('class', 'logitem-useful-text');
+        span_useful_text.innerHTML = 'For what I was doing, I find this page ';
+        div_useful.appendChild(span_useful_text);
+        div_useful.appendChild(span_useful_true);
+        div_useful.appendChild(span_useful_false);
+        
+        div_item_label.appendChild(div_divider);
+        div_item_label.appendChild(div_useful);
+    }
+    div_item.appendChild(div_item_label);
+
+    return div_item;
+}
+
+//Show candidate tasks
+function logitem_load_candidates(div_candidates){
+    //Sort labels by time 
+    candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
+    more_candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
+    //high priority candidates
+    for (var i = 0; i<candidate_tasks.length; i++){
+        var task = candidate_tasks[i];
+        if (task.task_level == 0 && task.subtasks.length > 0){
+            for(var j = 0; j < task.subtasks.length; j++){
+                var taskid = task.subtasks[j]['_id'];
+                var taskname = task.subtasks[j].task;
+                var parentname = task.task;
+                var ele = logitem_create_candidate_label(taskid, taskname, parentname);
+                div_candidates.appendChild(ele);
+            }
+        }
+        else{
+            var ele = logitem_create_candidate_label(task['_id'], task.task, '');
+            div_candidates.appendChild(ele);
+        }
+    }
+    //option - show more
+    
+    //low priority candidates
+    for(var i = 0; i < more_candidate_tasks.length; i++){
+        var task = more_candidate_tasks[i];
+        if (task.task_level == 0 && task.subtasks.length > 0){
+            for(var j = 0; j < task.subtasks.length; j++){
+                var taskid = task.subtasks[j]['_id'];
+                var taskname = task.subtasks[j].task;
+                var parentname = task.task;
+                var ele = logitem_create_candidate_label(taskid, taskname, parentname);
+                ele.className += 'more-candidate hidden';
+                div_candidates.appendChild(ele);
+            }
+        }
+        else{
+            var ele = logitem_create_candidate_label(task['_id'], task.task, '');
+            ele.className += 'more-candidate hidden';
+            div_candidates.appendChild(ele);
+        }
+
+    }
+    //TODO: Create new label?
+}
+
+function logitem_create_candidate_label(taskid, taskname, parentname){
+    var name = '';
+    if (parentname == ''){
+        if (taskname.length > 30)
+            taskname = taskname.substring(0, 30) + '...';
+        name = taskname; 
+    } 
+    else{
+        if (taskname.length > 15) + '...'
+            taskname = taskname.substring(0, 15);
+        if (parentname.length > 15)
+            parentname = parentname.substring(0, 15) + '...';
+        name = parentname + '/' + taskname;
+    }
+    var span_candidate = document.createElement('div');
+    span_candidate.setAttribute('id', 'logitem_label_candidate_' + taskid);
+    span_candidate.setAttribute('class', 'label label-default logitem-label-candidate');
+    span_candidate.innerHTML = name;
+    return span_candidate;
 }

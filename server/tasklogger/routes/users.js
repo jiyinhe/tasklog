@@ -309,21 +309,20 @@ router.post('/ajax_tasks', function(req, res){
 
 //Ajax call to get annotation data 
 router.post('/ajax_annotation', function(req, res){
-    console.log('here')
     var db = req.db;
     var collection = db.get('log_chrome');
     if (req.body['event'] == 'get_log'){
         collection.find({'userid': req.user.userid, 
                 'timestamp': {$gt: parseInt(req.body.time_start), $lt: parseInt(req.body.time_end)}, 
-                '$or': true },
-            {sort: {timestamp: -1}},
+                'to_annotate': true },
+            {sort: {timestamp: 1}},
             function(e, docs){
                 if (e){
                     console.log('DB ERROR: ' + e);
                     res.send({'err': true, 'emsg': e});
                 }
                 else{
-                     console.log(docs);
+                    res.send({'err': false, 'res': docs});
                 }
         });
     };

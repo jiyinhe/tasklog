@@ -172,12 +172,13 @@ a {
 
 
 .log-area {
-    margin-top: 70px;
+    margin-top: 30px;
     padding-right: 30px;
 }
 
 
 .navbar-extension {
+    padding-left: 50px;
     background-color: #fff;
 }
 
@@ -235,5 +236,51 @@ a {
 }
 
 
+.logitem-title {
+    padding-left: 10px;
+}
 
+.logitem-title a {
+    color: steelblue;
+}
 
+.logitem-icon {
+    margin-left: 10px;
+    margin-right: 5px;
+    font-size: 16px;
+}
+
+.logitem-time {
+    padding-left: 20px;
+    font-size: 12px;
+    color: grey; 
+}
+.logitem-label-chosen {
+    font-size: 16px;
+    color: grey;
+}
+
+.logitem-label-useful {
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.logitem-useful-option {
+    margin-left: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.logitem-useful-text {
+    color: grey;
+}
+
+.logitem-label-candidates {
+    margin-top: 10px;
+    font-size: 16px;
+}
+.logitem-label-candidate {
+    margin-left: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    display: inline-block;
+}
