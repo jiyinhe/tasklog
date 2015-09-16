@@ -54,7 +54,6 @@ $(document).ready(function(){
     load_task_labels();
 
     //TODO: Select all/none/labelled/unlablled
-    //TODO: Remove selected items
     //TODO: Select a different date to view log 
 
     //TODO: Per-item remove, click on modal confirming removing
@@ -66,7 +65,15 @@ $(document).ready(function(){
         remove_logitems(items); 
     });
 
-    //TODO: Global remove
+    //TODO: Global remove selected items
+    $('#global_trash').click(function(){
+        var selected_items = []
+        $('#div_logarea input:checked').each(function(){
+            selected_items.push($(this).attr('id').split('_')[3]);
+        });
+        remove_logitems(selected_items);
+    });
+
     //TODO: Per-item assign task
     //TODO: Global assign task
 
@@ -335,6 +342,7 @@ function create_logitem_element(item){
     var checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
     checkbox.setAttribute('id', 'logitem_content_checkbox_' + item['_id']);
+    checkbox.setAttribute('class', 'logitem-content-checkbox');
     div_item_content.appendChild(checkbox);
 
     //Logitem content - type icon - to be set
