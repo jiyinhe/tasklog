@@ -50,11 +50,22 @@ $(document).ready(function(){
     });
 
     /* Handling annotations on logs */
-    //load task labels, and load log after that
-    load_task_labels();
+    //load task labels - it does the following:
+    //update the global variable arrays: candidate_tasks, more_candidate_tasks
+    //update the dropdown menu for global task options
+    //load the log items
+    //update the candidate tasks for individual log items
+    load_data();
 
     //TODO: Select all/none/labelled/unlablled
+
     //TODO: Select a different date to view log 
+    $('#date_dropdown').on('click', '.date-option', function(){
+        var date_diff = parseInt($(this).attr('id').split('_')[1]);
+        set_view_date(date_diff);
+        //reload the tasks and log items
+        load_data();
+    });
 
     //Per-item remove, click on modal confirming removing
     $('#div_logarea').on('click', '.remove-confirm', function(){
@@ -150,6 +161,8 @@ function set_date_options(){
     it.setHours(24*i+23, 59, 59, 999);
     while (it < max){
         var ele = document.createElement('li');
+        ele.setAttribute('id', 'date_' + i);
+        ele.setAttribute('class', 'date-option');
         var ele_a = document.createElement('a');
         ele_a.appendChild(document.createTextNode(it.toDateString()));
         ele.appendChild(ele_a);
@@ -158,14 +171,16 @@ function set_date_options(){
         it.setHours(24*i + 23, 59, 59, 999);
     }
     var ele = document.createElement('li');
+    ele.setAttribute('id', 'date_' + i);
+    ele.setAttribute('class', 'date-option');
     var ele_a = document.createElement('a');
     ele_a.appendChild(document.createTextNode(max.toDateString()));
     ele.appendChild(ele_a);
     $('#date_dropdown').append(ele);
 }
 
-//Get candidate tasks from DB
-function load_task_labels(){
+//Get candidate tasks from DB, then load log items
+function load_data(){
     $.ajax({
         type: "POST",
         url: url_ajax_options,
