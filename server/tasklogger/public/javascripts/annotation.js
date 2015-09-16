@@ -56,7 +56,7 @@ $(document).ready(function(){
     //TODO: Select all/none/labelled/unlablled
     //TODO: Select a different date to view log 
 
-    //TODO: Per-item remove, click on modal confirming removing
+    //Per-item remove, click on modal confirming removing
     $('#div_logarea').on('click', '.remove-confirm', function(){
         var item_id = $(this).attr('id').split('_')[2];
         $('#modal_' + item_id).modal('toggle');
@@ -65,7 +65,7 @@ $(document).ready(function(){
         remove_logitems(items); 
     });
 
-    //TODO: Global remove selected items
+    //Global remove selected log items
     $('#global_trash').click(function(){
         var selected_items = []
         $('#div_logarea input:checked').each(function(){
@@ -77,7 +77,13 @@ $(document).ready(function(){
     //TODO: Per-item assign task
     //TODO: Global assign task
 
-    //TODO: Per-item assign usefulness
+    //Per-item assign usefulness
+    $('#div_logarea').on('click', '.logitem-useful-option', function(){
+        var useful = $(this).attr('id').split('_');
+        var id = useful[3];
+        var value = useful[2];
+        submit_labels_useful(id, value);
+    });
 
     //Per-item show more labels
     $('#div_logarea').on('click', '.logitem-label-candidate-more', function(){
@@ -93,7 +99,7 @@ $(document).ready(function(){
         $(this).parent().find('.logitem-label-candidate-more').removeClass('hidden');
     });
 
-    //TODO: Progress bary
+    //TODO: Progress bar
     //TODO: Remove ratio bar
 
     //TODO: Consider general labels, e.g., social networking, 
@@ -319,8 +325,6 @@ function display_log(log){
     }
     //Initialise tooltip
     $('[data-toggle="tooltip"]').tooltip();
-    //Initialise modal
-//    $('[data-toggle=modal]').modal({});
 }
 
 
@@ -666,3 +670,35 @@ function remove_logitems(items){
     });
 }
 
+//Submit the label of usefulness of single log item
+function submit_labels_useful(id, value){
+     $.ajax({
+        type: "POST",
+        url: url_ajax_annotation,
+        data: {'event': 'submit_labels_useful', 
+                'id': id,
+                'value': value,
+               }
+    }).done(function(response) {
+        if (response.err){
+            console.log(response.err)
+        }
+        else{
+            //Show the selected label in UI
+            console.log(response)
+            if (value == 'true'){
+                $('#logitem_useful_true_' + id)
+                    .removeClass('label label-default').addClass('label label-success');
+                $('#logitem_useful_false_' + id)
+                    .removeClass('label label-danger').addClass('label label-default');
+            }
+            else{
+                $('#logitem_useful_true_' + id)
+                    .removeClass('label label-success').addClass('label label-default');
+                $('#logitem_useful_false_' + id)
+                    .removeClass('label label-default').addClass('label label-danger');
+            }
+        }
+    });
+   
+}

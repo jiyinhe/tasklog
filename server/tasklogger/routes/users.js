@@ -345,13 +345,27 @@ router.post('/ajax_annotation', function(req, res){
             function(err, docs){
                 if (err){
                     console.log('DB ERROR: '+err)
-                    res.send('ERROR: '+err);
+                    res.send({'err': true, 'emsg': e});
                 }
                 else{
                     res.send('success'); 
                 }
         });
     } 
+    else if (req.body['event'] == 'submit_labels_useful'){
+        collection.update({'_id':  req.body['id'], 'userid': req.user.userid}, {
+           $set: {'annotation.useful': req.body.value == 'true'}}, 
+            function(err, docs){
+                if (err){
+                    console.log('DB ERROR: '+err);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                    res.send('success'); 
+                }
+        });
+
+    }
 });
 
 
