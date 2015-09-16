@@ -262,7 +262,7 @@ a {
 
 .logitem-label-useful {
     font-size: 16px;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 10px;
 }
 .logitem-useful-option {
@@ -278,9 +278,34 @@ a {
     margin-top: 10px;
     font-size: 16px;
 }
+
 .logitem-label-candidate {
-    margin-left: 20px;
-    margin-right: 10px;
+    margin-left: 10px;
     cursor: pointer;
     display: inline-block;
+}
+.logitem-label-candidate-more {
+    text-decoration: underline;
+    color: steelblue; 
+    margin-left: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.logitem-label-candidate-less {
+    text-decoration: underline;
+    color: steelblue; 
+    margin-left: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.label-default {
+    background-color: #848484;
+}
+
+.label-default:hover {
+    background-color: #A4A4A4;
+}
+
+h5 {
+    font-size: 16px;
 }

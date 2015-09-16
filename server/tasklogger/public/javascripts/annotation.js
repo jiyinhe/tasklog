@@ -45,7 +45,7 @@ $(document).ready(function(){
         $('.task-more').toggleClass('hidden');
     });
 
-    //TODO: Create new candidate task labels 
+    //TODO: Create new candidate task labels - maybe not 
     $('#task_dropdown').on('click', '#task_label_new', function(){
     });
 
@@ -53,24 +53,45 @@ $(document).ready(function(){
     //load task labels, and load log after that
     load_task_labels();
 
-
-    //TODO: Create new task label from label options
-    //TODO: Assign color for task labels
     //TODO: Select all/none/labelled/unlablled
     //TODO: Remove selected items
     //TODO: Select a different date to view log 
 
-   //TODO: Per-item remove
+    //TODO: Per-item remove, click on modal confirming removing
+    $('#div_logarea').on('click', '.remove-confirm', function(){
+        var item_id = $(this).attr('id').split('_')[2];
+        $('#modal_' + item_id).modal('toggle');
+        //remove the item
+        items = [item_id];
+        remove_logitems(items); 
+    });
+
     //TODO: Global remove
     //TODO: Per-item assign task
     //TODO: Global assign task
-    //TODO: Per-item assign relevance
-    //TODO: Progress bar
-    //TODO: Remove ratio bar
 
+    //TODO: Per-item assign usefulness
+
+    //Per-item show more labels
+    $('#div_logarea').on('click', '.logitem-label-candidate-more', function(){
+        var item_id = $(this).attr('id').split('_')[4];
+        $(this).parent().find('.more-candidate').removeClass('hidden');
+        $(this).addClass('hidden'); 
+    });
+    //Per-item show less labels
+    $('#div_logarea').on('click', '.logitem-label-candidate-less', function(){
+        var item_id = $(this).attr('id').split('_')[4];
+        $(this).parent().find('.more-candidate').addClass('hidden');
+        $(this).addClass('hidden'); 
+        $(this).parent().find('.logitem-label-candidate-more').removeClass('hidden');
+    });
+
+    //TODO: Progress bary
+    //TODO: Remove ratio bar
 
     //TODO: Consider general labels, e.g., social networking, 
     //entertainment, news update
+
     //TODO: Consider color code for tasks
 });
 
@@ -289,6 +310,10 @@ function display_log(log){
        var div_item= create_logitem_element(log[i]);
        $('#div_logarea').append(div_item);
     }
+    //Initialise tooltip
+    $('[data-toggle="tooltip"]').tooltip();
+    //Initialise modal
+//    $('[data-toggle=modal]').modal({});
 }
 
 
@@ -324,6 +349,19 @@ function create_logitem_element(item){
     time.setAttribute('class', 'logitem-time');
     time.innerHTML = new Date(item.timestamp).toLocaleTimeString();
 
+    //Logitem content - remove button
+    var remove = document.createElement('button');
+    remove.setAttribute('class', 'close');
+    remove.innerHTML = ['<span aria-hidden="true", data-toggole="tooltip"',
+        'data-placement="left", title="Remove this item from log"',
+        '>',
+        '&times;',
+        '</span>',
+        ].join('\n');
+    remove.setAttribute('data-toggle', 'modal');
+    remove.setAttribute('data-target', '#modal_'+item['_id']);
+    var div_modal = logitem_create_remove_modal(item);
+
     //Logitem labels 
     var div_item_label = document.createElement('div');
     div_item_label.setAttribute('id', 'logitem_label_' + item['_id']);
@@ -348,12 +386,12 @@ function create_logitem_element(item){
     div_candidates.setAttribute('id', 'logitem_label_candidates_'+item['_id']);
     div_candidates.setAttribute('class', 'logitem-label-candidates');
     //load_candidate labels
-    logitem_load_candidates(div_candidates);
+    logitem_load_candidates(div_candidates, item);
 
     //Logitem label - useful
     var div_useful = document.createElement('div');
-    div_useful.setAttribute('id', 'logitem_label_useful_' + item['_id']); 
-    div_useful.setAttribute('class', 'logitem-label-useful');
+    div_useful.setAttribute('id', 'logitem_useful_' + item['_id']); 
+    div_useful.setAttribute('class', 'logitem-useful panel-footer');
     div_useful.setAttribute('useful', '');
     //Logitem label - useful - options
     var span_useful_true = document.createElement('span');
@@ -361,7 +399,7 @@ function create_logitem_element(item){
     span_useful_true.setAttribute('class', 'label label-default logitem-useful-option');
     span_useful_true.innerHTML = 'USEFUL'
     var span_useful_false = document.createElement('span');
-    span_useful_false.setAttribute('id', 'logitem_usefulr_false_' + item['_id']); 
+    span_useful_false.setAttribute('id', 'logitem_useful_false_' + item['_id']); 
     span_useful_false.setAttribute('class', 'label label-default logitem-useful-option');
     span_useful_false.innerHTML = 'NOT USEFUL';
  
@@ -373,7 +411,7 @@ function create_logitem_element(item){
         //Set logitem content
         text.innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
         //Set chosen label explaining text
-        span_label_text.innerHTML = 'I was searching for: ';
+        span_label_text.innerHTML = 'I was <i>searching</i> for: ';
         if ('task' in item.annotation){
             //Set chosen task label
             span_label_task.innerHTML = item.annotation.task.name;
@@ -390,7 +428,7 @@ function create_logitem_element(item){
         //Set logitem text
         text.innerHTML = '<a href="'+item.url+'">' + item.details.current_tab.title + '</a>';
         //Set chosen label explaining text
-        span_label_text.innerHTML = 'I was browsing for: ';
+        span_label_text.innerHTML = 'I was <i>browsing</i> for: ';
         //Set chosen label
         var task_done = true;
         if ('task' in item.annotation){
@@ -420,6 +458,9 @@ function create_logitem_element(item){
     }
 
     //Adding elements into the DOM 
+    div_item_content.appendChild(remove);
+    div_item_content.appendChild(div_modal);
+
     div_item_content.appendChild(icon); 
     div_item_content.appendChild(text);
     div_item_content.appendChild(time);
@@ -430,6 +471,8 @@ function create_logitem_element(item){
 
     div_item_label.appendChild(div_chosen_label);
     div_item_label.appendChild(div_candidates);
+
+    div_item.appendChild(div_item_label);
     if (item.event == 'tab-loaded'){
         var span_useful_text = document.createElement('span');
         span_useful_text.setAttribute('class', 'logitem-useful-text');
@@ -437,17 +480,14 @@ function create_logitem_element(item){
         div_useful.appendChild(span_useful_text);
         div_useful.appendChild(span_useful_true);
         div_useful.appendChild(span_useful_false);
-        
-        div_item_label.appendChild(div_divider);
-        div_item_label.appendChild(div_useful);
+        div_item.appendChild(div_useful);
     }
-    div_item.appendChild(div_item_label);
 
     return div_item;
 }
 
 //Show candidate tasks
-function logitem_load_candidates(div_candidates){
+function logitem_load_candidates(div_candidates, item){
     //Sort labels by time 
     candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
     more_candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
@@ -469,7 +509,12 @@ function logitem_load_candidates(div_candidates){
         }
     }
     //option - show more
-    
+    var ele = document.createElement('span');
+    ele.setAttribute('id', 'logitem_label_candidate_more_' + item['_id']);
+    ele.setAttribute('class', 'logitem-label-candidate-more');
+    ele.innerHTML = 'Show more ...';
+    div_candidates.appendChild(ele);
+
     //low priority candidates
     for(var i = 0; i < more_candidate_tasks.length; i++){
         var task = more_candidate_tasks[i];
@@ -479,7 +524,7 @@ function logitem_load_candidates(div_candidates){
                 var taskname = task.subtasks[j].task;
                 var parentname = task.task;
                 var ele = logitem_create_candidate_label(taskid, taskname, parentname);
-                ele.className += 'more-candidate hidden';
+                ele.className += ' more-candidate hidden';
                 div_candidates.appendChild(ele);
             }
         }
@@ -488,8 +533,15 @@ function logitem_load_candidates(div_candidates){
             ele.className += 'more-candidate hidden';
             div_candidates.appendChild(ele);
         }
-
     }
+    //option - show less
+    var ele = document.createElement('span');
+    ele.setAttribute('id', 'logitem_label_candidate_less_' + item['_id']);
+    ele.setAttribute('class', 'logitem-label-candidate-less more-candidate hidden');
+    ele.innerHTML = 'Show less ...';
+    div_candidates.appendChild(ele);
+
+
     //TODO: Create new label?
 }
 
@@ -513,3 +565,96 @@ function logitem_create_candidate_label(taskid, taskname, parentname){
     span_candidate.innerHTML = name;
     return span_candidate;
 }
+
+function logitem_create_remove_modal(item){
+    //Modal
+    var div_modal = document.createElement('div');
+    div_modal.setAttribute('id', 'modal_' + item['_id']); 
+    div_modal.setAttribute('class', 'modal');
+    div_modal.setAttribute('role', 'dialog');
+    div_modal.setAttribute('tabindex', '-1');
+    //Modal - dialog
+    var div_modal_dialog = document.createElement('div');
+    div_modal_dialog.setAttribute('class', 'modal-dialog');
+    div_modal_dialog.setAttribute('role', 'document');
+    //Modal - content
+    var div_modal_content = document.createElement('div');
+    div_modal_content.setAttribute('class', 'modal-content');
+    //Modal - header
+    var div_modal_header = document.createElement('div');
+    div_modal_header.setAttribute('class', 'modal-header'); 
+    var btn_dismiss = document.createElement('button');
+    btn_dismiss.setAttribute('class', 'close');
+    btn_dismiss.setAttribute('data-dismiss', 'modal');
+    btn_dismiss.setAttribute('aria-label', 'Close');
+    btn_dismiss.innerHTML = '<span aria-hidden="true">&times;</span>'    
+    div_modal_header.appendChild(btn_dismiss);
+    var div_title = document.createElement('h4');
+    div_title.setAttribute('modal-title');
+    div_modal_header.appendChild(div_title);
+
+    //Modal - body
+    var div_modal_body = document.createElement('div');
+    div_modal_body.setAttribute('class', 'modal-body');
+    var icon = '';
+    var content = '';
+    if (item.event == 'tab-search'){
+        icon = '<span class="glyphicon glyphicon-search"></span>';
+        content = '"' + decodeURI(item.details.query.replace('+', '')) + '"';
+    }
+    else{
+        icon = '<span class="glyphicon glyphicon-globe"></span>';
+        content = item.details.current_tab.title;
+    }
+    var message = [
+    '<div class="alert alert-danger">',
+    '<h4><strong>Warning</strong> - removing item from log </h4>',
+    icon, content,
+    '</div>',
+    '<h5>Are you sure that you would like this item to be removed from your log?</h5>',
+    ]
+    div_modal_body.innerHTML = message.join('\n');
+    //Modal - footer
+    var div_modal_footer = document.createElement('div');
+    div_modal_footer.setAttribute('class', 'modal-footer');
+    //buttons
+    var btn_no = document.createElement('button');
+    btn_no.setAttribute('class', 'btn btn-default');
+    btn_no.setAttribute('data-dismiss', 'modal');
+    btn_no.innerHTML = 'Cancel';
+    var btn_yes = document.createElement('button');
+    btn_yes.setAttribute('class', 'btn btn-primary remove-confirm');
+    btn_yes.setAttribute('id', 'remove_confirm_'+item['_id']);
+    btn_yes.innerHTML = 'Yes';
+    div_modal_footer.appendChild(btn_no);
+    div_modal_footer.appendChild(btn_yes);
+
+    div_modal_content.appendChild(div_modal_header);
+    div_modal_content.appendChild(div_modal_body);
+    div_modal_content.appendChild(div_modal_footer);
+    div_modal_dialog.appendChild(div_modal_content);
+    div_modal.appendChild(div_modal_dialog);
+    return div_modal;
+}
+
+
+// remove items from log - mark the log item as "remove"
+function remove_logitems(items){
+    $.ajax({
+        type: "POST",
+        url: url_ajax_annotation,
+        data: {'event': 'remove_logitems', 
+                'items': items,
+               }
+    }).done(function(response) {
+        if (response.err){
+            console.log(response.err)
+        }
+        else{
+            //remove this element from UI
+            for(var i = 0; i < items.length; i++)
+                $('#logitem_' + items[i]).remove();
+        }
+    });
+}
+

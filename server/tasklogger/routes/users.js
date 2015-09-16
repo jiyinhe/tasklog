@@ -314,7 +314,9 @@ router.post('/ajax_annotation', function(req, res){
     if (req.body['event'] == 'get_log'){
         collection.find({'userid': req.user.userid, 
                 'timestamp': {$gt: parseInt(req.body.time_start), $lt: parseInt(req.body.time_end)}, 
-                'to_annotate': true },
+                'to_annotate': true, 
+                'removed': false,
+            },
             {sort: {timestamp: 1}},
             function(e, docs){
                 if (e){
@@ -325,8 +327,31 @@ router.post('/ajax_annotation', function(req, res){
                     res.send({'err': false, 'res': docs});
                 }
         });
-    };
- 
+    }
+    else if (req.body['event'] == 'remove_logitems'){
+        var itemids = req.body['items[]'];
+        var items = [];
+        if (itemids.constructor === Array){
+            for (var i = 0; i<itemids.length; i++){
+                items.push(new ObjectId(itemids[i]));
+            }
+        }
+        else
+            items.push(new ObjectId(itemids));
+        
+        collection.update({'_id':  {$in: items}, 'userid': req.user.userid}, {
+           $set: {'removed': true}}, 
+            {multi: true},
+            function(err, docs){
+                if (err){
+                    console.log('DB ERROR: '+err)
+                    res.send('ERROR: '+err);
+                }
+                else{
+                    res.send('success'); 
+                }
+        });
+    } 
 });
 
 
@@ -383,9 +408,6 @@ router.post('/ajax_annotation_options', function(req, res){
     }
 });
 
-//Ajax call from log annotation
-router.post('/ajax_annotation', function(req, res){
-});
  
 
 /* Account information page */

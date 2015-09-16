@@ -128,6 +128,7 @@ function savedata(logdata){
     logdata['device'] = device;
     logdata['annotation'] = {};
     logdata['to_annotate'] = false; 
+    logdata['removed'] = false;
     // We only ask for a few events to be annotated
     // use tab-loaded for the pages users browsed
     // use tab-search for Web search users performed with google, bing, yahoo. 
