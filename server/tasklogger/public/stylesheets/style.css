@@ -64,8 +64,8 @@ a {
 .navbar {
     padding-left: 30px;
 }
-.navbar-inverse {
-    background-color: #350808;
+.navbar-default {
+/*    background-color: #350808;*/
 }
 
 .left-nav {
@@ -141,6 +141,8 @@ a {
 .hidden {
     display: none;  
 }
+
+
 .add-subtask {
     color: steelblue;
     font-size: 12px;
@@ -275,7 +277,7 @@ a {
 }
 
 .logitem-label-candidates {
-    margin-top: 10px;
+    margin-top: 20px;
     font-size: 16px;
 }
 

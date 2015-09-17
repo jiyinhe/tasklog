@@ -338,7 +338,6 @@ router.post('/ajax_annotation', function(req, res){
         }
         else
             items.push(new ObjectId(itemids));
-        
         collection.update({'_id':  {$in: items}, 'userid': req.user.userid}, {
            $set: {'removed': true}}, 
             {multi: true},
@@ -364,8 +363,34 @@ router.post('/ajax_annotation', function(req, res){
                     res.send('success'); 
                 }
         });
-
     }
+    else if (req.body['event'] == 'submit_labels_task'){
+        var itemids = req.body['items[]'];
+        var items = [];
+        if (itemids.constructor === Array){
+            for (var i = 0; i<itemids.length; i++){
+                items.push(new ObjectId(itemids[i]));
+            }
+        }
+        else
+            items.push(new ObjectId(itemids));
+ 
+        collection.update({'userid': req.user.userid, '_id':  {$in: items}}, 
+            {$set: {'annotation.task.taskid': req.body.taskid,
+                    'annotation.task.name': req.body.taskname,
+                }}, 
+            {multi: true},
+            function(err, docs){
+                if (err){
+                    console.log('DB ERROR: '+err);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+                    res.send('success'); 
+                }
+        });
+    }
+
 });
 
 
@@ -400,6 +425,53 @@ router.post('/ajax_annotation_options', function(req, res){
                 }
         });
     }
+    else if (req.body['event'] == 'get_dates'){
+        var collection = db.get('log_chrome');
+        collection.col.aggregate([
+            {$match: {'userid': req.user.userid, 
+                      'to_annotate': true}},
+            {$project: {
+                'year': {$year: '$timestamp_bson'},
+                'day':  {$dayOfYear: '$timestamp_bson'},
+                'removed': 1,
+                'event': 1,
+                'annotation.useful': {$ifNull: ['$annotation.useful', 0]},
+                'annotation.task': {$ifNull: ['$annotation.task', 0]},
+                }
+            },
+            {$project: {
+                    'year': '$year',
+                    'day': '$day',
+                    'event': 1,
+                    'removed': {$cond: [{$eq: ['$removed', true]}, 1, 0]},
+                    'annotation.useful': 1,
+                    'annotation.task': 1,
+                    'annotation_not_done': {$cond: [
+                        {$or: [{$eq: ['$annotation.task', 0]},
+                            {$and: [{$eq: ['$event', 'tab-loaded']}, 
+                                    {$eq: ['$annotation.useful', 0]}]} 
+                            ]}, 1, 0]}
+                }
+            },
+           {$group: {
+                    '_id': {year: '$year', day: '$day'},
+                    'count_logitem': {$sum: 1},
+                    'count_removed': {$sum: '$removed'},
+                    'count_to_annotate': {$sum: '$annotation_not_done'}
+                }
+            },
+        ],
+        function(e, docs){
+            if (e){
+                console.log(e) 
+                res.send({'err': true, 'emsg': e});
+            }
+            else{
+                res.send({'err': false, 'res': docs});
+            } 
+        });
+    }
+/*
     else if (req.body['event'] == 'get_date_range'){
         var collection = db.get('log_chrome');
         collection.col.aggregate([
@@ -420,6 +492,7 @@ router.post('/ajax_annotation_options', function(req, res){
                 } 
             });
     }
+*/
 });
 
  

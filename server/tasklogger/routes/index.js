@@ -57,8 +57,10 @@ router.post('/savedata', function(req, res){
     // its sent by the same device, same user
     if (data[0].device == "chrome"){
         collection = db.get('log_chrome');
-        for (var i = 0; i < data.length; i++)
+        for (var i = 0; i < data.length; i++){
             data[i]['IP'] = IP;
+            data[i]['timestamp_bson'] = new Date(data[i]['timestamp']);
+        }
     }
     //TODO: add for other devices and collections 
     //store the entry to db

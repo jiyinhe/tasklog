@@ -5,10 +5,10 @@
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
 
-//the date the user is viewing
-var view_date = {};
-//the range that logs are recorded
-var date_range = {};
+//Dates where logs are recorded and user progress
+var log_dates_progress = [];
+//The current viewing date;
+var view_date = {}
 
 // candidate tasks are tasks that haven't been done between the viewing date
 var candidate_tasks = [];
@@ -33,13 +33,15 @@ $(document).ready(function(){
         $('#global_label_option').dropdown('toggle');
     });
 
-    //Initialise labeling options
-    //Set viewing date to default: today
-    set_view_date(0);
-     
-    //Get date range of logs
-    get_date_range();
+    /* Handling annotations on logs */
 
+    //Initialise labeling options
+
+    //Get dates
+    //Set viewing date to default
+    //Load data of that day
+    get_dates();
+    
     //See more candidate task labels
     $('#task_dropdown').on('click', '#task_label_more', function(){
         $('.task-more').toggleClass('hidden');
@@ -49,20 +51,17 @@ $(document).ready(function(){
     $('#task_dropdown').on('click', '#task_label_new', function(){
     });
 
-    /* Handling annotations on logs */
-    //load task labels - it does the following:
-    //update the global variable arrays: candidate_tasks, more_candidate_tasks
-    //update the dropdown menu for global task options
-    //load the log items
-    //update the candidate tasks for individual log items
-    load_data();
+   load_data();
 
     //TODO: Select all/none/labelled/unlablled
 
-    //TODO: Select a different date to view log 
+    //Select a different date to view log 
     $('#date_dropdown').on('click', '.date-option', function(){
-        var date_diff = parseInt($(this).attr('id').split('_')[1]);
-        set_view_date(date_diff);
+        var year = $(this).attr('year');
+        var day = $(this).attr('day');
+        var date = new Date(year, 0);
+        date.setDate(day);
+        set_view_date(date);
         //reload the tasks and log items
         load_data();
     });
@@ -85,8 +84,25 @@ $(document).ready(function(){
         remove_logitems(selected_items);
     });
 
-    //TODO: Per-item assign task
+    //Per-item assign task
+    $('#div_logarea').on('click', '.logitem-label-candidate', function(){
+        var task_id = $(this).attr('id').split('_')[3];
+        var taskname = $(this).text();
+        var item_id = $(this).parent().attr('id').split('_')[3]
+        submit_labels_task([item_id], task_id, taskname);
+    });
+    
     //TODO: Global assign task
+    $('#task_dropdown').on('click', '.task_option', function(){
+        var taskid = $(this).attr('id').split('_')[1];
+        var taskname = $(this).find('a').text();
+        var selected_items = []
+        $('#div_logarea input:checked').each(function(){
+            selected_items.push($(this).attr('id').split('_')[3]);
+        });
+        submit_labels_task(selected_items, taskid, taskname);
+ 
+    });
 
     //Per-item assign usefulness
     $('#div_logarea').on('click', '.logitem-useful-option', function(){
@@ -122,64 +138,64 @@ $(document).ready(function(){
 /*================================
     Functions for log annoation
 ===================================*/
-function set_view_date(hours_from_today){
-    //set to today
-    view_date.start = new Date();
-    view_date.end = new Date(); 
-    //deviate from today
-    view_date.start.setHours(hours_from_today, 0, 0, 0);
-    view_date.end.setHours(hours_from_today+23, 59, 59, 999);
-    //set the selected date on UI
-    $('#global_date_selected').text(view_date.start.toDateString())
-}
-
-//Get the range of dates of the logs
-function get_date_range(){
+function get_dates(){
     $.ajax({
         type: "POST",
         url: url_ajax_options,
-        data: {'event': 'get_date_range', 
+        data: {'event': 'get_dates', 
                }
     }).done(function(response) {
         if (response.err){
             console.log(response.err)
         }
         else{
-            date_range.min = new Date(response.res.min)
-            date_range.max = new Date(response.res.max)
+            for (var i = 0; i<response.res.length; i++){
+                var key = response.res[i]['_id'];
+                var date = new Date(key.year, 0);
+                date.setDate(key.day)
+                response.res[i].date = date;
+                log_dates_progress.push(response.res[i]);
+            }
             set_date_options();
-        }
+
+            //By default set the viewing date to the lastest day
+            log_dates_progress.sort(function(a, b){
+                return b.date.getTime() - a.date.getTime();
+            })
+            set_view_date(log_dates_progress[0].date);
+            //Load data of that day
+            load_data(); 
+        };
     });
+}
+
+function set_view_date(date){
+    view_date.start = new Date(date);
+    view_date.end = new Date(date);
+    view_date.end.setHours(23, 59, 59, 999)
+    $('#global_date_selected').text(date.toDateString());
 }
 
 //Set the date options on UI
 function set_date_options(){
-    var it = new Date(date_range.min.getTime());
-    var max = new Date(date_range.max.getTime());
-    max.setHours(23, 59, 59, 999);
-    var i = 0
-    it.setHours(24*i+23, 59, 59, 999);
-    while (it < max){
+      for (var i = 0; i < log_dates_progress.length; i++){
         var ele = document.createElement('li');
-        ele.setAttribute('id', 'date_' + i);
+        ele.setAttribute('year', log_dates_progress[i]['_id'].year);
+        ele.setAttribute('day', log_dates_progress[i]['_id'].day);
         ele.setAttribute('class', 'date-option');
         var ele_a = document.createElement('a');
-        ele_a.appendChild(document.createTextNode(it.toDateString()));
+        ele_a.appendChild(document.createTextNode(log_dates_progress[i].date.toDateString()));
         ele.appendChild(ele_a);
         $('#date_dropdown').append(ele);
-        i += 1;
-        it.setHours(24*i + 23, 59, 59, 999);
     }
-    var ele = document.createElement('li');
-    ele.setAttribute('id', 'date_' + i);
-    ele.setAttribute('class', 'date-option');
-    var ele_a = document.createElement('a');
-    ele_a.appendChild(document.createTextNode(max.toDateString()));
-    ele.appendChild(ele_a);
-    $('#date_dropdown').append(ele);
 }
 
 //Get candidate tasks from DB, then load log items
+//load task labels - it does the following:
+//update the global variable arrays: candidate_tasks, more_candidate_tasks
+//update the dropdown menu for global task options
+//load the log items
+//update the candidate tasks for individual log items 
 function load_data(){
     $.ajax({
         type: "POST",
@@ -351,6 +367,7 @@ function create_logitem_element(item){
     var div_item = document.createElement('div');
     div_item.setAttribute('id', 'logitem_' + item['_id']);
     div_item.setAttribute('class', 'panel panel-default');
+    div_item.setAttribute('event_type', item.event);
 
     //Logitem content
     var div_item_content = document.createElement('div');
@@ -407,6 +424,7 @@ function create_logitem_element(item){
     //Logitem label - chosen label - task name - to be set
     var span_label_task = document.createElement('span');
     span_label_task.setAttribute('class', 'label label-info');
+    span_label_task.setAttribute('id', 'logitem_label_chosen_taskname_'+item['_id']);
 
     //Logitem label - candidates
     var div_candidates = document.createElement('div');
@@ -465,7 +483,7 @@ function create_logitem_element(item){
             div_chosen_label.setAttribute('taskid', item.annotation.task.taskid);
             div_chosen_label.setAttribute('taskname', item.annotation.task.name);
             //Set labeling done
-            div_item.setAttribute('class', 'panel panel-success')
+            //div_item.setAttribute('class', 'panel panel-success')
         } 
         else
             task_done = false;
@@ -481,7 +499,7 @@ function create_logitem_element(item){
         else
             task_done = false;
         if(task_done)
-            div_item.setAttribute('class', 'panel panel-sucess');
+            div_item.setAttribute('class', 'panel panel-success');
     }
 
     //Adding elements into the DOM 
@@ -523,7 +541,7 @@ function logitem_load_candidates(div_candidates, item){
         var task = candidate_tasks[i];
         if (task.task_level == 0 && task.subtasks.length > 0){
             for(var j = 0; j < task.subtasks.length; j++){
-                var taskid = task.subtasks[j]['_id'];
+                var taskid = task.subtasks[j]['_id'];                   
                 var taskname = task.subtasks[j].task;
                 var parentname = task.task;
                 var ele = logitem_create_candidate_label(taskid, taskname, parentname);
@@ -567,7 +585,6 @@ function logitem_load_candidates(div_candidates, item){
     ele.setAttribute('class', 'logitem-label-candidate-less more-candidate hidden');
     ele.innerHTML = 'Show less ...';
     div_candidates.appendChild(ele);
-
 
     //TODO: Create new label?
 }
@@ -700,7 +717,6 @@ function submit_labels_useful(id, value){
         }
         else{
             //Show the selected label in UI
-            console.log(response)
             if (value == 'true'){
                 $('#logitem_useful_true_' + id)
                     .removeClass('label label-default').addClass('label label-success');
@@ -712,6 +728,33 @@ function submit_labels_useful(id, value){
                     .removeClass('label label-success').addClass('label label-default');
                 $('#logitem_useful_false_' + id)
                     .removeClass('label label-default').addClass('label label-danger');
+            }
+        }
+    });
+}
+//Submit the task labels
+function submit_labels_task(items, taskid, taskname){
+     $.ajax({
+        type: "POST",
+        url: url_ajax_annotation,
+        data: {'event': 'submit_labels_task', 
+                'items': items, 
+                'taskid': taskid,
+                'taskname': taskname,
+               }
+    }).done(function(response) {
+        if (response.err){
+            console.log(response.err)
+        }
+        else{
+            //Show the selected label in chosen label
+            for(var i = 0; i < items.length; i++){
+                var span_id = '#logitem_label_chosen_taskname_' + items[i]
+                var div_id = '#logitem_label_chosen_' + items[i];
+                $('#div_logarea').find(span_id).text(taskname).attr('taskid', taskid);
+                //TODO: Set the value to the chosen div
+                $('#div_logarea').find(div_id).attr('taskid', taskid).attr('taskname', taskname);
+                //TODO: Set item to done if it's done
             }
         }
     });
