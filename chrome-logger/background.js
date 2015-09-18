@@ -24,15 +24,17 @@ For following activities are recorded:
 ===================================*/ 
 var device = "chrome";
 // TODO: set the url of the server
-//var domain = 'http://localhost:3000';
-var domain = 'http://tasklog.cs.ucl.ac.uk';
+var domain = 'http://localhost:3000';
+//var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
 var check_userid_url = domain + '/users/checkid';
 
 /* Functions communicating with Popup */
+
 // TODO: For testing purpose, this allows reset of userid
 // when reloading the extension 
-chrome.storage.sync.remove('userid');
+// chrome.storage.sync.remove('userid');
+
 // check userid when starting
 var user_id = '';
 //when starting try to get userid
@@ -65,6 +67,20 @@ var check_userid = function(){
     return user_id;
 }
 
+//reset userid
+/*
+var reset_userid = function(){
+    var response = {}
+    response.current_userid = user_id;
+
+    user_id = '';
+    chrome.storage.sync.set({'userid': ''});
+
+    if (typeof callback == 'function'){
+         callback.call(this, response);
+    }
+};
+*/
 //set userid that is input from popup
 var set_userid = function(userid, callback){
     //check if the userid exists in db
@@ -90,6 +106,7 @@ var set_userid = function(userid, callback){
             }
             else {
                 chrome.storage.sync.set({'userid': response.user.userid});
+                
                 user_id = response.user.userid;
                 // Send notification
                 chrome.notifications.clear('userid');

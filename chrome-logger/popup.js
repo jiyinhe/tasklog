@@ -20,6 +20,25 @@ $("#submit_userid").click(function(){
     });
 });
 
+//Go to links on new tab
+$('body').on('click', 'a', function(){
+    chrome.tabs.create({url: $(this).attr('href')});
+    return false;
+});
+
+//Reset the userid
+/*
+$('#reset_userid').click(function(){
+    BGPage.reset_userid(function(response){
+        if (!response.err){
+            var current_id = response.current_userid;
+            $('#input_userid').attr('placeholder', current_id).prop('disabled', false);
+            $('#input_userid').val('');
+            $('#submit_userid').removeClass('disabled').addClass('active');
+        }
+    });
+});
+*/
 });
  
 
@@ -31,7 +50,7 @@ function userid_status(userid){
     }
     else{
         //UserId is set
-        console.log('userid set');
+        //console.log('userid set');
         $('#input_userid').val(userid);
         $('#input_userid').prop('disabled', true);
         $('#submit_userid').removeClass('active').addClass('disabled');
