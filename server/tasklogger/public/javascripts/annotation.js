@@ -4,6 +4,7 @@
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
+var max_candidates = 5;
 
 //Dates where logs are recorded and user progress
 var log_dates_progress = [];
@@ -54,6 +55,34 @@ $(document).ready(function(){
    load_data();
 
     //TODO: Select all/none/labelled/unlablled
+    $('#global_checkbox').click(function(){
+        if ($(this).is(':checked')){
+            $('#global_checkbox').prop('checked', true);
+            $('#div_logarea').find('.logitem-content-checkbox').prop('checked', true);
+        }
+        else {
+            $('#global_checkbox').prop('checked', false);
+            $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
+        }
+    });
+    $('#select_all').click(function(){
+        $('#global_checkbox').prop('checked', true);
+        $('#div_logarea').find('.logitem-content-checkbox').prop('checked', true);
+    });
+
+    $('#select_none').click(function(){
+        $('#global_checkbox').prop('checked', false);
+        $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
+    });
+
+    $('#select_labelled').click(function(){
+        $('#div_logarea').find('.panel-success .logitem-content-checkbox')
+            .prop('checked', true);
+    });
+    $('#select_unlabelled').click(function(){
+        $('#div_logarea').find('.panel-default .logitem-content-checkbox')
+            .prop('checked', true);
+    });
 
     //Select a different date to view log 
     $('#date_dropdown').on('click', '.date-option', function(){
@@ -92,7 +121,7 @@ $(document).ready(function(){
         submit_labels_task([item_id], task_id, taskname);
     });
     
-    //TODO: Global assign task
+    //Global assign task
     $('#task_dropdown').on('click', '.task_option', function(){
         var taskid = $(this).attr('id').split('_')[1];
         var taskname = $(this).find('a').text();
@@ -101,7 +130,6 @@ $(document).ready(function(){
             selected_items.push($(this).attr('id').split('_')[3]);
         });
         submit_labels_task(selected_items, taskid, taskname);
- 
     });
 
     //Per-item assign usefulness
@@ -242,8 +270,9 @@ function load_data(){
 function display_task_options(){
     $('.task_option').remove();
     var list = document.getElementById('task_dropdown');
-    candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
-    more_candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
+    candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
+    more_candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
+
     //Only show the "canddiate_tasks"
     for (var i = 0; i<candidate_tasks.length; i++){
         var ele_tasks = create_tasklabel_element(candidate_tasks[i])
@@ -534,10 +563,18 @@ function create_logitem_element(item){
 //Show candidate tasks
 function logitem_load_candidates(div_candidates, item){
     //Sort labels by time 
-    candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
-    more_candidate_tasks.sort(function(a, b){return a.time_create - b.time_create})
+    candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
+    more_candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
+
+    //option - show more
+    var ele_more = document.createElement('span');
+    ele_more.setAttribute('id', 'logitem_label_candidate_more_' + item['_id']);
+    ele_more.setAttribute('class', 'logitem-label-candidate-more');
+    ele_more.innerHTML = 'Show more ...';
+
     //high priority candidates
     for (var i = 0; i<candidate_tasks.length; i++){
+        //process tasks with subtasks
         var task = candidate_tasks[i];
         if (task.task_level == 0 && task.subtasks.length > 0){
             for(var j = 0; j < task.subtasks.length; j++){
@@ -545,20 +582,22 @@ function logitem_load_candidates(div_candidates, item){
                 var taskname = task.subtasks[j].task;
                 var parentname = task.task;
                 var ele = logitem_create_candidate_label(taskid, taskname, parentname);
+                if (i >= max_candidates)
+                    ele.className += ' more-candidate hidden';
                 div_candidates.appendChild(ele);
             }
         }
         else{
             var ele = logitem_create_candidate_label(task['_id'], task.task, '');
+            if (i >= max_candidates)
+                ele.className += ' more-candidate hidden';
             div_candidates.appendChild(ele);
         }
+        if (i == max_candidates)
+            div_candidates.appendChild(ele_more);
     }
-    //option - show more
-    var ele = document.createElement('span');
-    ele.setAttribute('id', 'logitem_label_candidate_more_' + item['_id']);
-    ele.setAttribute('class', 'logitem-label-candidate-more');
-    ele.innerHTML = 'Show more ...';
-    div_candidates.appendChild(ele);
+    if (i <= max_candidates)
+        div_candidates.appendChild(ele_more);
 
     //low priority candidates
     for(var i = 0; i < more_candidate_tasks.length; i++){
@@ -597,8 +636,8 @@ function logitem_create_candidate_label(taskid, taskname, parentname){
         name = taskname; 
     } 
     else{
-        if (taskname.length > 15) + '...'
-            taskname = taskname.substring(0, 15);
+        if (taskname.length > 15) 
+            taskname = taskname.substring(0, 15) + '...';
         if (parentname.length > 15)
             parentname = parentname.substring(0, 15) + '...';
         name = parentname + '/' + taskname;
@@ -729,6 +768,14 @@ function submit_labels_useful(id, value){
                 $('#logitem_useful_false_' + id)
                     .removeClass('label label-default').addClass('label label-danger');
             }
+            //Set value to useful div
+            $('#div_logarea').find('#logitem_useful_' + id).attr('useful', value);
+            //Set the panel to done if it also has task set
+            var task = $('#div_logarea').find('#logitem_label_chosen_' + id).attr('taskid');
+            if (task != '') 
+                $('#div_logarea').find('#logitem_' + id)
+                    .removeClass('panel-default').addClass('panel-success');
+            
         }
     });
 }
@@ -752,9 +799,21 @@ function submit_labels_task(items, taskid, taskname){
                 var span_id = '#logitem_label_chosen_taskname_' + items[i]
                 var div_id = '#logitem_label_chosen_' + items[i];
                 $('#div_logarea').find(span_id).text(taskname).attr('taskid', taskid);
-                //TODO: Set the value to the chosen div
+                //Set the value to the chosen div
                 $('#div_logarea').find(div_id).attr('taskid', taskid).attr('taskname', taskname);
-                //TODO: Set item to done if it's done
+                //Set item to done if it's done
+                var event_type = $('#div_logarea').find('#logitem_' +
+                        items[i]).attr('event_type');
+                var panel_id = '#logitem_' + items[i];
+    
+                if (event_type == 'tab-search')
+                    $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
+                else if(event_type == 'tab-loaded'){
+                    var useful = $('#div_logarea').find('#logitem_useful_' + items[i]).attr('useful');
+                    if (useful != ''){
+                        $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
+                    }
+                }
             }
         }
     });
