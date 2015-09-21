@@ -46,12 +46,23 @@ function validate(eles){
 			}			
 		} 
 		//5 required checkbox for terms
-		if ('checkbox' in options && 'terms' in options){
-			if(! $('#'+element).prop("checked")){
-				msg = "To participate, please indicate that you agree to the terms above";
-				errs[element] = msg;
-			}
-		}
+		if ('checkbox' in options){ 
+            if ('terms' in options){
+    			if(! $('#'+element).prop("checked")){
+	    			msg = "To participate, please indicate that you agree to the terms above";
+		    		errs[element] = msg;
+			    }
+            }
+            else {
+                //If none is checked
+                if(! $('[name="' + element + '"]').is(":checked")){
+                    msg = 'Please indicate your choices';
+                    errs[element] = msg;
+                }
+                else
+                    errs[element] = false;
+            }
+	    }
 
 		//6 required radios for background
 		if ('radio' in options){
@@ -61,7 +72,6 @@ function validate(eles){
 			}else{
 				errs[element]=false;
 			}
-
 		}
 	}
 	return errs;

@@ -36,15 +36,18 @@ router.post('/register_user', function(req, res){
     //set the collection
     var collection = db.get('user');
     // check if the email address has already been used
-    collection.find({email: req.body.email}, {}, function(e, docs){
+    var data = JSON.parse(req.body.data);
+
+    collection.find({email: data.email}, {}, function(e, docs){
         if (docs.length == 0){
             var token = alphanumeric.shuffle().substring(0, 6);
             //store the user info
             collection.insert({
                 'userid': token,
-                'name': req.body.user,
-                'email': req.body.email,
-                'pass': req.body.pass,
+                'name': data.user,
+                'email': data.email,
+                'pass': data.pass,
+                'info': data.info,
             }, function(err, doc){
                  // DB error
                 //console.log(err)
@@ -61,9 +64,9 @@ router.post('/register_user', function(req, res){
                     res.send({
                         'err': false,
                         'userid': token,
-                        'name': req.body.user,
-                        'email': req.body.email,
-                        'pass': req.body.pass
+                        'name': data.user,
+                        'email': data.email,
+                        'pass': data.pass
                     })
                 }
             }); 

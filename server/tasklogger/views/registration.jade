@@ -15,6 +15,10 @@ html( leng="en" )
             h2(class="text-center space30") UCL Media Futures Computer and Search Activities Study
             h3(class=["text-center", "space30"]) Participant Registration Form
  
+            p(class="text-info") 
+                span Fields with (
+                span(class="text-danger")=" * "
+                span ) are required.
             form(class=["form-horizontal"])
                 .jumbotron
                     .form-group
@@ -22,25 +26,33 @@ html( leng="en" )
                             h4 I. Participant account
 
                     .form-group
-                        label(for="name", class=["col-sm-2", "col-sm-offset-1", "control-label"]) Name
+                        label(for="name", class=["col-sm-2", "col-sm-offset-1", "control-label"]) 
+                            span Name 
+                            span(class="text-danger")=" *"
                         .col-sm-6
                            input#user(type="text", class="form-control" placeholder="Please enter your first and family name.")
                            div#err_user(class="err") 
 
                     .form-group
-                        label(for="email", class=["col-sm-2", "col-sm-offset-1", "control-label"]) Email
+                        label(for="email", class=["col-sm-2", "col-sm-offset-1", "control-label"]) 
+                            span Email
+                            span(class="text-danger")=" *"
                         .col-sm-6
                             input#email(type="email", class="form-control" placeholder="Your email will not be shared with others.")
                             div#err_email(class="err")
  
                     .form-group
-                        label(for="pass1", class=["col-sm-2", "col-sm-offset-1", "control-label"]) Password 
+                        label(for="pass1", class=["col-sm-2", "col-sm-offset-1", "control-label"]) 
+                            span Password 
+                            span(class="text-danger")=" *"
                         .col-sm-6
                             input#pass1(type="password", class="form-control", name="password")
                             div#err_pass1(class="err")
 
                     .form-group
-                        label(for="pass2", class=["col-sm-2", "col-sm-offset-1","control-label"]) Password (again) 
+                        label(for="pass2", class=["col-sm-2", "col-sm-offset-1","control-label"]) 
+                            span Password (again) 
+                            span(class="text-danger")=" *"
                         .col-sm-6
                             input#pass2(type="password", class="form-control")
                             div#err_pass2(class="err")                            
@@ -51,7 +63,10 @@ html( leng="en" )
                             h4 II. Basic information
                     
                     .form-group
-                        label(for="gender", class=["col-sm-2", "col-sm-offset-1","control-label"]) My gender:
+                        label(for="gender", class=["col-sm-2", "col-sm-offset-1","control-label"]) 
+                            span My gender:
+                            span(class="text-danger")=" *"
+                           
                         .col-sm-6
                             label(class="radio-inline")
                                 input#gender_m(type="radio", name="gender", value="male")
@@ -65,7 +80,10 @@ html( leng="en" )
                             div#err_gender(class="err")
 
                     .form-group
-                        label(for="age", class=["col-sm-2", "col-sm-offset-1","control-label"]) My age:
+                        label(for="age", class=["col-sm-2", "col-sm-offset-1","control-label"]) 
+                            span My age:
+                            span(class="text-danger")=" *"
+
                         .col-sm-6
                             label(class="radio-inline")
                                 input#age_1(type="radio", name="age", value="18_24")
@@ -85,7 +103,9 @@ html( leng="en" )
                             div#err_age(class="err")
 
                     .form-group
-                        label(for="profession", class=["col-sm-2", "col-sm-offset-1","control-label"]) My profession is:
+                        label(for="profession", class=["col-sm-2", "col-sm-offset-1","control-label"]) 
+                            span My profession is:
+                            span(class="text-danger")=" *"
                         .col-sm-6
                             input#profession(type="text", class="form-control")
                             div#err_profession(class="err")                            
@@ -97,7 +117,9 @@ html( leng="en" )
                    
                     .form-group
                         .col-sm-12
-                            p 1. I am an experienced user of computer technology.
+                            p 1. I am an experienced user of computer technology. 
+                                span(class="text-danger")=" *"
+                            div#err_exp_comp(class="err")
 
                         .col-sm-6 
                             label(class=["control-label", "radio-inline"])
@@ -119,11 +141,13 @@ html( leng="en" )
                                 span 5
                             label(class="radio-inline")
                                 span Extremely experienced
-                            div#err_exp_comp(class="err")
 
                     .form-group
                         .col-sm-12
                             p 2. I am an experienced user of search engines.
+                                span(class="text-danger")=" *"
+                            div#err_exp_se(class="err")
+
                         .col-sm-6 
                             label(class=["control-label", "radio-inline"])
                                 span Not at all
@@ -144,11 +168,13 @@ html( leng="en" )
                                 span 5
                             label(class="radio-inline")
                                 span Extremely experienced
-                            div#err_exp_se(class="err")
 
                     .form-group
                         .col-sm-12
                             p 3. How often do you use computers? 
+                                span(class="text-danger")=" *"
+                            div#err_freq_comp(class="err")
+
                             div(class="radio")
                                 label
                                     input#freq_comp_1(type="radio", name="freq_comp", value="1")
@@ -169,11 +195,13 @@ html( leng="en" )
                                 label
                                     input#freq_comp_5(type="radio", name="freq_comp", value="5")
                                     span Every day, more than two hours per day
-                            div#err_feq_comp(class="err")
 
                     .form-group
                         .col-sm-12
                             p 4. How often do you use a smartphone? 
+                                span(class="text-danger")=" *"
+                            div#err_freq_phone(class="err")
+
                             div(class="radio")
                                 label
                                     input#freq_phone_1(type="radio", name="freq_phone", value="1")
@@ -194,11 +222,13 @@ html( leng="en" )
                                 label
                                     input#freq_phone_5(type="radio", name="freq_phone", value="5")
                                     span Every day, more than two hours per day
-                            div#err_feq_phone(class="err")
 
                     .form-group
                         .col-sm-12
                             p 5. How often do you use a PC tablet or iPad? 
+                                span(class="text-danger")=" *"
+                            div#err_freq_tablet(class="err")
+
                             div(class="radio")
                                 label
                                     input#freq_tablet_1(type="radio", name="freq_tablet", value="1")
@@ -219,11 +249,13 @@ html( leng="en" )
                                 label
                                     input#freq_tablet_5(type="radio", name="freq_tablet", value="5")
                                     span Every day, more than two hours per day
-                            div#err_feq_tablet(class="err")
 
                     .form-group
                         .col-sm-12
                             p 6. How often do you use Web search engines (e.g., Google, Bing, Yahoo!)
+                                span(class="text-danger")=" *"
+                            div#err_freq_se(class="err")
+
                             div(class="radio")
                                 label
                                     input#freq_se_1(type="radio", name="freq_se", value="1")
@@ -240,11 +272,13 @@ html( leng="en" )
                                 label
                                     input#freq_se_4(type="radio", name="freq_se", value="4")
                                     span I use them so frequently that I can't count
-                            div#err_feq_se(class="err")
 
                     .form-group
                         .col-sm-12
                             p 7. How much of your computer use is related to your work? 
+                                span(class="text-danger")=" *"
+                            div#err_comp_work(class="err")
+
                             label(class=["control-label", "radio-inline"])
                                 span None of it
                             label(class="radio-inline")
@@ -264,11 +298,13 @@ html( leng="en" )
                                 span 5
                             label(class="radio-inline")
                                 span All of it
-                            div#err_comp_work(class="err")
 
                     .form-group
                         .col-sm-12
                             p 8. How much of your smartphone use is related to your work? 
+                                span(class="text-danger")=" *"
+                            div#err_phone_work(class="err")
+
                             label(class=["control-label", "radio-inline"])
                                 span None of it
                             label(class="radio-inline")
@@ -288,11 +324,13 @@ html( leng="en" )
                                 span 5
                             label(class="radio-inline")
                                 span All of it
-                            div#err_phone_work(class="err")
 
                     .form-group
                         .col-sm-12
                             p 9. How much of your tablet/iPad use is related to your work? 
+                                span(class="text-danger")=" *"
+                            div#err_tablet_work(class="err")
+
                             label(class=["control-label", "radio-inline"])
                                 span None of it
                             label(class="radio-inline")
@@ -312,65 +350,67 @@ html( leng="en" )
                                 span 5
                             label(class="radio-inline")
                                 span All of it
-                            div#err_tablet_work(class="err")
                 
                     .form-group
                         .col-sm-12
                             p 10. What do you usually search for on the Internet?
+                                span(class="text-danger")=" *"
+                            div#err_search_for(class="err")
+
                             .checkbox
                                 label
-                                    input(type="checkbox", value="shopping") 
+                                    input(type="checkbox", value="shopping", name="search_for") 
                                     span Shopping
                             .checkbox
                                 label
-                                    input(type="checkbox", value="travel") 
+                                    input(type="checkbox", value="travel", name="search_for") 
                                     span Travel/Holiday planning
                             .checkbox
                                 label
-                                    input(type="checkbox", value="map") 
+                                    input(type="checkbox", value="map", name="search_for") 
                                     span Finding routes
                             .checkbox
                                 label
-                                    input(type="checkbox", value="health") 
+                                    input(type="checkbox", value="health", name="search_for") 
                                     span Health related
                             .checkbox
                                 label
-                                    input(type="checkbox", value="entertainment") 
+                                    input(type="checkbox", value="entertainment", name="search_for") 
                                     span Entertainment (e.g., movies, books, videos, etc)
                             .checkbox
                                 label
-                                    input(type="checkbox", value="knowledge") 
+                                    input(type="checkbox", value="knowledge", name="search_for") 
                                     span Knowledge (e.g., Wikipedia)
                             .checkbox
                                 label
-                                    input(type="checkbox", value="news") 
+                                    input(type="checkbox", value="news", name="search_for") 
                                     span News articles
                             .checkbox
                                 label
-                                    input(type="checkbox", value="social") 
+                                    input(type="checkbox", value="social", name="search_for") 
                                     span Social media (e.g., twitter, facebook, etc.)
                             .checkbox
                                 label
-                                    input(type="checkbox", value="qa") 
+                                    input(type="checkbox", value="qa", name="search_for") 
                                     span Answers to specific questions (e.g., Yahoo answers, Quora, etc.)
                             .checkbox
                                 label
-                                    input(type="checkbox", value="research") 
+                                    input(type="checkbox", value="research", name="search_for") 
                                     span Research articles
                             .checkbox
                                 label
-                                    input(type="checkbox", value="recipes") 
+                                    input(type="checkbox", value="recipes", name="search_for") 
                                     span Recipes
                             .checkbox
                                 label
-                                    input(type="checkbox", value="work") 
+                                    input(type="checkbox", value="work", name="search_for") 
                                     span Information for work
                             .checkbox
                                 label 
-                                    input(type="checkbox", value="other")
+                                    input#checkbox_search_for_other(type="checkbox", value="other", name="search_for")
                                     span Other
-                                    =" "
-                                    input#search_other(type="text", placeholder="Please specify", class="form-control")
+                                input#search_other(type="text", placeholder="Please specify", class="form-control")
+ 
                 .jumbotron
                     .form-group
                         .col-sm-12 
@@ -383,9 +423,9 @@ html( leng="en" )
                         div#err_db(class="err")
 
 
-                form#login_form(class=["form-horizontal"], method="post", action="/users/login")
-                    .form-group
-                        .col-sm-6
-                            input#login_email(type="hidden", name="username")
-                            input#login_pass(type="hidden", name="password")
+            form#login_form(class=["form-horizontal"], method="post", action="/users/login")
+                .form-group
+                    .col-sm-6
+                        input#login_email(type="hidden", name="username")
+                        input#login_pass(type="hidden", name="password")
  
