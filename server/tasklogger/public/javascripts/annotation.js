@@ -54,7 +54,7 @@ $(document).ready(function(){
 
    load_data();
 
-    //TODO: Select all/none/labelled/unlablled
+    //Select all/none/labelled/unlablled
     $('#global_checkbox').click(function(){
         if ($(this).is(':checked')){
             $('#global_checkbox').prop('checked', true);
@@ -177,22 +177,28 @@ function get_dates(){
             console.log(response.err)
         }
         else{
-            for (var i = 0; i<response.res.length; i++){
-                var key = response.res[i]['_id'];
-                var date = new Date(key.year, 0);
-                date.setDate(key.day)
-                response.res[i].date = date;
-                log_dates_progress.push(response.res[i]);
-            }
-            set_date_options();
+            if (response.res.length == 0)
+                $('#div_empty')
+                    .html('<p> You have not done anything yet.</p>').removeClass('hidden');
+            else{    
+                $('#div_empty').addClass('hidden');
+                for (var i = 0; i<response.res.length; i++){
+                    var key = response.res[i]['_id'];
+                    var date = new Date(key.year, 0);
+                    date.setDate(key.day)
+                    response.res[i].date = date;
+                    log_dates_progress.push(response.res[i]);
+                }
+                set_date_options();
 
-            //By default set the viewing date to the lastest day
-            log_dates_progress.sort(function(a, b){
-                return b.date.getTime() - a.date.getTime();
-            })
-            set_view_date(log_dates_progress[0].date);
-            //Load data of that day
-            load_data(); 
+                //By default set the viewing date to the lastest day
+                log_dates_progress.sort(function(a, b){
+                    return b.date.getTime() - a.date.getTime();
+                })
+                set_view_date(log_dates_progress[0].date);
+                //Load data of that day
+                load_data(); 
+            }
         };
     });
 }

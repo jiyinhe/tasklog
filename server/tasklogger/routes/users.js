@@ -489,7 +489,10 @@ router.post('/ajax_annotation_options', function(req, res){
                 res.send({'err': true, 'emsg': e});
             }
             else{
-                res.send({'err': false, 'res': docs});
+                if (docs.length == 0)
+                    res.send({'err': false, 'res': []});
+                else
+                    res.send({'err': false, 'res': docs});
             } 
         });
     }
