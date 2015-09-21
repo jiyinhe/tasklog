@@ -3,7 +3,13 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+ //   res.render('index', { title: 'Express' });
+    if (req.user===undefined){
+        res.redirect('/users/login');
+    }
+    else 
+        res.redirect('/users/annotation');
+
 });
 
 /* GET page for check db data*/

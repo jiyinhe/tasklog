@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
         res.redirect('/users/login');
     }
     else 
-        res.redirect('/users/dashboard');
+        res.redirect('/users/annotation');
 });
 
 /* GET registration page. */
@@ -79,6 +79,8 @@ router.post('/register_user', function(req, res){
 });
 
 /* GET registration page. */
+
+/*
 router.get('/dashboard', function(req, res, next) {
     if (req.user===undefined){
         res.redirect('/users/login');
@@ -90,6 +92,7 @@ router.get('/dashboard', function(req, res, next) {
         "title": "Tasklog - Home",
     });
 });
+*/
 
 //Check if userid exists
 router.post('/checkid', function(req, res){
@@ -133,6 +136,22 @@ router.get('/annotation', function(req, res, next) {
         "title": "Tasklog - My annotations",
     });
 });
+
+
+/* Account information page */
+router.get('/account', function(req, res, next) {
+    if (req.user===undefined){
+        res.redirect('/users/login');
+    }
+ 
+    res.render('account', {
+        "user": req.user,
+        "accountclass": "active",
+        "title": "Tasklog - My account", 
+    });
+});
+
+
 
 /* ajax for todo list (tasks) */
 router.post('/ajax_tasks', function(req, res){
@@ -496,19 +515,6 @@ router.post('/ajax_annotation_options', function(req, res){
 });
 
  
-
-/* Account information page */
-router.get('/account', function(req, res, next) {
-    if (req.user===undefined){
-        res.redirect('/users/login');
-    }
- 
-    res.render('account', {
-        "user": req.user,
-        "accountclass": "active",
-        "title": "Tasklog - My account", 
-    });
-});
 
 
 //util functions

@@ -64,6 +64,12 @@ a {
 .navbar {
     padding-left: 30px;
 }
+
+.navbar-right {
+    margin-right: 50px;
+}
+
+
 .navbar-default {
 /*    background-color: #350808;*/
 }

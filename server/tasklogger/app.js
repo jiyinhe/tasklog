@@ -108,7 +108,7 @@ passport.use(new LocalStrategy(
 //login request
 app.post('/users/login',
     passport.authenticate('local', {
-        successRedirect: '/users/dashboard',
+        successRedirect: '/users/annotation',
         failureRedirect: '/users/login',
         failureFlash: true,
     })

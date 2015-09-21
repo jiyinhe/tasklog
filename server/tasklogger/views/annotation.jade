@@ -70,7 +70,7 @@ block content
                 div(class="header")
                     ul(class=["nav", "nav-tabs"])
                         li(role="presentation" class="active", id="li_todo")
-                            a(class="header-text" id="link_todo") My to-dos 
+                            a(class="header-text" id="link_todo") My goals
                                 span#count_todo
                         li(role="presentation", id="li_done") 
                             a(class="header-text" id="link_done") Items done
@@ -78,7 +78,7 @@ block content
 
                 div(class=["plan-options", "row"], id="plan_options")
                     div(class=["col-sm-8"])
-                        input#input_addtask(type="text", class="form-control", placeholder="+Add a new task")
+                        input#input_addtask(type="text", class="form-control", placeholder="+Add a goal")
                     div(class=["col-sm-4", "dropdown", "options"])
                         a#options(class="options" data-target="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") 
                             span(class=["glyphicon glyphicon-cog"]) 
@@ -87,9 +87,9 @@ block content
                             li#option_archive
                                 a Archive finished items
                             li#option_expand 
-                                a Expand all to-dos
+                                a Expand all 
                             li#option_collapse
-                                a Collapse all to-dos
+                                a Collapse all 
  
                 div#div_planlist(class="plan-area")
 

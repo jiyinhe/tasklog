@@ -11,9 +11,16 @@ html( leng="en" )
         script(src="/javascripts/register.js")
     body
         .container
-            .jumbotron
-                h3(class=["text-center", "space30"]) Participant Registration
-                form(class=["form-horizontal"])
+
+            h2(class="text-center space30") UCL Media Futures Computer and Search Activities Study
+            h3(class=["text-center", "space30"]) Participant Registration Form
+ 
+            form(class=["form-horizontal"])
+                .jumbotron
+                    .form-group
+                        .col-sm-6
+                            h4 I. Participant account
+
                     .form-group
                         label(for="name", class=["col-sm-2", "col-sm-offset-1", "control-label"]) Name
                         .col-sm-6
@@ -37,14 +44,346 @@ html( leng="en" )
                         .col-sm-6
                             input#pass2(type="password", class="form-control")
                             div#err_pass2(class="err")                            
- 
+
+                .jumbotron
                     .form-group
-                        div(class=["col-sm-offset-3", "col-sm-6"])
-                            button#reg_btn(type="button", class=["btn", "btn-primary"]) Register
-                            div#err_db(class="err")
+                        .col-sm-6
+                            h4 II. Basic information
+                    
+                    .form-group
+                        label(for="gender", class=["col-sm-2", "col-sm-offset-1","control-label"]) My gender:
+                        .col-sm-6
+                            label(class="radio-inline")
+                                input#gender_m(type="radio", name="gender", value="male")
+                                span Male
+                            label(class="radio-inline")
+                                input#gender_f(type="radio", name="gender", value="female")
+                                span Female
+                            label(class="radio-inline")
+                                input#gender_o(type="radio", name="gender", value="other")
+                                span Other
+                            div#err_gender(class="err")
+
+                    .form-group
+                        label(for="age", class=["col-sm-2", "col-sm-offset-1","control-label"]) My age:
+                        .col-sm-6
+                            label(class="radio-inline")
+                                input#age_1(type="radio", name="age", value="18_24")
+                                span 18-24
+                            label(class="radio-inline")
+                                input#age_2(type="radio", name="age", value="25_34")
+                                span 25-34
+                            label(class="radio-inline")
+                                input#age_3(type="radio", name="age", value="35_44")
+                                span 35-44
+                            label(class="radio-inline")
+                                input#age_4(type="radio", name="age", value="45_54")
+                                span 45-54
+                            label(class="radio-inline")
+                                input#age_5(type="radio", name="age", value="55+")
+                                span 55+
+                            div#err_age(class="err")
+
+                    .form-group
+                        label(for="profession", class=["col-sm-2", "col-sm-offset-1","control-label"]) My profession is:
+                        .col-sm-6
+                            input#profession(type="text", class="form-control")
+                            div#err_profession(class="err")                            
+                
+                .jumbotron
+                    .form-group
+                        .col-sm-12 
+                            h4 III. To what extent do the following statements apply to you? (10 questions)
+                   
+                    .form-group
+                        .col-sm-12
+                            p 1. I am an experienced user of computer technology.
+
+                        .col-sm-6 
+                            label(class=["control-label", "radio-inline"])
+                                span Not at all
+                            label(class="radio-inline")
+                                input#experience_computer_1(type="radio", name="exp_comp", value="1")
+                                span 1
+                            label(class="radio-inline")
+                                input#experience_computer_2(type="radio", name="exp_comp", value="2")
+                                span 2
+                            label(class="radio-inline")
+                                input#experience_computer_3(type="radio", name="exp_comp", value="3")
+                                span 3
+                            label(class="radio-inline")
+                                input#experience_computer_4(type="radio", name="exp_comp", value="4")
+                                span 4
+                            label(class="radio-inline")
+                                input#experience_computer_5(type="radio", name="exp_comp", value="5")
+                                span 5
+                            label(class="radio-inline")
+                                span Extremely experienced
+                            div#err_exp_comp(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 2. I am an experienced user of search engines.
+                        .col-sm-6 
+                            label(class=["control-label", "radio-inline"])
+                                span Not at all
+                            label(class="radio-inline")
+                                input#experience_se_1(type="radio", name="exp_se", value="1")
+                                span 1
+                            label(class="radio-inline")
+                                input#experience_se_2(type="radio", name="exp_se", value="2")
+                                span 2
+                            label(class="radio-inline")
+                                input#experience_se_3(type="radio", name="exp_se", value="3")
+                                span 3
+                            label(class="radio-inline")
+                                input#experience_se_4(type="radio", name="exp_se", value="4")
+                                span 4
+                            label(class="radio-inline")
+                                input#experience_se_5(type="radio", name="exp_se", value="5")
+                                span 5
+                            label(class="radio-inline")
+                                span Extremely experienced
+                            div#err_exp_se(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 3. How often do you use computers? 
+                            div(class="radio")
+                                label
+                                    input#freq_comp_1(type="radio", name="freq_comp", value="1")
+                                    span I normaly don't use computers
+                            div(class="radio")
+                                label
+                                    input#freq_comp_2(type="radio", name="freq_comp", value="2")
+                                    span Once or twice a week
+                            div(class="radio")
+                                label
+                                    input#freq_comp_3(type="radio", name="freq_comp", value="3")
+                                    span Every day, less than one hour per day
+                            div(class="radio")
+                                label
+                                    input#freq_comp_4(type="radio", name="freq_comp", value="4")
+                                    span Every day, one to two hours per day
+                            div(class="radio")
+                                label
+                                    input#freq_comp_5(type="radio", name="freq_comp", value="5")
+                                    span Every day, more than two hours per day
+                            div#err_feq_comp(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 4. How often do you use a smartphone? 
+                            div(class="radio")
+                                label
+                                    input#freq_phone_1(type="radio", name="freq_phone", value="1")
+                                    span I normaly don't use a smartphone
+                            div(class="radio")
+                                label
+                                    input#freq_phone_2(type="radio", name="freq_phone", value="2")
+                                    span Once or twice a week
+                            div(class="radio")
+                                label
+                                    input#freq_phone_3(type="radio", name="freq_phone", value="3")
+                                    span Every day, less than one hour per day
+                            div(class="radio")
+                                label
+                                    input#freq_phone_4(type="radio", name="freq_phone", value="4")
+                                    span Every day, one to two hours per day
+                            div(class="radio")
+                                label
+                                    input#freq_phone_5(type="radio", name="freq_phone", value="5")
+                                    span Every day, more than two hours per day
+                            div#err_feq_phone(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 5. How often do you use a PC tablet or iPad? 
+                            div(class="radio")
+                                label
+                                    input#freq_tablet_1(type="radio", name="freq_tablet", value="1")
+                                    span I normaly don't use a tablet/iPad
+                            div(class="radio")
+                                label
+                                    input#freq_tablet_2(type="radio", name="freq_tablet", value="2")
+                                    span Once or twice a week
+                            div(class="radio")
+                                label
+                                    input#freq_tablet_3(type="radio", name="freq_tablet", value="3")
+                                    span Every day, less than one hour per day
+                            div(class="radio")
+                                label
+                                    input#freq_tablet_4(type="radio", name="freq_tablet", value="4")
+                                    span Every day, one to two hours per day
+                            div(class="radio")
+                                label
+                                    input#freq_tablet_5(type="radio", name="freq_tablet", value="5")
+                                    span Every day, more than two hours per day
+                            div#err_feq_tablet(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 6. How often do you use Web search engines (e.g., Google, Bing, Yahoo!)
+                            div(class="radio")
+                                label
+                                    input#freq_se_1(type="radio", name="freq_se", value="1")
+                                    span I normaly don't use search engines 
+                            div(class="radio")
+                                label
+                                    input#freq_se_2(type="radio", name="freq_se", value="2")
+                                    span Once or twice a week
+                            div(class="radio")
+                                label
+                                    input#freq_se_3(type="radio", name="freq_se", value="3")
+                                    span Once or twice a day 
+                            div(class="radio")
+                                label
+                                    input#freq_se_4(type="radio", name="freq_se", value="4")
+                                    span I use them so frequently that I can't count
+                            div#err_feq_se(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 7. How much of your computer use is related to your work? 
+                            label(class=["control-label", "radio-inline"])
+                                span None of it
+                            label(class="radio-inline")
+                                input#comp_work_1(type="radio", name="comp_work", value="1")
+                                span 1
+                            label(class="radio-inline")
+                                input#comp_work_2(type="radio", name="comp_work", value="2")
+                                span 2
+                            label(class="radio-inline")
+                                input#comp_work_3(type="radio", name="comp_work", value="3")
+                                span 3
+                            label(class="radio-inline")
+                                input#comp_work_4(type="radio", name="comp_work", value="4")
+                                span 4
+                            label(class="radio-inline")
+                                input#comp_work_5(type="radio", name="comp_work", value="5")
+                                span 5
+                            label(class="radio-inline")
+                                span All of it
+                            div#err_comp_work(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 8. How much of your smartphone use is related to your work? 
+                            label(class=["control-label", "radio-inline"])
+                                span None of it
+                            label(class="radio-inline")
+                                input#phone_work_1(type="radio", name="phone_work", value="1")
+                                span 1
+                            label(class="radio-inline")
+                                input#phone_work_2(type="radio", name="phone_work", value="2")
+                                span 2
+                            label(class="radio-inline")
+                                input#phone_work_3(type="radio", name="phone_work", value="3")
+                                span 3
+                            label(class="radio-inline")
+                                input#phone_work_4(type="radio", name="phone_work", value="4")
+                                span 4
+                            label(class="radio-inline")
+                                input#phone_work_5(type="radio", name="phone_work", value="5")
+                                span 5
+                            label(class="radio-inline")
+                                span All of it
+                            div#err_phone_work(class="err")
+
+                    .form-group
+                        .col-sm-12
+                            p 9. How much of your tablet/iPad use is related to your work? 
+                            label(class=["control-label", "radio-inline"])
+                                span None of it
+                            label(class="radio-inline")
+                                input#tablet_work_1(type="radio", name="tablet_work", value="1")
+                                span 1
+                            label(class="radio-inline")
+                                input#tablet_work_2(type="radio", name="tablet_work", value="2")
+                                span 2
+                            label(class="radio-inline")
+                                input#tablet_work_3(type="radio", name="tablet_work", value="3")
+                                span 3
+                            label(class="radio-inline")
+                                input#tablet_work_4(type="radio", name="tablet_work", value="4")
+                                span 4
+                            label(class="radio-inline")
+                                input#tablet_work_5(type="radio", name="tablet_work", value="5")
+                                span 5
+                            label(class="radio-inline")
+                                span All of it
+                            div#err_tablet_work(class="err")
+                
+                    .form-group
+                        .col-sm-12
+                            p 10. What do you usually search for on the Internet?
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="shopping") 
+                                    span Shopping
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="travel") 
+                                    span Travel/Holiday planning
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="map") 
+                                    span Finding routes
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="health") 
+                                    span Health related
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="entertainment") 
+                                    span Entertainment (e.g., movies, books, videos, etc)
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="knowledge") 
+                                    span Knowledge (e.g., Wikipedia)
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="news") 
+                                    span News articles
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="social") 
+                                    span Social media (e.g., twitter, facebook, etc.)
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="qa") 
+                                    span Answers to specific questions (e.g., Yahoo answers, Quora, etc.)
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="research") 
+                                    span Research articles
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="recipes") 
+                                    span Recipes
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="work") 
+                                    span Information for work
+                            .checkbox
+                                label 
+                                    input(type="checkbox", value="other")
+                                    span Other
+                                    =" "
+                                    input#search_other(type="text", placeholder="Please specify", class="form-control")
+                .jumbotron
+                    .form-group
+                        .col-sm-12 
+                            h4 IV. Further details on your search habit (if any):
+                        textarea#search_habit(class="form-control", rows=3)
+ 
+                .form-group
+                    div(class=["col-sm-offset-3", "col-sm-6"])
+                        button#reg_btn(type="button", class=["btn", "btn-primary", "btn-lg", "btn-block"]) Register
+                        div#err_db(class="err")
 
 
-                 form#login_form(class=["form-horizontal"], method="post", action="/users/login")
+                form#login_form(class=["form-horizontal"], method="post", action="/users/login")
                     .form-group
                         .col-sm-6
                             input#login_email(type="hidden", name="username")

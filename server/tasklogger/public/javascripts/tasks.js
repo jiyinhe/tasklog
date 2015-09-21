@@ -464,7 +464,7 @@ function create_main_task(task, type){
         add_subtask.setAttribute('class', 'add-subtask');
         add_subtask.innerHTML = '<span class="glyphicon glyphicon-plus"></span>';
         add_subtask.setAttribute('data-toggle', 'tooltip');
-        add_subtask.setAttribute('title', 'Add a todo for the task');
+        add_subtask.setAttribute('title', 'Add a sub-item for this goal');
         ele_main_task.appendChild(add_subtask);
     
         //Add the remove sign
