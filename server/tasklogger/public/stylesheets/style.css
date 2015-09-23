@@ -81,6 +81,15 @@ a {
     padding-top: 70px;
 }
 
+.nav-progress {
+    padding-top: 15px;
+    width: 250px;
+}
+
+.progress-bar-grey {
+    background-color: #BDBDBD;
+}
+
 .inpagelink {
     padding-top: 50px;
 }

@@ -147,13 +147,17 @@ function savedata(logdata){
     logdata['to_annotate'] = false; 
     logdata['removed'] = false;
     //Create toy data for testing
+    //console.log(logdata.url.substring(0, 6))
     //logdata['timestamp'] = logdata['timestamp'] - 60*1000*60*24
 
     // We only ask for a few events to be annotated
     // use tab-loaded for the pages users browsed
     // use tab-search for Web search users performed with google, bing, yahoo. 
-    if (logdata['event'] == 'tab-loaded' || logdata['event'] == 'tab-search')
+    if (logdata['event'] == 'tab-search')
         logdata['to_annotate'] = true;
+    else if (logdata['event'] == 'tab-loaded' && !(logdata.url.substring(0, 6) === 'chrome')){
+        logdata['to_annotate'] = true;
+    } 
 
     //check if storage is empty
     chrome.storage.sync.get('logdata', function(item){

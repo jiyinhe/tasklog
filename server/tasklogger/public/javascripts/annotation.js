@@ -89,8 +89,13 @@ $(document).ready(function(){
         var year = $(this).attr('year');
         var day = $(this).attr('day');
         var date = new Date(year, 0);
+        var count_tot = $(this).attr('count_total');
+        var count_done = $(this).attr('count_done');
+        var count_rm = $(this).attr('count_removed');
+        //console.log(count_tot, count_done, count_rm)
         date.setDate(day);
-        set_view_date(date);
+        set_view_date(date, year, day);
+        set_progress_bar(count_tot, count_done, count_rm);
         //reload the tasks and log items
         load_data();
     });
@@ -154,9 +159,6 @@ $(document).ready(function(){
         $(this).parent().find('.logitem-label-candidate-more').removeClass('hidden');
     });
 
-    //TODO: Progress bar
-    //TODO: Remove ratio bar
-
     //TODO: Consider general labels, e.g., social networking, 
     //entertainment, news update
 
@@ -187,6 +189,8 @@ function get_dates(){
                     var date = new Date(key.year, 0);
                     date.setDate(key.day)
                     response.res[i].date = date;
+                    response.res[i].year = key.year;
+                    response.res[i].day = key.day;
                     log_dates_progress.push(response.res[i]);
                 }
                 set_date_options();
@@ -195,7 +199,13 @@ function get_dates(){
                 log_dates_progress.sort(function(a, b){
                     return b.date.getTime() - a.date.getTime();
                 })
-                set_view_date(log_dates_progress[0].date);
+                set_view_date(log_dates_progress[0].date, 
+                    log_dates_progress[0].year, log_dates_progress[0].day);
+//                console.log(log_dates_progress[0])
+                var count_tot = log_dates_progress[0].count_logitem;
+                var count_todo = log_dates_progress[0].count_to_annotate;
+                var count_rm = log_dates_progress[0].count_removed;
+                set_progress_bar(count_tot, count_tot-count_todo, count_rm);
                 //Load data of that day
                 load_data(); 
             }
@@ -203,22 +213,48 @@ function get_dates(){
     });
 }
 
-function set_view_date(date){
+function set_view_date(date, year, day){
     view_date.start = new Date(date);
     view_date.end = new Date(date);
     view_date.end.setHours(23, 59, 59, 999)
-    $('#global_date_selected').text(date.toDateString());
+    $('#global_date_selected').text(date.toDateString()).attr('year', year).attr('day', day);
 }
+
+//Set progress bar
+function set_progress_bar(count_tot, count_done, count_rm){
+   //Removed
+    var rm_perc = Math.round((count_rm)/count_tot*100);
+    $('#progress_rm').attr('style', 'width:'+rm_perc + '%');
+    $('#progress_rm_label').text(count_rm+'/'+count_tot);
+    //Done
+    var done_perc = Math.round((count_done)/count_tot*100);
+    $('#progress_done').attr('style', 'width:'+done_perc + '%');
+    $('#progress_done_label').text(count_done+'/'+count_tot);
+ 
+}
+
 
 //Set the date options on UI
 function set_date_options(){
       for (var i = 0; i < log_dates_progress.length; i++){
+        var tot = log_dates_progress[i].count_logitem;
+        var todo = log_dates_progress[i].count_to_annotate;
         var ele = document.createElement('li');
         ele.setAttribute('year', log_dates_progress[i]['_id'].year);
         ele.setAttribute('day', log_dates_progress[i]['_id'].day);
+        ele.setAttribute('count_total', tot);
+        ele.setAttribute('count_done', tot-todo);
+        ele.setAttribute('count_removed', log_dates_progress[i].count_removed);
         ele.setAttribute('class', 'date-option');
         var ele_a = document.createElement('a');
+
+        //Set the progress of that date option 
         ele_a.appendChild(document.createTextNode(log_dates_progress[i].date.toDateString()));
+        var span_counts = document.createElement('span');
+        span_counts.innerHTML = ' (' + (log_dates_progress[i].count_removed) + '/'+(tot-todo) + '/' + tot + ')';
+        span_counts.setAttribute('class', 'span_counts');
+        ele_a.appendChild(span_counts);
+
         ele.appendChild(ele_a);
         $('#date_dropdown').append(ele);
     }
@@ -743,6 +779,8 @@ function remove_logitems(items){
             //remove this element from UI
             for(var i = 0; i < items.length; i++)
                 $('#logitem_' + items[i]).remove();
+            //update progress 
+            update_progress('remove', items.length); 
         }
     });
 }
@@ -778,11 +816,14 @@ function submit_labels_useful(id, value){
             $('#div_logarea').find('#logitem_useful_' + id).attr('useful', value);
             //Set the panel to done if it also has task set
             var task = $('#div_logarea').find('#logitem_label_chosen_' + id).attr('taskid');
-            if (task != '') 
+            if (task != ''){ 
+                //Done another annotation, update progress
+                if ($('#div_logarea').find('#logitem_' + id).hasClass('panel-default'))
+                    update_progress('done', 1);
                 $('#div_logarea').find('#logitem_' + id)
                     .removeClass('panel-default').addClass('panel-success');
-            
-        }
+           }
+       }
     });
 }
 //Submit the task labels
@@ -812,11 +853,19 @@ function submit_labels_task(items, taskid, taskname){
                         items[i]).attr('event_type');
                 var panel_id = '#logitem_' + items[i];
     
-                if (event_type == 'tab-search')
+                if (event_type == 'tab-search'){
+                    if ($('#div_logarea').find(panel_id).hasClass('panel-default')){
+                        //Done another annotation, update progress
+                        update_progress('done', 1);
+                    }
                     $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
+                }
                 else if(event_type == 'tab-loaded'){
                     var useful = $('#div_logarea').find('#logitem_useful_' + items[i]).attr('useful');
                     if (useful != ''){
+                        if($('#div_logarea').find(panel_id).hasClass('panel-default'))
+                            //done another annotation, update progress
+                            update_progress('done', 1);
                         $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
                     }
                 }
@@ -825,3 +874,30 @@ function submit_labels_task(items, taskid, taskname){
     });
    
 }
+
+function update_progress(type, count){
+    //Find the the currently viewed date where changes happen
+    var view_year = $('#global_date_selected').attr('year');
+    var view_day = $('#global_date_selected').attr('day');
+    var ele = $('.date-option[year="'+view_year+'"][day="'+view_day+'"]');
+    if (type == 'done'){
+        count_done = parseInt(ele.attr('count_done')) + count;
+        ele.attr('count_done', count_done);
+    }
+    else if (type == 'remove'){
+        count_remove = parseInt(ele.attr('count_removed')) + count;
+        ele.attr('count_removed', count_remove);
+    }
+    set_progress_bar(ele.attr('count_total'), ele.attr('count_done'), ele.attr('count_removed'));
+    ele.find('.span_counts').html( 
+        '('+ele.attr('count_removed')+'/'+ele.attr('count_done')+'/'+ele.attr('count_total')+')');
+
+}
+
+
+
+
+
+
+
+
