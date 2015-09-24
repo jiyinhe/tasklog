@@ -52,7 +52,6 @@ $(document).ready(function(){
     $('#task_dropdown').on('click', '#task_label_new', function(){
     });
 
-   load_data();
 
     //Select all/none/labelled/unlablled
     $('#global_checkbox').click(function(){
@@ -90,12 +89,12 @@ $(document).ready(function(){
         var day = $(this).attr('day');
         var date = new Date(year, 0);
         var count_tot = $(this).attr('count_total');
-        var count_done = $(this).attr('count_done');
+        var count_todo = $(this).attr('count_todo');
         var count_rm = $(this).attr('count_removed');
         //console.log(count_tot, count_done, count_rm)
         date.setDate(day);
         set_view_date(date, year, day);
-        set_progress_bar(count_tot, count_done, count_rm);
+        set_progress_bar(count_tot, count_todo, count_rm);
         //reload the tasks and log items
         load_data();
     });
@@ -205,7 +204,7 @@ function get_dates(){
                 var count_tot = log_dates_progress[0].count_logitem;
                 var count_todo = log_dates_progress[0].count_to_annotate;
                 var count_rm = log_dates_progress[0].count_removed;
-                set_progress_bar(count_tot, count_tot-count_todo, count_rm);
+                set_progress_bar(count_tot, count_todo, count_rm);
                 //Load data of that day
                 load_data(); 
             }
@@ -221,15 +220,16 @@ function set_view_date(date, year, day){
 }
 
 //Set progress bar
-function set_progress_bar(count_tot, count_done, count_rm){
+function set_progress_bar(count_tot, count_todo, count_rm){
    //Removed
     var rm_perc = Math.round((count_rm)/count_tot*100);
     $('#progress_rm').attr('style', 'width:'+rm_perc + '%');
-    $('#progress_rm_label').text(count_rm+'/'+count_tot);
+    $('#progress_rm_label').text(count_rm);
     //Done
+    var count_done = count_tot - count_rm - count_todo;
     var done_perc = Math.round((count_done)/count_tot*100);
     $('#progress_done').attr('style', 'width:'+done_perc + '%');
-    $('#progress_done_label').text(count_done+'/'+count_tot);
+    $('#progress_done_label').text(count_done+'/'+(count_tot-count_rm));
  
 }
 
@@ -239,19 +239,20 @@ function set_date_options(){
       for (var i = 0; i < log_dates_progress.length; i++){
         var tot = log_dates_progress[i].count_logitem;
         var todo = log_dates_progress[i].count_to_annotate;
+        var rm = log_dates_progress[i].count_removed;
         var ele = document.createElement('li');
         ele.setAttribute('year', log_dates_progress[i]['_id'].year);
         ele.setAttribute('day', log_dates_progress[i]['_id'].day);
         ele.setAttribute('count_total', tot);
-        ele.setAttribute('count_done', tot-todo);
-        ele.setAttribute('count_removed', log_dates_progress[i].count_removed);
+        ele.setAttribute('count_todo', todo);
+        ele.setAttribute('count_removed', rm);
         ele.setAttribute('class', 'date-option');
         var ele_a = document.createElement('a');
 
         //Set the progress of that date option 
         ele_a.appendChild(document.createTextNode(log_dates_progress[i].date.toDateString()));
         var span_counts = document.createElement('span');
-        span_counts.innerHTML = ' (' + (log_dates_progress[i].count_removed) + '/'+(tot-todo) + '/' + tot + ')';
+        span_counts.innerHTML = ' (' + (tot-rm-todo) + '/' + (tot-rm) + ')';
         span_counts.setAttribute('class', 'span_counts');
         ele_a.appendChild(span_counts);
 
@@ -401,8 +402,8 @@ function load_log(){
         type: "POST",
         url: url_ajax_annotation,
         data: {'event': 'get_log', 
-                'time_start': view_date.start.getTime(),
-                'time_end': view_date.end.getTime(),
+                'time_start': view_date.start,
+                'time_end': view_date.end,
                }
     }).done(function(response) {
         if (response.err){
@@ -420,12 +421,13 @@ function load_log(){
 
 //Display log items
 function display_log(log){
+    console.log(log.length);
     $('#div_logarea').html('');
     for (var i = 0; i<log.length; i++){
        var div_item= create_logitem_element(log[i]);
        $('#div_logarea').append(div_item);
     }
-    //Initialise tooltip
+   //Initialise tooltip
     $('[data-toggle="tooltip"]').tooltip();
 }
 
@@ -435,10 +437,29 @@ function display_log(log){
 //{task: {taskid: xx, name: yy}, useful: true/false}
 function create_logitem_element(item){
     //Logitem area
+    //var time1 = new Date().getTime();
+
+    //for(i = 0; i<=1000; i++){
     var div_item = document.createElement('div');
     div_item.setAttribute('id', 'logitem_' + item['_id']);
     div_item.setAttribute('class', 'panel panel-default');
     div_item.setAttribute('event_type', item.event);
+    //}
+    //var time2 = new Date().getTime()
+    //console.log('m1', time2-time1)
+
+    /*
+    //var time3 = new Date().getTime();
+    //for(i = 0; i<=1000; i++){
+    var tmp_id = 'logitem_' + item['_id'];
+    var tmp = ['<div class="panel panel-default">',
+                'event_type="'+item.event+'"',
+                'id="'+tmp_id+'"',
+                '</div>'].join('\n');
+    //}
+    var time4 = new Date().getTime();
+    //console.log('m2', time4 - time3)
+    */
 
     //Logitem content
     var div_item_content = document.createElement('div');
@@ -572,6 +593,7 @@ function create_logitem_element(item){
         if(task_done)
             div_item.setAttribute('class', 'panel panel-success');
     }
+
 
     //Adding elements into the DOM 
     div_item_content.appendChild(remove);
@@ -715,7 +737,7 @@ function logitem_create_remove_modal(item){
     btn_dismiss.innerHTML = '<span aria-hidden="true">&times;</span>'    
     div_modal_header.appendChild(btn_dismiss);
     var div_title = document.createElement('h4');
-    div_title.setAttribute('modal-title');
+    div_title.setAttribute('class', 'modal-title');
     div_modal_header.appendChild(div_title);
 
     //Modal - body
@@ -777,10 +799,13 @@ function remove_logitems(items){
         }
         else{
             //remove this element from UI
-            for(var i = 0; i < items.length; i++)
-                $('#logitem_' + items[i]).remove();
-            //update progress 
-            update_progress('remove', items.length); 
+            for(var i = 0; i < items.length; i++){
+                var ele = $('#logitem_' + items[i]);
+                //update progress 
+                var done = ele.hasClass('panel-success');
+                ele.remove(); 
+                update_progress('remove', items.length, done); 
+            }
         }
     });
 }
@@ -819,7 +844,7 @@ function submit_labels_useful(id, value){
             if (task != ''){ 
                 //Done another annotation, update progress
                 if ($('#div_logarea').find('#logitem_' + id).hasClass('panel-default'))
-                    update_progress('done', 1);
+                    update_progress('done', 1, false);
                 $('#div_logarea').find('#logitem_' + id)
                     .removeClass('panel-default').addClass('panel-success');
            }
@@ -856,7 +881,7 @@ function submit_labels_task(items, taskid, taskname){
                 if (event_type == 'tab-search'){
                     if ($('#div_logarea').find(panel_id).hasClass('panel-default')){
                         //Done another annotation, update progress
-                        update_progress('done', 1);
+                        update_progress('done', 1, false);
                     }
                     $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
                 }
@@ -865,7 +890,7 @@ function submit_labels_task(items, taskid, taskname){
                     if (useful != ''){
                         if($('#div_logarea').find(panel_id).hasClass('panel-default'))
                             //done another annotation, update progress
-                            update_progress('done', 1);
+                            update_progress('done', 1, false);
                         $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
                     }
                 }
@@ -875,22 +900,31 @@ function submit_labels_task(items, taskid, taskname){
    
 }
 
-function update_progress(type, count){
+function update_progress(type, count, done){
     //Find the the currently viewed date where changes happen
     var view_year = $('#global_date_selected').attr('year');
     var view_day = $('#global_date_selected').attr('day');
     var ele = $('.date-option[year="'+view_year+'"][day="'+view_day+'"]');
+
+    var count_todo = parseInt(ele.attr('count_todo'));
+    var count_removed = parseInt(ele.attr('count_removed'));
+    var count_total = parseInt(ele.attr('count_total'));
+
     if (type == 'done'){
-        count_done = parseInt(ele.attr('count_done')) + count;
-        ele.attr('count_done', count_done);
+        count_todo = count_todo - count;
+        ele.attr('count_todo', count_todo);
     }
     else if (type == 'remove'){
-        count_remove = parseInt(ele.attr('count_removed')) + count;
+        count_remove = count_removed + count;
         ele.attr('count_removed', count_remove);
+        if (!done){
+            count_todo = count_todo - count;
+            ele.attr('count_todo', count_todo);
+        }
     }
-    set_progress_bar(ele.attr('count_total'), ele.attr('count_done'), ele.attr('count_removed'));
+    set_progress_bar(ele.attr('count_total'), ele.attr('count_todo'), ele.attr('count_removed'));
     ele.find('.span_counts').html( 
-        '('+ele.attr('count_removed')+'/'+ele.attr('count_done')+'/'+ele.attr('count_total')+')');
+        '('+ count_todo +'/'+ (count_total - count_removed) +')');
 
 }
 

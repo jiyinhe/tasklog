@@ -128,6 +128,7 @@ router.get('/instructions', function(req, res, next) {
        
 /* Annotation page */
 router.get('/annotation', function(req, res, next) {
+//    console.log(req.user)
     if (req.user===undefined){
         res.redirect('/users/login');
     }
@@ -331,13 +332,16 @@ router.post('/ajax_tasks', function(req, res){
 
 //Ajax call to get annotation data 
 router.post('/ajax_annotation', function(req, res){
+//    var time1 = new Date().getTime();
     var db = req.db;
     var collection = db.get('log_chrome');
+    var timestart = new Date(req.body.time_start);
+    var timeend = new Date(req.body.time_end);
     if (req.body['event'] == 'get_log'){
         collection.find({'userid': req.user.userid, 
-                'timestamp': {$gt: parseInt(req.body.time_start), $lt: parseInt(req.body.time_end)}, 
-                'to_annotate': true, 
-                'removed': false,
+                'timestamp_bson': {$gte: timestart, $lte: timeend}, 
+                 'to_annotate': true, 
+                 'removed': false,
             },
             {sort: {timestamp: 1}},
             function(e, docs){
@@ -346,6 +350,9 @@ router.post('/ajax_annotation', function(req, res){
                     res.send({'err': true, 'emsg': e});
                 }
                 else{
+//                    var time2 = new Date().getTime();
+//                    console.log((time2 - time1)/1000)
+                    console.log(docs.length)
                     res.send({'err': false, 'res': docs});
                 }
         });
@@ -448,13 +455,15 @@ router.post('/ajax_annotation_options', function(req, res){
         });
     }
     else if (req.body['event'] == 'get_dates'){
+        //Check timezone, bson uses UTC time
+        var timediff = new Date().getTimezoneOffset()*60*1000;
         var collection = db.get('log_chrome');
         collection.col.aggregate([
             {$match: {'userid': req.user.userid, 
                       'to_annotate': true}},
             {$project: {
-                'year': {$year: '$timestamp_bson'},
-                'day':  {$dayOfYear: '$timestamp_bson'},
+                'year': {$year: {$subtract: ['$timestamp_bson', timediff]}},
+                'day':  {$dayOfYear: {$subtract: ['$timestamp_bson', timediff]}},
                 'removed': 1,
                 'event': 1,
                 'annotation.useful': {$ifNull: ['$annotation.useful', 0]},
@@ -469,10 +478,11 @@ router.post('/ajax_annotation_options', function(req, res){
                     'annotation.useful': 1,
                     'annotation.task': 1,
                     'annotation_not_done': {$cond: [
-                        {$or: [{$eq: ['$annotation.task', 0]},
-                            {$and: [{$eq: ['$event', 'tab-loaded']}, 
-                                    {$eq: ['$annotation.useful', 0]}]} 
-                            ]}, 1, 0]}
+                        {$and: [{$eq: ['$removed', false]},
+                            {$or: [{$eq: ['$annotation.task', 0]},
+                                {$and: [{$eq: ['$event', 'tab-loaded']}, 
+                                        {$eq: ['$annotation.useful', 0]}]} 
+                            ]}]}, 1, 0]}
                 }
             },
            {$group: {
@@ -482,6 +492,7 @@ router.post('/ajax_annotation_options', function(req, res){
                     'count_to_annotate': {$sum: '$annotation_not_done'}
                 }
             },
+            {$sort: {'_id': 1}}
         ],
         function(e, docs){
             if (e){
@@ -489,6 +500,7 @@ router.post('/ajax_annotation_options', function(req, res){
                 res.send({'err': true, 'emsg': e});
             }
             else{
+    //            console.log(docs);
                 if (docs.length == 0)
                     res.send({'err': false, 'res': []});
                 else
