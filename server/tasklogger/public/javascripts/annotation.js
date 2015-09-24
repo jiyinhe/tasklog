@@ -1,6 +1,9 @@
 /* ====================
    Dependancy: tasks.js
  ===================== */
+//TODO: modal element creation takes up long time
+//TODO: consider extra labels
+//TODO: instruction
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -77,10 +80,22 @@ $(document).ready(function(){
     $('#select_labelled').click(function(){
         $('#div_logarea').find('.panel-success .logitem-content-checkbox')
             .prop('checked', true);
+        //De-select unlabelled
+        $('#div_logarea').find('.panel-default .logitem-content-checkbox')
+            .prop('checked', false);
     });
     $('#select_unlabelled').click(function(){
         $('#div_logarea').find('.panel-default .logitem-content-checkbox')
             .prop('checked', true);
+        //De-select labelled
+        $('#div_logarea').find('.panel-success .logitem-content-checkbox')
+            .prop('checked', false);
+    });
+
+
+    //Filter unlabelled items
+    $('#global_filter').click(function(){
+        $('#div_logarea').find('.panel-success').toggleClass('hidden');
     });
 
     //Select a different date to view log 
@@ -146,13 +161,14 @@ $(document).ready(function(){
 
     //Per-item show more labels
     $('#div_logarea').on('click', '.logitem-label-candidate-more', function(){
-        var item_id = $(this).attr('id').split('_')[4];
+        //var item_id = $(this).attr('id').split('_')[4];
         $(this).parent().find('.more-candidate').removeClass('hidden');
         $(this).addClass('hidden'); 
+        $(this).parent().find('.logitem-label-candidate-less').removeClass('hidden');
     });
     //Per-item show less labels
     $('#div_logarea').on('click', '.logitem-label-candidate-less', function(){
-        var item_id = $(this).attr('id').split('_')[4];
+        //var item_id = $(this).attr('id').split('_')[4];
         $(this).parent().find('.more-candidate').addClass('hidden');
         $(this).addClass('hidden'); 
         $(this).parent().find('.logitem-label-candidate-more').removeClass('hidden');
@@ -413,7 +429,7 @@ function load_log(){
             );
         }
         else{
-            display_log(response.res);
+           display_log(response.res);
         }
     });
 }
@@ -421,12 +437,22 @@ function load_log(){
 
 //Display log items
 function display_log(log){
-    console.log(log.length);
+//    console.log(log.length);
     $('#div_logarea').html('');
+
+    //make candidate labels
+    var labels = logitem_load_candidates();
+    var items = document.createDocumentFragment();
+
+    //make elements without setting IDs specific to an item
+    var div_item_template = create_logitem_elements(labels);
+
     for (var i = 0; i<log.length; i++){
-       var div_item= create_logitem_element(log[i]);
-       $('#div_logarea').append(div_item);
+//       var div_item = create_logitem_element(log[i], labels);
+        var div_item = assemble_logitem_elements(div_item_template, log[i]);
+        items.appendChild(div_item);
     }
+    $('#div_logarea').append(items);
    //Initialise tooltip
     $('[data-toggle="tooltip"]').tooltip();
 }
@@ -435,46 +461,24 @@ function display_log(log){
 //For each item, the annotation property should have the
 //following structure:
 //{task: {taskid: xx, name: yy}, useful: true/false}
-function create_logitem_element(item){
+function create_logitem_elements(ele_candidate_labels){
     //Logitem area
-    //var time1 = new Date().getTime();
-
-    //for(i = 0; i<=1000; i++){
+    //Div item
     var div_item = document.createElement('div');
-    div_item.setAttribute('id', 'logitem_' + item['_id']);
     div_item.setAttribute('class', 'panel panel-default');
-    div_item.setAttribute('event_type', item.event);
-    //}
-    //var time2 = new Date().getTime()
-    //console.log('m1', time2-time1)
-
-    /*
-    //var time3 = new Date().getTime();
-    //for(i = 0; i<=1000; i++){
-    var tmp_id = 'logitem_' + item['_id'];
-    var tmp = ['<div class="panel panel-default">',
-                'event_type="'+item.event+'"',
-                'id="'+tmp_id+'"',
-                '</div>'].join('\n');
-    //}
-    var time4 = new Date().getTime();
-    //console.log('m2', time4 - time3)
-    */
 
     //Logitem content
     var div_item_content = document.createElement('div');
-    div_item_content.setAttribute('id', 'logitem_content_'+item['_id']);
-    div_item_content.setAttribute('class', 'panel-heading');
+    div_item_content.setAttribute('class', 'panel-heading logitem-content');
 
-   //Logitem content - checkbox
+    //Logitem content - checkbox
     var checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox');
-    checkbox.setAttribute('id', 'logitem_content_checkbox_' + item['_id']);
-    checkbox.setAttribute('class', 'logitem-content-checkbox');
-    div_item_content.appendChild(checkbox);
+    checkbox.setAttribute('class', 'logitem-checkbox');
 
     //Logitem content - type icon - to be set
     var icon = document.createElement('span');
+    icon.setAttribute('class', 'logitem-icon');
 
     //Logitem content - Query or Title of page - to be set
     var text = document.createElement('span');
@@ -483,11 +487,10 @@ function create_logitem_element(item){
     //Logitem content - time
     var time = document.createElement('span');
     time.setAttribute('class', 'logitem-time');
-    time.innerHTML = new Date(item.timestamp).toLocaleTimeString();
 
     //Logitem content - remove button
     var remove = document.createElement('button');
-    remove.setAttribute('class', 'close');
+    remove.setAttribute('class', 'close logitem-remove');
     remove.innerHTML = ['<span aria-hidden="true", data-toggole="tooltip"',
         'data-placement="left", title="Remove this item from log"',
         '>',
@@ -495,85 +498,142 @@ function create_logitem_element(item){
         '</span>',
         ].join('\n');
     remove.setAttribute('data-toggle', 'modal');
-    remove.setAttribute('data-target', '#modal_'+item['_id']);
-    var div_modal = logitem_create_remove_modal(item);
-
+ 
     //Logitem labels 
     var div_item_label = document.createElement('div');
-    div_item_label.setAttribute('id', 'logitem_label_' + item['_id']);
-    div_item_label.setAttribute('class', 'panel-body');
+    div_item_label.setAttribute('class', 'panel-body logitem-label');
 
     //Logitem label - chosen label
     var div_chosen_label = document.createElement('div');
-    div_chosen_label.setAttribute('id', 'logitem_label_chosen_' + item['_id']);
     div_chosen_label.setAttribute('class', 'logitem-label-chosen');
     div_chosen_label.setAttribute('taskid', '');
     div_chosen_label.setAttribute('taskname', '');
 
     //Logitem label - chosen label - explaning text - to be set
     var span_label_text = document.createElement('span');
+    span_label_text.setAttribute('class', 'label-text');
 
     //Logitem label - chosen label - task name - to be set
     var span_label_task = document.createElement('span');
     span_label_task.setAttribute('class', 'label label-info');
-    span_label_task.setAttribute('id', 'logitem_label_chosen_taskname_'+item['_id']);
 
     //Logitem label - candidates
     var div_candidates = document.createElement('div');
-    div_candidates.setAttribute('id', 'logitem_label_candidates_'+item['_id']);
     div_candidates.setAttribute('class', 'logitem-label-candidates');
-    //load_candidate labels
-    logitem_load_candidates(div_candidates, item);
+    div_candidates.innerHTML = ele_candidate_labels.innerHTML;
 
     //Logitem label - useful
     var div_useful = document.createElement('div');
-    div_useful.setAttribute('id', 'logitem_useful_' + item['_id']); 
     div_useful.setAttribute('class', 'logitem-useful panel-footer');
     div_useful.setAttribute('useful', '');
     //Logitem label - useful - options
     var span_useful_true = document.createElement('span');
-    span_useful_true.setAttribute('id', 'logitem_useful_true_' + item['_id']); 
-    span_useful_true.setAttribute('class', 'label label-default logitem-useful-option');
+    span_useful_true.setAttribute('class', 'label label-default logitem-useful-option logitem-useful-yes');
     span_useful_true.innerHTML = 'USEFUL'
     var span_useful_false = document.createElement('span');
-    span_useful_false.setAttribute('id', 'logitem_useful_false_' + item['_id']); 
-    span_useful_false.setAttribute('class', 'label label-default logitem-useful-option');
+    span_useful_false.setAttribute('class', 'label label-default logitem-useful-option logitem-useful-no');
     span_useful_false.innerHTML = 'NOT USEFUL';
+
+    var div_modal = logitem_create_remove_modal();
+    div_item_content.appendChild(div_modal);
  
+    //Adding elements into the DOM 
+    div_item_content.appendChild(checkbox);
+    div_item_content.appendChild(icon); 
+    div_item_content.appendChild(text);
+    div_item_content.appendChild(time);
+    div_item.appendChild(div_item_content)
+    div_item_content.appendChild(remove);
+
+    div_chosen_label.appendChild(span_label_text);
+    div_chosen_label.appendChild(span_label_task);
+    div_item_label.appendChild(div_chosen_label);
+    div_item_label.appendChild(div_candidates);
+    div_item.appendChild(div_item_label);
+
+    var span_useful_text = document.createElement('span');
+    span_useful_text.setAttribute('class', 'logitem-useful-text');
+    span_useful_text.innerHTML = 'For what I was doing, I find this page ';
+    div_useful.appendChild(span_useful_text);
+    div_useful.appendChild(span_useful_true);
+    div_useful.appendChild(span_useful_false);
+    div_item.appendChild(div_useful);
+   
+    return div_item;
+}
+
+function assemble_logitem_elements(div_item_template, item){
+    var div_item = div_item_template.cloneNode(true);
+    //Set attribute of div_item
+    div_item.setAttribute('id', 'logitem_' + item['_id']);
+    div_item.setAttribute('event_type', item.event);
+    //Set attribute of div_item_content 
+    div_item.getElementsByClassName('logitem-content')[0].setAttribute('id', 'logitem_content_'+item['_id']);
+
+    div_item.getElementsByClassName('logitem-checkbox')[0].setAttribute('id', 'logitem_content_checkbox_' + item['_id']);
+    div_item.getElementsByClassName('logitem-time')[0].innerHTML = new Date(item.timestamp).toLocaleTimeString();
+
+    div_item.getElementsByClassName('logitem-remove')[0].setAttribute('data-target', '#modal_'+item['_id']);
+
+    div_item.getElementsByClassName('logitem-label')[0].setAttribute('id', 'logitem_label_' + item['_id']);
+    div_item.getElementsByClassName('logitem-label-chosen')[0].setAttribute('id', 'logitem_label_chosen_' + item['_id']);
+    div_item.getElementsByClassName('label-info')[0].setAttribute('id', 'logitem_label_chosen_taskname_'+item['_id']);
+    div_item.getElementsByClassName('logitem-label-candidates')[0].setAttribute('id', 'logitem_label_candidates_'+item['_id']);
+
+    div_item.getElementsByClassName('logitem-useful')[0].setAttribute('id', 'logitem_useful_' + item['_id']); 
+    div_item.getElementsByClassName('logitem-useful-yes')[0].setAttribute('id', 'logitem_useful_true_' + item['_id']); 
+    div_item.getElementsByClassName('logitem-useful-no')[0].setAttribute('id', 'logitem_useful_false_' + item['_id']); 
+ 
+    div_item.getElementsByClassName('modal')[0].setAttribute('id', 'modal_' + item['_id']); 
+    div_item.getElementsByClassName('remove-confirm')[0].setAttribute('id', 'remove_confirm_'+item['_id']);
+
+    var icon = '';
+    var content = '';
     //Depending on the type of item, and the annotation status, 
     //set properties and content of the log items 
     if (item.event == 'tab-search'){
         //Set icon type
-        icon.setAttribute('class', 'glyphicon glyphicon-search logitem-icon');
-        //Set logitem content
-        text.innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
+        div_item.getElementsByClassName('logitem-icon')[0].className += ' glyphicon glyphicon-search logitem-icon';
+       //Set logitem content
+        div_item.getElementsByClassName('logitem-title')[0].innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
+        icon = '<span class="glyphicon glyphicon-search"></span>';
+        content = '"' + decodeURI(item.details.query.replace('+', '')) + '"'; 
+ 
         //Set chosen label explaining text
-        span_label_text.innerHTML = 'I was <i>searching</i> for: ';
+        var ele_text = div_item.getElementsByClassName('label-text')[0]
+        ele_text.innerHTML = 'I was <i>searching</i> for: ';
+        var ele_chosen = div_item.getElementsByClassName('logitem-label-chosen')[0];
         if ('task' in item.annotation){
             //Set chosen task label
-            span_label_task.innerHTML = item.annotation.task.name;
+            ele_text.innerHTML = item.annotation.task.name;
             //Set values of chosen label
-            div_chosen_label.setAttribute('taskid', item.annotation.task.taskid);
-            div_chosen_label.setAttribute('taskname', item.annotation.task.name);
+            ele_chosen.setAttribute('taskid', item.annotation.task.taskid);
+            ele_chosen.setAttribute('taskname', item.annotation.task.name);
             //Set labeling done
-            div_item.setAttribute('class', 'panel panel-success')
+            div_item.setAttribute('class', 'panel panel-success');
         } 
-    }
-    else{
+        div_item.getElementsByClassName('logitem-useful')[0].className += ' hidden';
+   }
+   else{
         //Set icon type
-        icon.setAttribute('class', 'glyphicon glyphicon-globe logitem-icon');
+        div_item.getElementsByClassName('logitem-icon')[0].className += ' glyphicon glyphicon-globe logitem-icon';
         //Set logitem text
-        text.innerHTML = '<a href="'+item.url+'">' + item.details.current_tab.title + '</a>';
+        div_item.getElementsByClassName('logitem-title')[0].innerHTML = '<a href="'+item.url+'">' + item.details.current_tab.title + '</a>';
+        icon = '<span class="glyphicon glyphicon-globe"></span>';
+        content = item.details.current_tab.title;
+
         //Set chosen label explaining text
-        span_label_text.innerHTML = 'I was <i>browsing</i> for: ';
+        var ele_text = div_item.getElementsByClassName('label-text')[0];
+        ele_text.innerHTML = 'I was <i>browsing</i> for: ';
         //Set chosen label
         var task_done = true;
+        var ele_chosen = div_item.getElementsByClassName('logitem-label-chosen')[0];
         if ('task' in item.annotation){
             //Set chosen task label
-            span_label_task.innerHTML = item.annotation.task.name;
+            ele_chosen.innerHTML = item.annotation.task.name;
             //Set values of chosen label
-            div_chosen_label.setAttribute('taskid', item.annotation.task.taskid);
-            div_chosen_label.setAttribute('taskname', item.annotation.task.name);
+            ele_chosen.setAttribute('taskid', item.annotation.task.taskid);
+            ele_chosen.setAttribute('taskname', item.annotation.task.name);
             //Set labeling done
             //div_item.setAttribute('class', 'panel panel-success')
         } 
@@ -582,57 +642,50 @@ function create_logitem_element(item){
         //Set useful label
         if ('useful' in item.annotation){
             if (item.annotation.useful)
-                span_useful_true.setAttribute('class', 'label label-success logitem-useful-option');
+                div_item.getElementsByClassName('logitem-useful-yes')[0].setAttribute('class',
+                    'label label-success logitem-useful-option logitem-useful-yes');
             else
-                span_useful_false.setAttribute('class', 'label label-danger logitem-useful-option');
+                div_item.getElementsByClassName('logitem-useful-no')[0].setAttribute('class',
+                    'label label-danger logitem-useful-option logitem-useful-no');
             //set chosen useful label
-            div_useful.setAttribute('useful', item.annotation.useful);
+            div_item.getElementsByClassName('logitem-useful')[0].setAttribute('useful', item.annotation.useful);
         }
         else
             task_done = false;
         if(task_done)
-            div_item.setAttribute('class', 'panel panel-success');
+            div_item.setAttribute('class', 'panel panel-success'); 
     }
 
-
-    //Adding elements into the DOM 
-    div_item_content.appendChild(remove);
-    div_item_content.appendChild(div_modal);
-
-    div_item_content.appendChild(icon); 
-    div_item_content.appendChild(text);
-    div_item_content.appendChild(time);
-    div_item.appendChild(div_item_content)
-            
-    div_chosen_label.appendChild(span_label_text);
-    div_chosen_label.appendChild(span_label_task);
-
-    div_item_label.appendChild(div_chosen_label);
-    div_item_label.appendChild(div_candidates);
-
-    div_item.appendChild(div_item_label);
-    if (item.event == 'tab-loaded'){
-        var span_useful_text = document.createElement('span');
-        span_useful_text.setAttribute('class', 'logitem-useful-text');
-        span_useful_text.innerHTML = 'For what I was doing, I find this page ';
-        div_useful.appendChild(span_useful_text);
-        div_useful.appendChild(span_useful_true);
-        div_useful.appendChild(span_useful_false);
-        div_item.appendChild(div_useful);
-    }
+    var message = [
+    '<div class="alert alert-danger">',
+    '<h4><strong>Warning</strong> - removing item from log </h4>',
+    icon, content,
+    '</div>',
+    '<h5>Are you sure that you would like this item to be removed from your log?</h5>',
+    ]
+    div_item.getElementsByClassName('modal-body')[0].innerHTML = message.join('\n');
 
     return div_item;
 }
 
+/*
+function create_logitem_element(item, ele_candidate_labels){
+    time1 = new Date().getTime();
+    time2 = new Date().getTime();
+    console.log(time2 - time1)
+
+    return div_item;
+}
+*/
 //Show candidate tasks
-function logitem_load_candidates(div_candidates, item){
+function logitem_load_candidates(){
+    var div_candidates = document.createElement('div');
     //Sort labels by time 
     candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
     more_candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
 
     //option - show more
     var ele_more = document.createElement('span');
-    ele_more.setAttribute('id', 'logitem_label_candidate_more_' + item['_id']);
     ele_more.setAttribute('class', 'logitem-label-candidate-more');
     ele_more.innerHTML = 'Show more ...';
 
@@ -684,12 +737,12 @@ function logitem_load_candidates(div_candidates, item){
     }
     //option - show less
     var ele = document.createElement('span');
-    ele.setAttribute('id', 'logitem_label_candidate_less_' + item['_id']);
     ele.setAttribute('class', 'logitem-label-candidate-less more-candidate hidden');
     ele.innerHTML = 'Show less ...';
     div_candidates.appendChild(ele);
 
     //TODO: Create new label?
+    return div_candidates;
 }
 
 function logitem_create_candidate_label(taskid, taskname, parentname){
@@ -713,10 +766,9 @@ function logitem_create_candidate_label(taskid, taskname, parentname){
     return span_candidate;
 }
 
-function logitem_create_remove_modal(item){
+function logitem_create_remove_modal(){
     //Modal
     var div_modal = document.createElement('div');
-    div_modal.setAttribute('id', 'modal_' + item['_id']); 
     div_modal.setAttribute('class', 'modal');
     div_modal.setAttribute('role', 'dialog');
     div_modal.setAttribute('tabindex', '-1');
@@ -736,32 +788,14 @@ function logitem_create_remove_modal(item){
     btn_dismiss.setAttribute('aria-label', 'Close');
     btn_dismiss.innerHTML = '<span aria-hidden="true">&times;</span>'    
     div_modal_header.appendChild(btn_dismiss);
-    var div_title = document.createElement('h4');
-    div_title.setAttribute('class', 'modal-title');
-    div_modal_header.appendChild(div_title);
+    //var div_title = document.createElement('h4');
+    //div_title.setAttribute('class', 'modal-title');
+    //div_modal_header.appendChild(div_title);
 
     //Modal - body
     var div_modal_body = document.createElement('div');
     div_modal_body.setAttribute('class', 'modal-body');
-    var icon = '';
-    var content = '';
-    if (item.event == 'tab-search'){
-        icon = '<span class="glyphicon glyphicon-search"></span>';
-        content = '"' + decodeURI(item.details.query.replace('+', '')) + '"';
-    }
-    else{
-        icon = '<span class="glyphicon glyphicon-globe"></span>';
-        content = item.details.current_tab.title;
-    }
-    var message = [
-    '<div class="alert alert-danger">',
-    '<h4><strong>Warning</strong> - removing item from log </h4>',
-    icon, content,
-    '</div>',
-    '<h5>Are you sure that you would like this item to be removed from your log?</h5>',
-    ]
-    div_modal_body.innerHTML = message.join('\n');
-    //Modal - footer
+   //Modal - footer
     var div_modal_footer = document.createElement('div');
     div_modal_footer.setAttribute('class', 'modal-footer');
     //buttons
@@ -771,7 +805,7 @@ function logitem_create_remove_modal(item){
     btn_no.innerHTML = 'Cancel';
     var btn_yes = document.createElement('button');
     btn_yes.setAttribute('class', 'btn btn-primary remove-confirm');
-    btn_yes.setAttribute('id', 'remove_confirm_'+item['_id']);
+
     btn_yes.innerHTML = 'Yes';
     div_modal_footer.appendChild(btn_no);
     div_modal_footer.appendChild(btn_yes);
