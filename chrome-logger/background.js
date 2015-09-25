@@ -155,7 +155,11 @@ function savedata(logdata){
     // use tab-search for Web search users performed with google, bing, yahoo. 
     if (logdata['event'] == 'tab-search')
         logdata['to_annotate'] = true;
-    else if (logdata['event'] == 'tab-loaded' && !(logdata.url.substring(0, 6) === 'chrome')){
+    else if (logdata['event'] == 'tab-loaded' && 
+        !(logdata.url.substring(0, 6) === 'chrome') &&
+        !(logdata.url.substring(0, 9) === 'localhost') &&
+        !(logdata.url.substring(0, 14)) === 'tasklog.cs.ucl')
+    ){
         logdata['to_annotate'] = true;
     } 
 

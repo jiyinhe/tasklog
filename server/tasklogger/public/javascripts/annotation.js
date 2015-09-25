@@ -19,6 +19,13 @@ var candidate_tasks = [];
 // more candidate tasks are tasks that were done before the viewing date
 var more_candidate_tasks = [];
 
+//general labels
+var general_labels = [
+    {id: '001', 'label': 'Entertainment'},
+    {id: '002', 'label': 'Social networking'},
+    {id: '003', 'label': 'News update'}
+]; 
+
 $(document).ready(function(){
     //Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
@@ -441,19 +448,29 @@ function display_log(log){
     $('#div_logarea').html('');
 
     //make candidate labels
+    time1 = new Date().getTime()
     var labels = logitem_load_candidates();
-    var items = document.createDocumentFragment();
+    time2 = new Date().getTime()
+    console.log(time2 - time1)
+
 
     //make elements without setting IDs specific to an item
+    time1 = new Date().getTime()
     var div_item_template = create_logitem_elements(labels);
+    time2 = new Date().getTime()
+    console.log(time2 - time1)
 
+    time1 = new Date().getTime()
+    var items = document.createDocumentFragment();
     for (var i = 0; i<log.length; i++){
-//       var div_item = create_logitem_element(log[i], labels);
         var div_item = assemble_logitem_elements(div_item_template, log[i]);
         items.appendChild(div_item);
     }
+    time2 = new Date().getTime()
+    console.log(time2-time1)
+    console.log((time2-time1)/log.length)
     $('#div_logarea').append(items);
-   //Initialise tooltip
+    //Initialise tooltip
     $('[data-toggle="tooltip"]').tooltip();
 }
 
@@ -564,6 +581,8 @@ function create_logitem_elements(ele_candidate_labels){
 
 function assemble_logitem_elements(div_item_template, item){
     var div_item = div_item_template.cloneNode(true);
+
+    time1 = new Date().getTime()
     //Set attribute of div_item
     div_item.setAttribute('id', 'logitem_' + item['_id']);
     div_item.setAttribute('event_type', item.event);
@@ -665,6 +684,10 @@ function assemble_logitem_elements(div_item_template, item){
     ]
     div_item.getElementsByClassName('modal-body')[0].innerHTML = message.join('\n');
 
+    time2 = new Date().getTime()
+//    console.log(time2-time1)
+
+
     return div_item;
 }
 
@@ -680,6 +703,15 @@ function create_logitem_element(item, ele_candidate_labels){
 //Show candidate tasks
 function logitem_load_candidates(){
     var div_candidates = document.createElement('div');
+    //Load general labels
+    var list1 = document.createDocumentFragment();
+    for (var i = 0; i < general_labels.length; i++){
+        var ele_general = document.createElement('span');
+        ele_general.setAttribute('class', 'label label-warning logitem-label-candidate');
+        ele_general.setAttribute('id', 'logitem_label_candidate_' + general_labels[i].id);
+        ele_general.innerHTML = general_labels[i].label;
+        list1.appendChild(ele_general);
+    }
     //Sort labels by time 
     candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
     more_candidate_tasks.sort(function(a, b){return b.time_created - a.time_created});
@@ -701,20 +733,20 @@ function logitem_load_candidates(){
                 var ele = logitem_create_candidate_label(taskid, taskname, parentname);
                 if (i >= max_candidates)
                     ele.className += ' more-candidate hidden';
-                div_candidates.appendChild(ele);
+                list1.appendChild(ele);
             }
         }
         else{
             var ele = logitem_create_candidate_label(task['_id'], task.task, '');
             if (i >= max_candidates)
                 ele.className += ' more-candidate hidden';
-            div_candidates.appendChild(ele);
+            list1.appendChild(ele);
         }
         if (i == max_candidates)
-            div_candidates.appendChild(ele_more);
+            list1.appendChild(ele_more);
     }
     if (i <= max_candidates)
-        div_candidates.appendChild(ele_more);
+        list1.appendChild(ele_more);
 
     //low priority candidates
     for(var i = 0; i < more_candidate_tasks.length; i++){
@@ -726,22 +758,22 @@ function logitem_load_candidates(){
                 var parentname = task.task;
                 var ele = logitem_create_candidate_label(taskid, taskname, parentname);
                 ele.className += ' more-candidate hidden';
-                div_candidates.appendChild(ele);
+                list1.appendChild(ele);
             }
         }
         else{
             var ele = logitem_create_candidate_label(task['_id'], task.task, '');
             ele.className += 'more-candidate hidden';
-            div_candidates.appendChild(ele);
+            list1.appendChild(ele);
         }
     }
     //option - show less
     var ele = document.createElement('span');
     ele.setAttribute('class', 'logitem-label-candidate-less more-candidate hidden');
     ele.innerHTML = 'Show less ...';
-    div_candidates.appendChild(ele);
+    list1.appendChild(ele);
 
-    //TODO: Create new label?
+    div_candidates.appendChild(list1);
     return div_candidates;
 }
 
@@ -767,6 +799,7 @@ function logitem_create_candidate_label(taskid, taskname, parentname){
 }
 
 function logitem_create_remove_modal(){
+    var time1 = new Date().getTime();
     //Modal
     var div_modal = document.createElement('div');
     div_modal.setAttribute('class', 'modal');
@@ -815,6 +848,8 @@ function logitem_create_remove_modal(){
     div_modal_content.appendChild(div_modal_footer);
     div_modal_dialog.appendChild(div_modal_content);
     div_modal.appendChild(div_modal_dialog);
+    var time2  = new Date().getTime()
+    console.log(time2 - time1)
     return div_modal;
 }
 
