@@ -2,12 +2,16 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: modal element creation takes up long time
-//TODO: consider extra labels
+//TODO: consider extra labels in task dropdown
 //TODO: instruction
+//TODO: pagination or continuous loading
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
 var max_candidates = 5;
+
+var log_data = [];
+var batch_size = 200; 
 
 //Dates where logs are recorded and user progress
 var log_dates_progress = [];
@@ -436,7 +440,8 @@ function load_log(){
             );
         }
         else{
-           display_log(response.res);
+            log_data = response.res;
+            display_log(response.res);
         }
     });
 }
@@ -450,21 +455,18 @@ function display_log(log){
     //make candidate labels
     time1 = new Date().getTime()
     var labels = logitem_load_candidates();
-    time2 = new Date().getTime()
-    console.log(time2 - time1)
-
 
     //make elements without setting IDs specific to an item
-    time1 = new Date().getTime()
     var div_item_template = create_logitem_elements(labels);
-    time2 = new Date().getTime()
-    console.log(time2 - time1)
 
-    time1 = new Date().getTime()
     var items = document.createDocumentFragment();
-    for (var i = 0; i<log.length; i++){
+    var counts = batch_size > log.lengh ? log.length : batch_size;
+    console.log(log.length)
+    //Only load the first batch
+    for (var i = 0; i<batch_size; i++){
         var div_item = assemble_logitem_elements(div_item_template, log[i]);
         items.appendChild(div_item);
+       
     }
     time2 = new Date().getTime()
     console.log(time2-time1)
@@ -474,11 +476,15 @@ function display_log(log){
     $('[data-toggle="tooltip"]').tooltip();
 }
 
+//TODO: continuous loading
+function load_more(){
+}
 
 //For each item, the annotation property should have the
 //following structure:
 //{task: {taskid: xx, name: yy}, useful: true/false}
 function create_logitem_elements(ele_candidate_labels){
+    var elements = {};
     //Logitem area
     //Div item
     var div_item = document.createElement('div');
@@ -552,154 +558,191 @@ function create_logitem_elements(ele_candidate_labels){
     span_useful_false.innerHTML = 'NOT USEFUL';
 
     var div_modal = logitem_create_remove_modal();
-    div_item_content.appendChild(div_modal);
+
+//    div_item_content.appendChild(div_modal);
+    elements.div_modal = div_modal;
  
     //Adding elements into the DOM 
+    /*
     div_item_content.appendChild(checkbox);
     div_item_content.appendChild(icon); 
     div_item_content.appendChild(text);
     div_item_content.appendChild(time);
-    div_item.appendChild(div_item_content)
     div_item_content.appendChild(remove);
+    div_item_content.appendChild(div_modal);
+    div_item.appendChild(div_item_content)
 
     div_chosen_label.appendChild(span_label_text);
     div_chosen_label.appendChild(span_label_task);
     div_item_label.appendChild(div_chosen_label);
     div_item_label.appendChild(div_candidates);
     div_item.appendChild(div_item_label);
+    */
+    elements.checkbox = checkbox;
+    elements.icon = icon;
+    elements.text = text;
+    elements.time = time;
+    elements.div_item_content = div_item_content;
+    elements.remove = remove;
+    elements.span_label_text = span_label_text;
+    elements.span_label_task = span_label_task;
+    elements.div_chosen_label = div_chosen_label;
+    elements.div_candidates = div_candidates;
+    elements.div_item_label = div_item_label;
+
 
     var span_useful_text = document.createElement('span');
     span_useful_text.setAttribute('class', 'logitem-useful-text');
     span_useful_text.innerHTML = 'For what I was doing, I find this page ';
+
+    /*
     div_useful.appendChild(span_useful_text);
     div_useful.appendChild(span_useful_true);
     div_useful.appendChild(span_useful_false);
     div_item.appendChild(div_useful);
-   
-    return div_item;
+    */
+    elements.span_useful_text = span_useful_text;
+    elements.span_useful_true = span_useful_true;
+    elements.span_useful_false = span_useful_false;
+    elements.div_useful = div_useful;
+    elements.div_item = div_item;
+
+//    return div_item;
+    return elements;
 }
 
 function assemble_logitem_elements(div_item_template, item){
-    var div_item = div_item_template.cloneNode(true);
-
-    time1 = new Date().getTime()
+//    var div_item = div_item_template.cloneNode(true);
+    var elements = Object.create(div_item_template);
+    time1 = new Date().getTime();
     //Set attribute of div_item
+    var div_item = elements.div_item;
     div_item.setAttribute('id', 'logitem_' + item['_id']);
     div_item.setAttribute('event_type', item.event);
-    //Set attribute of div_item_content 
-    div_item.getElementsByClassName('logitem-content')[0].setAttribute('id', 'logitem_content_'+item['_id']);
 
-    div_item.getElementsByClassName('logitem-checkbox')[0].setAttribute('id', 'logitem_content_checkbox_' + item['_id']);
-    div_item.getElementsByClassName('logitem-time')[0].innerHTML = new Date(item.timestamp).toLocaleTimeString();
-
-    div_item.getElementsByClassName('logitem-remove')[0].setAttribute('data-target', '#modal_'+item['_id']);
-
-    div_item.getElementsByClassName('logitem-label')[0].setAttribute('id', 'logitem_label_' + item['_id']);
-    div_item.getElementsByClassName('logitem-label-chosen')[0].setAttribute('id', 'logitem_label_chosen_' + item['_id']);
-    div_item.getElementsByClassName('label-info')[0].setAttribute('id', 'logitem_label_chosen_taskname_'+item['_id']);
-    div_item.getElementsByClassName('logitem-label-candidates')[0].setAttribute('id', 'logitem_label_candidates_'+item['_id']);
-
-    div_item.getElementsByClassName('logitem-useful')[0].setAttribute('id', 'logitem_useful_' + item['_id']); 
-    div_item.getElementsByClassName('logitem-useful-yes')[0].setAttribute('id', 'logitem_useful_true_' + item['_id']); 
-    div_item.getElementsByClassName('logitem-useful-no')[0].setAttribute('id', 'logitem_useful_false_' + item['_id']); 
- 
-    div_item.getElementsByClassName('modal')[0].setAttribute('id', 'modal_' + item['_id']); 
-    div_item.getElementsByClassName('remove-confirm')[0].setAttribute('id', 'remove_confirm_'+item['_id']);
-
-    var icon = '';
-    var content = '';
-    //Depending on the type of item, and the annotation status, 
-    //set properties and content of the log items 
-    if (item.event == 'tab-search'){
-        //Set icon type
-        div_item.getElementsByClassName('logitem-icon')[0].className += ' glyphicon glyphicon-search logitem-icon';
-       //Set logitem content
-        div_item.getElementsByClassName('logitem-title')[0].innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
-        icon = '<span class="glyphicon glyphicon-search"></span>';
-        content = '"' + decodeURI(item.details.query.replace('+', '')) + '"'; 
- 
-        //Set chosen label explaining text
-        var ele_text = div_item.getElementsByClassName('label-text')[0]
-        ele_text.innerHTML = 'I was <i>searching</i> for: ';
-        var ele_chosen = div_item.getElementsByClassName('logitem-label-chosen')[0];
-        if ('task' in item.annotation){
-            //Set chosen task label
-            ele_text.innerHTML = item.annotation.task.name;
-            //Set values of chosen label
-            ele_chosen.setAttribute('taskid', item.annotation.task.taskid);
-            ele_chosen.setAttribute('taskname', item.annotation.task.name);
-            //Set labeling done
-            div_item.setAttribute('class', 'panel panel-success');
-        } 
-        div_item.getElementsByClassName('logitem-useful')[0].className += ' hidden';
-   }
-   else{
-        //Set icon type
-        div_item.getElementsByClassName('logitem-icon')[0].className += ' glyphicon glyphicon-globe logitem-icon';
-        //Set logitem text
-        div_item.getElementsByClassName('logitem-title')[0].innerHTML = '<a href="'+item.url+'">' + item.details.current_tab.title + '</a>';
-        icon = '<span class="glyphicon glyphicon-globe"></span>';
-        content = item.details.current_tab.title;
-
-        //Set chosen label explaining text
-        var ele_text = div_item.getElementsByClassName('label-text')[0];
-        ele_text.innerHTML = 'I was <i>browsing</i> for: ';
-        //Set chosen label
-        var task_done = true;
-        var ele_chosen = div_item.getElementsByClassName('logitem-label-chosen')[0];
-        if ('task' in item.annotation){
-            //Set chosen task label
-            ele_chosen.innerHTML = item.annotation.task.name;
-            //Set values of chosen label
-            ele_chosen.setAttribute('taskid', item.annotation.task.taskid);
-            ele_chosen.setAttribute('taskname', item.annotation.task.name);
-            //Set labeling done
-            //div_item.setAttribute('class', 'panel panel-success')
-        } 
-        else
-            task_done = false;
-        //Set useful label
-        if ('useful' in item.annotation){
-            if (item.annotation.useful)
-                div_item.getElementsByClassName('logitem-useful-yes')[0].setAttribute('class',
-                    'label label-success logitem-useful-option logitem-useful-yes');
-            else
-                div_item.getElementsByClassName('logitem-useful-no')[0].setAttribute('class',
-                    'label label-danger logitem-useful-option logitem-useful-no');
-            //set chosen useful label
-            div_item.getElementsByClassName('logitem-useful')[0].setAttribute('useful', item.annotation.useful);
-        }
-        else
-            task_done = false;
-        if(task_done)
-            div_item.setAttribute('class', 'panel panel-success'); 
-    }
-
-    var message = [
-    '<div class="alert alert-danger">',
-    '<h4><strong>Warning</strong> - removing item from log </h4>',
-    icon, content,
-    '</div>',
-    '<h5>Are you sure that you would like this item to be removed from your log?</h5>',
-    ]
-    div_item.getElementsByClassName('modal-body')[0].innerHTML = message.join('\n');
+//    //Set attribute of div_item_content 
+//    div_item.getElementsByClassName('logitem-content')[0].setAttribute('id', 'logitem_content_'+item['_id']);
+//
+//    div_item.getElementsByClassName('logitem-checkbox')[0].setAttribute('id', 'logitem_content_checkbox_' + item['_id']);
+//    div_item.getElementsByClassName('logitem-time')[0].innerHTML = new Date(item.timestamp).toLocaleTimeString();
+//
+//    div_item.getElementsByClassName('logitem-remove')[0].setAttribute('data-target', '#modal_'+item['_id']);
+//
+//    div_item.getElementsByClassName('logitem-label')[0].setAttribute('id', 'logitem_label_' + item['_id']);
+//    div_item.getElementsByClassName('logitem-label-chosen')[0].setAttribute('id', 'logitem_label_chosen_' + item['_id']);
+//    div_item.getElementsByClassName('label-info')[0].setAttribute('id', 'logitem_label_chosen_taskname_'+item['_id']);
+//    div_item.getElementsByClassName('logitem-label-candidates')[0].setAttribute('id', 'logitem_label_candidates_'+item['_id']);
+//
+//    div_item.getElementsByClassName('logitem-useful')[0].setAttribute('id', 'logitem_useful_' + item['_id']); 
+//    div_item.getElementsByClassName('logitem-useful-yes')[0].setAttribute('id', 'logitem_useful_true_' + item['_id']); 
+//    div_item.getElementsByClassName('logitem-useful-no')[0].setAttribute('id', 'logitem_useful_false_' + item['_id']); 
+// 
+//    div_item.getElementsByClassName('modal')[0].setAttribute('id', 'modal_' + item['_id']); 
+//    div_item.getElementsByClassName('remove-confirm')[0].setAttribute('id', 'remove_confirm_'+item['_id']);
+//
+//    var icon = '';
+//    var content = '';
+//    //Depending on the type of item, and the annotation status, 
+//    //set properties and content of the log items 
+//    if (item.event == 'tab-search'){
+//        //Set icon type
+//        div_item.getElementsByClassName('logitem-icon')[0].className += ' glyphicon glyphicon-search logitem-icon';
+//       //Set logitem content
+//        div_item.getElementsByClassName('logitem-title')[0].innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
+//        icon = '<span class="glyphicon glyphicon-search"></span>';
+//        content = '"' + decodeURI(item.details.query.replace('+', '')) + '"'; 
+// 
+//        //Set chosen label explaining text
+//        var ele_text = div_item.getElementsByClassName('label-text')[0]
+//        ele_text.innerHTML = 'I was <i>searching</i> for: ';
+//        var ele_chosen = div_item.getElementsByClassName('logitem-label-chosen')[0];
+//        if ('task' in item.annotation){
+//            //Set chosen task label
+//            ele_text.innerHTML = item.annotation.task.name;
+//            //Set values of chosen label
+//            ele_chosen.setAttribute('taskid', item.annotation.task.taskid);
+//            ele_chosen.setAttribute('taskname', item.annotation.task.name);
+//            //Set labeling done
+//            div_item.setAttribute('class', 'panel panel-success');
+//        } 
+//        div_item.getElementsByClassName('logitem-useful')[0].className += ' hidden';
+//   }
+//   else{
+//        //Set icon type
+//        div_item.getElementsByClassName('logitem-icon')[0].className += ' glyphicon glyphicon-globe logitem-icon';
+//        //Set logitem text
+//        div_item.getElementsByClassName('logitem-title')[0].innerHTML = '<a href="'+item.url+'">' + item.details.current_tab.title + '</a>';
+//        icon = '<span class="glyphicon glyphicon-globe"></span>';
+//        content = item.details.current_tab.title;
+//
+//        //Set chosen label explaining text
+//        var ele_text = div_item.getElementsByClassName('label-text')[0];
+//        ele_text.innerHTML = 'I was <i>browsing</i> for: ';
+//        //Set chosen label
+//        var task_done = true;
+//        var ele_chosen = div_item.getElementsByClassName('label-info')[0];
+//        if ('task' in item.annotation){
+//            //Set chosen task label
+//            ele_chosen.innerHTML = item.annotation.task.name;
+//            //Set values of chosen label
+//            ele_chosen.setAttribute('taskid', item.annotation.task.taskid);
+//            ele_chosen.setAttribute('taskname', item.annotation.task.name);
+//            //Set labeling done
+//            //div_item.setAttribute('class', 'panel panel-success')
+//        } 
+//        else
+//            task_done = false;
+//        //Set useful label
+//        if ('useful' in item.annotation){
+//            if (item.annotation.useful)
+//                div_item.getElementsByClassName('logitem-useful-yes')[0].setAttribute('class',
+//                    'label label-success logitem-useful-option logitem-useful-yes');
+//            else
+//                div_item.getElementsByClassName('logitem-useful-no')[0].setAttribute('class',
+//                    'label label-danger logitem-useful-option logitem-useful-no');
+//            //set chosen useful label
+//            div_item.getElementsByClassName('logitem-useful')[0].setAttribute('useful', item.annotation.useful);
+//        }
+//        else
+//            task_done = false;
+//        if(task_done)
+//            div_item.setAttribute('class', 'panel panel-success'); 
+//    }
+//
+//    var message = [
+//    '<div class="alert alert-danger">',
+//    '<h4><strong>Warning</strong> - removing item from log </h4>',
+//    icon, content,
+//    '</div>',
+//    '<h5>Are you sure that you would like this item to be removed from your log?</h5>',
+//    ]
+//    div_item.getElementsByClassName('modal-body')[0].innerHTML = message.join('\n');
 
     time2 = new Date().getTime()
-//    console.log(time2-time1)
+    console.log(time2-time1)
 
+    elements.div_item_content.appendChild(elements.checkbox);
+    elements.div_item_content.appendChild(elements.icon); 
+    elements.div_item_content.appendChild(elements.text);
+    elements.div_item_content.appendChild(elements.time);
+    elements.div_item_content.appendChild(elements.remove);
+    elements.div_item_content.appendChild(elements.div_modal);
+    div_item.appendChild(elements.div_item_content)
 
+    elements.div_chosen_label.appendChild(elements.span_label_text);
+    elements.div_chosen_label.appendChild(elements.span_label_task);
+    elements.div_item_label.appendChild(elements.div_chosen_label);
+    elements.div_item_label.appendChild(elements.div_candidates);
+    div_item.appendChild(elements.div_item_label);
+
+    elements.div_useful.appendChild(elements.span_useful_text);
+    elements.div_useful.appendChild(elements.span_useful_true);
+    elements.div_useful.appendChild(elements.span_useful_false);
+    div_item.appendChild(elements.div_useful);
+ 
     return div_item;
 }
 
-/*
-function create_logitem_element(item, ele_candidate_labels){
-    time1 = new Date().getTime();
-    time2 = new Date().getTime();
-    console.log(time2 - time1)
-
-    return div_item;
-}
-*/
 //Show candidate tasks
 function logitem_load_candidates(){
     var div_candidates = document.createElement('div');

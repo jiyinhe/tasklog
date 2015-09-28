@@ -156,13 +156,13 @@ function savedata(logdata){
     if (logdata['event'] == 'tab-search')
         logdata['to_annotate'] = true;
     else if (logdata['event'] == 'tab-loaded' && 
-        !(logdata.url.substring(0, 6) === 'chrome') &&
-        !(logdata.url.substring(0, 9) === 'localhost') &&
-        !(logdata.url.substring(0, 14)) === 'tasklog.cs.ucl')
-    ){
+        !(logdata.url.substring(0, 6) === 'chrome' || 
+        logdata.url.substring(0, 16) === 'http://localhost' || 
+        logdata.url.substring(0, 21) === 'http://tasklog.cs.ucl'))
+    {
         logdata['to_annotate'] = true;
     } 
-
+ 
     //check if storage is empty
     chrome.storage.sync.get('logdata', function(item){
         var stored_log = []
@@ -180,7 +180,7 @@ function savedata(logdata){
                     stored_log[i]['userid'] = user_id;
             }
         }
-        console.log(stored_log);
+        //console.log(stored_log);
         //if userid is not set, send notification
         if (user_id == ''){
             //store it in storage
