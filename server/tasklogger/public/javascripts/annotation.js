@@ -480,10 +480,9 @@ function load_more()
     var shown = $('#div_logarea').find('.panel').length;
     var tot = log_data.length;
     if (shown < tot){
-
         var counts = tot;
         if (shown + batch_size < tot)
-            counts = shown + size;    
+            counts = shown + batch_size;
         //Load more results
         var items = document.createDocumentFragment();
         for(var i = shown; i < counts; i++){
