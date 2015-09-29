@@ -1,16 +1,17 @@
 /* ====================
    Dependancy: tasks.js
  ===================== */
-//TODO: consider extra labels in task dropdown
 //TODO: instruction
 //TODO: pagination or continuous loading
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
 var max_candidates = 5;
+var div_item_template = {};
 
+ 
 var log_data = [];
-var batch_size = 50; 
+var batch_size = 10; 
 
 //Dates where logs are recorded and user progress
 var log_dates_progress = [];
@@ -183,6 +184,10 @@ $(document).ready(function(){
         $(this).addClass('hidden'); 
         $(this).parent().find('.logitem-label-candidate-more').removeClass('hidden');
     });
+
+
+    //Bind scroll for load more
+    $(window).scroll(bindScroll);
 
 });
 
@@ -448,7 +453,7 @@ function display_log(log){
     var labels = logitem_load_candidates();
 
     //make elements without setting IDs specific to an item
-    var div_item_template = create_logitem_elements(labels);
+    div_item_template = create_logitem_elements(labels);
 
     var items = document.createDocumentFragment();
     var counts = batch_size;
@@ -468,8 +473,35 @@ function display_log(log){
     $('[data-toggle="tooltip"]').tooltip();
 }
 
-//TODO: continuous loading
-function load_more(){
+//Continuous loading
+function load_more()
+{
+    //Chcek how many results are loaded 
+    var shown = $('#div_logarea').find('.panel').length;
+    var tot = log_data.length;
+    if (shown < tot){
+
+        var counts = tot;
+        if (shown + batch_size < tot)
+            counts = shown + size;    
+        //Load more results
+        var items = document.createDocumentFragment();
+        for(var i = shown; i < counts; i++){
+            var div_item = assemble_logitem_elements(div_item_template, log_data[i]);
+            items.appendChild(div_item);
+        }
+        $('#div_logarea').append(items);
+        //Initialise tooltip
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+    $(window).bind('scroll', bindScroll);
+}
+
+function bindScroll(){
+   if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+       $(window).unbind('scroll');
+       load_more();
+   }
 }
 
 //For each item, the annotation property should have the
