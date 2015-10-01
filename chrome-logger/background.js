@@ -27,6 +27,7 @@ var device = "chrome";
 var domain = 'http://localhost:3000';
 //var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
+var serp_storage_url = domain + '/saveserp';
 var check_userid_url = domain + '/users/checkid';
 
 /* Functions communicating with Popup */
@@ -162,7 +163,30 @@ function savedata(logdata){
     {
         logdata['to_annotate'] = true;
     } 
- 
+    //If a SERP loaded, send message to content.js
+    if (logdata['event'] == 'tab-loaded'){
+        var se =  check_searchEngine(logdata['url']);
+        if(se.search){
+            var tabid = logdata.details.current_tab.id;
+            chrome.tabs.sendMessage(tabid, {msg: 'serp loaded', 'se': se.se},
+                function(response) {
+                    var newwindow = window.open();
+                    newwindow.document.write('<html>' + response.serp + '</html>')
+                    //save serp
+                    if (response!=undefined){
+                        var serpdata = {
+                            'serp': response.serp,
+                            'url': logdata.url,
+                            'timestamp': logdata.timestamp,
+                            'userid': logdata.userid
+                        }
+        //                console.log(serpdata)
+                        save_serp(serpdata);
+                    }
+                });  
+        }
+    }
+
     //check if storage is empty
     chrome.storage.sync.get('logdata', function(item){
         var stored_log = []
@@ -180,7 +204,7 @@ function savedata(logdata){
                     stored_log[i]['userid'] = user_id;
             }
         }
-        //console.log(stored_log);
+        console.log('savedata', stored_log);
         //if userid is not set, send notification
         if (user_id == ''){
             //store it in storage
@@ -217,6 +241,67 @@ function savedata(logdata){
             });
         }
     });
+}
+
+//Save SERP content
+function save_serp(serpdata){
+    //check if storage is empty
+    chrome.storage.sync.get('serpdata', function(item){
+        console.log(item)
+        var stored_log = []
+        if (item['serpdata'] === undefined){
+            //nothing in storage
+            stored_log = [serpdata];
+        }
+        else{
+            //something already in storage
+            stored_log = item['serpdata'];
+            stored_log.push(serpdata);
+            // check if the delay of storing in DB is due to userid issue
+            for (var i = 0; i < stored_log.length; i++){
+                if ((user_id != '') && (stored_log[i]['userid'] == ''))
+                    stored_log[i]['userid'] = user_id;
+            }
+        }
+        console.log(stored_log);
+        //if userid is not set, send notification
+        if (user_id == ''){
+            //store it in storage
+            chrome.storage.sync.set({'serpdata': stored_log})
+
+            chrome.notifications.create(
+                "userid",
+                {
+                    "type": "basic",
+                    "iconUrl": "icons/icon_38.png",
+                    "title": "WARNING: UserID is not set",
+                    "message": "Please set your unique userID for chrome logger",
+                    "priority": 2,
+                });
+        }
+        else{
+            //otherwise try to store it in db
+            $.ajax({
+                type: "POST",
+                url: serp_storage_url,
+                data: {"data": JSON.stringify(stored_log)},
+                dataType: "json",
+                success: function(response){
+                    console.log(response)
+                    if (response.err){
+                        //error occured, log stay in storage
+                        chrome.storage.sync.set({'serpdata': stored_log})
+                        console.log(response.emsg);
+                    }
+                    else{
+                        //success, clear storage for logdata
+                        chrome.storage.sync.remove('serpdata');
+                    }
+                }
+            });
+        }
+    });
+
 }
 
 // When a new tab is open, record.
@@ -419,22 +504,33 @@ function check_searchEngine(url){
     var query = ''
     var se = ''
     var search = false
+    var start = 0;
     if (google_reg.test(url)){
         query = url.split('q=')[1].split('&')[0];
         se = 'google'
         search = true
+        tmp = url.split('start=');
+        if (tmp.length > 1)
+            start = parseInt(tmp[1].split('&')[0]);
     }
     else if (yahoo_reg.test(url)){
         query = url.split('p=')[1].split('&')[0];
         se = 'yahoo'
         search = true
+        tmp = url.split('from=')
+        if (tmp.length > 1)
+            start = parseInt(tmp[1].split('&')[0]);
     }
     else if (bing_reg.test(url)){
         query = url.split('q=')[1].split('&')[0];
         se = 'bing'
         search = true
+        tmp = url.split('b=')
+        if (tmp.length > 1)
+            start = parseInt(tmp[1].split('&')[0]);
     }
-    return {'se': se, 'query': query, 'search': search}
+    console.log('startpage', start)
+    return {'se': se, 'query': query, 'search': search, 'start_count': start}
 }
 
 /* ======== user navigation requests ========*/

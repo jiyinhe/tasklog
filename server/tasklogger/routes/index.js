@@ -47,6 +47,11 @@ router.get('/logpeek', function(req, res, next){
         res.render('logpeek', {"title": "Logview", "docs": []});
 });
 
+/* save serp */
+router.post('/saveserp', function(req, res){
+    console.log(req.body);
+    res.send({'err': false});
+});
 
 /* process data posting request from chrome */
 router.post('/savedata', function(req, res){
@@ -135,6 +140,7 @@ function format_records(docs){
                     'newTabTitle': docs[i].details.new_tab.title,
                     'newTabURL': docs[i].details.new_tab.url,
                 });
+
         }
         else if (docs[i]['event'].indexOf('navigation')>-1){
             d['url'] = docs[i].details.url;

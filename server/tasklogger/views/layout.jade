@@ -26,12 +26,14 @@ html
                     //    a(href="/users/account") Manage my information
 
                     li(class=instructionclass)
-                        a(href="/users/instructions") Instructions
+                        a(href="/users/instructions") Information & Instructions
 
+
+                - if (typeof(user) !== 'undefined'){
                 ul(class="nav navbar-nav navbar-right")
                     li
                         a=user.name + " ( " + user.userid + " )"
-
+                -}
             block navbar-extension
 
     block content

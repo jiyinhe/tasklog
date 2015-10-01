@@ -55,3 +55,19 @@ $(document).on('click', 'a', function(){
         'timestamp': ts
     });
 })
+
+chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+    if (msg.msg == 'serp loaded'){
+        var res = ''
+        if (msg.se == 'google'){
+            res = document.getElementById('ires').innerHTML;
+        }
+        else if (msg.se == 'bing'){
+            res = document.getElementById('b_results').innerHTML;
+        }
+        else if (msg.se == 'yahoo'){
+            res = document.getElementById('results').innerHTML;
+        }
+        sendResponse({'serp': res});
+    }
+});
