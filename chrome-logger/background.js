@@ -24,8 +24,8 @@ For following activities are recorded:
 ===================================*/ 
 var device = "chrome";
 // TODO: set the url of the server
-var domain = 'http://localhost:3000';
-//var domain = 'http://tasklog.cs.ucl.ac.uk';
+//var domain = 'http://localhost:3000';
+var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
 var serp_storage_url = domain + '/saveserp';
 var check_userid_url = domain + '/users/checkid';
@@ -166,12 +166,13 @@ function savedata(logdata){
     //If a SERP loaded, send message to content.js
     if (logdata['event'] == 'tab-loaded'){
         var se =  check_searchEngine(logdata['url']);
-        console.log(se)
+        //console.log(se)
         if(se.search){
             var tabid = logdata.affected_tab_id;
-            chrome.tabs.sendMessage(tabid, {msg: 'serp loaded', 'se': se.se, 'start': se.start_count, 'media': se.media},
+            chrome.tabs.sendMessage(tabid, {msg: 'serp loaded', 'se': se.se, 
+                'start': se.start_count, 'media': se.media},
                 function(response) {
-                    console.log(response)   
+                    //console.log(response)   
                     //var serp = pako.inflate(response.serp, {'to': 'string'})
                     var serp = response.serp
                     var newwindow = window.open();

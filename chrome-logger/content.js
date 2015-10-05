@@ -100,9 +100,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
                         //check for content length
                         var serp = res.innerHTML;
                         compress = pako.deflate(serp, {'to': 'string'})
-                        console.log(compress.length/1024)
                         //check size
                         if (compress.length/1024 > 500){
+                            console.log(compress.length/1024)
                             //limit the number of results
                             if (msg.se == 'google'){
                                 if (msg.media == 'images'){
@@ -133,7 +133,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
                                 }
                             }
                         }
-                        console.log(compress.length/1024)
                         sendResponse({'serp': compress});
                     }
                     else
