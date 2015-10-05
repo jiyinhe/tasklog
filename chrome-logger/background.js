@@ -24,8 +24,8 @@ For following activities are recorded:
 ===================================*/ 
 var device = "chrome";
 // TODO: set the url of the server
-//var domain = 'http://localhost:3000';
-var domain = 'http://tasklog.cs.ucl.ac.uk';
+var domain = 'http://localhost:3000';
+//var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
 var serp_storage_url = domain + '/saveserp';
 var check_userid_url = domain + '/users/checkid';
@@ -174,16 +174,19 @@ function savedata(logdata){
                 function(response) {
                     //console.log(response)   
                     //var serp = pako.inflate(response.serp, {'to': 'string'})
-                    var serp = response.serp
-                    var newwindow = window.open();
-                    newwindow.document.write('<html>' + pako.inflate(serp, {'to': 'string'}) + '</html>')
+                    //var serp = response.serp
+                    //var newwindow = window.open();
+                    //newwindow.document.write('<html>' + pako.inflate(serp, {'to': 'string'}) + '</html>')
                     //save serp
                     if (response!=undefined){
                         var serpdata = {
                             'serp': response.serp,
                             'url': logdata.url,
                             'timestamp': logdata.timestamp,
-                            'userid': logdata.userid
+                            'userid': logdata.userid,
+                            'engine': se.se,
+                            'start': se.start_count,
+                            'media': se.media
                         }
                         save_serp(serpdata);
                     }

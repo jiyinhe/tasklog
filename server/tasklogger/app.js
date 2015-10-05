@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session)
 var flash = require('connect-flash')
+var pako = require('pako')
 
 //Add variables for db connection
 var dbname = "db_tasklog";

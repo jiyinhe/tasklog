@@ -1,4 +1,5 @@
 var express = require('express');
+var pako = require('pako');
 var router = express.Router();
 
 /* GET home page. */
@@ -49,8 +50,27 @@ router.get('/logpeek', function(req, res, next){
 
 /* save serp */
 router.post('/saveserp', function(req, res){
-    console.log(req.body);
-    res.send({'err': false});
+    var db = req.db;
+    var data = JSON.parse(req.body.data);
+    for(var i = 0; i<data.length; i++){
+        data[i].serp = pako.inflate(data[i].serp, {'to': 'string'});
+        data[i]['timestamp_bson'] = new Date(data[i]['timestamp']);
+    }
+
+    collection = db.get('log_serp');
+
+    //store the entry to db
+    collection.col.insert(data, function(err, doc){
+        if (err){
+            res.send({
+                "error": true,
+                "emsg": "error occurred when inserting record",
+            });
+            console.log(err);
+        }
+        else
+            res.send({"error": false});
+    });
 });
 
 /* process data posting request from chrome */
@@ -58,7 +78,7 @@ router.post('/savedata', function(req, res){
     // get db connection
     var db = req.db;
     var data = JSON.parse(req.body.data);
-    
+ 
     // TODO: test this in deployment
     var IP = req.ip;
 

@@ -92,7 +92,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
                 //Check every 500 ms
                 var wait_load = setInterval(function(){
                     res = document.getElementById(ele)
-                    console.log(res)
+                    //console.log(res)
                     done = (html == res.innerHTML);
                     if (done){
                         //stop interval, send response
@@ -102,7 +102,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
                         compress = pako.deflate(serp, {'to': 'string'})
                         //check size
                         if (compress.length/1024 > 500){
-                            console.log(compress.length/1024)
                             //limit the number of results
                             if (msg.se == 'google'){
                                 if (msg.media == 'images'){
@@ -133,6 +132,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
                                 }
                             }
                         }
+                        console.log(compress.length/1024);
                         sendResponse({'serp': compress});
                     }
                     else
