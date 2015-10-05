@@ -14,13 +14,13 @@
 
     "background": {
         "persistent": true,
-        "scripts": ["external/jquery-1.11.3.min.js", "background.js" ]
+        "scripts": ["external/jquery-1.11.3.min.js", "external/pako.min.js", "background.js" ]
     },
 
     "content_scripts": [
         {
         "matches": ["<all_urls>"],
-        "js": ["external/jquery-1.11.3.min.js", "content.js"]
+        "js": ["external/jquery-1.11.3.min.js", "external/pako.min.js", "content.js"]
         }
     ],
 

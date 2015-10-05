@@ -102,6 +102,8 @@ function format_records(docs){
             d['details'] = JSON.stringify({ 
                 'query': docs[i].details.query,
                 'engine': docs[i].details.engine,
+                'start': docs[i].details.start,
+                'media': docs[i].details.media,
             });
             d['url'] =  docs[i].details.current_tab.url;
             d['title'] =  docs[i].details.current_tab.title;

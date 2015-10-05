@@ -142,13 +142,13 @@ chrome.tabs.query({'active': true}, function(tabs){
 
 //function for send post request to store data
 function savedata(logdata){
+    //console.log(logdata.event)
     logdata['userid'] = user_id;
     logdata['device'] = device;
     logdata['annotation'] = {};
     logdata['to_annotate'] = false; 
     logdata['removed'] = false;
     //Create toy data for testing
-    //console.log(logdata.url.substring(0, 6))
     //logdata['timestamp'] = logdata['timestamp'] - 60*1000*60*24
 
     // We only ask for a few events to be annotated
@@ -166,12 +166,16 @@ function savedata(logdata){
     //If a SERP loaded, send message to content.js
     if (logdata['event'] == 'tab-loaded'){
         var se =  check_searchEngine(logdata['url']);
+        console.log(se)
         if(se.search){
-            var tabid = logdata.details.current_tab.id;
-            chrome.tabs.sendMessage(tabid, {msg: 'serp loaded', 'se': se.se},
+            var tabid = logdata.affected_tab_id;
+            chrome.tabs.sendMessage(tabid, {msg: 'serp loaded', 'se': se.se, 'start': se.start_count, 'media': se.media},
                 function(response) {
+                    console.log(response)   
+                    //var serp = pako.inflate(response.serp, {'to': 'string'})
+                    var serp = response.serp
                     var newwindow = window.open();
-                    newwindow.document.write('<html>' + response.serp + '</html>')
+                    newwindow.document.write('<html>' + pako.inflate(serp, {'to': 'string'}) + '</html>')
                     //save serp
                     if (response!=undefined){
                         var serpdata = {
@@ -180,7 +184,6 @@ function savedata(logdata){
                             'timestamp': logdata.timestamp,
                             'userid': logdata.userid
                         }
-        //                console.log(serpdata)
                         save_serp(serpdata);
                     }
                 });  
@@ -204,7 +207,6 @@ function savedata(logdata){
                     stored_log[i]['userid'] = user_id;
             }
         }
-        console.log('savedata', stored_log);
         //if userid is not set, send notification
         if (user_id == ''){
             //store it in storage
@@ -247,7 +249,6 @@ function savedata(logdata){
 function save_serp(serpdata){
     //check if storage is empty
     chrome.storage.sync.get('serpdata', function(item){
-        console.log(item)
         var stored_log = []
         if (item['serpdata'] === undefined){
             //nothing in storage
@@ -263,8 +264,8 @@ function save_serp(serpdata){
                     stored_log[i]['userid'] = user_id;
             }
         }
-        console.log(stored_log);
         //if userid is not set, send notification
+        //console.log(stored_log);
         if (user_id == ''){
             //store it in storage
             chrome.storage.sync.set({'serpdata': stored_log})
@@ -479,6 +480,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
         if (e == 'tab-search'){
                 details['query'] = search_check['query'];
                 details['engine'] = search_check['se'];
+                details['start'] = search_check['start_count'];
+                details['media'] = search_check['media'];
         }
 
         var log = {'event': e, 'timestamp': ts,
@@ -501,36 +504,88 @@ function check_searchEngine(url){
     var yahoo_reg = /.+?\.search\.yahoo\..+?p=.+/
     var bing_reg = /.+?\.bing\..+?q=.+/ 
 
-    var query = ''
-    var se = ''
-    var search = false
+//    test = 'https://www.google.co.uk/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=UK+visa'
+//    console.log(test.match(google_reg))
+
+    var query = '';
+    var se = '';
+    var search = false;
     var start = 0;
+    var media = 'web';
     if (google_reg.test(url)){
         query = url.split('q=')[1].split('&')[0];
         se = 'google'
         search = true
         tmp = url.split('start=');
+        reg_tbm = /tbm=.+?(&|$)/g
         if (tmp.length > 1)
             start = parseInt(tmp[1].split('&')[0]);
-    }
+        tbms = url.match(reg_tbm);
+        //console.log(tbms)
+        if (tbms!=null){
+            mediatype = tbms[tbms.length-1].split('=')[1].split('&')[0];
+            console.log(mediatype)
+            if (mediatype == 'isch')
+                media = 'images';
+            else if (mediatype == 'nws')
+                media = 'news';
+            else if (mediatype == 'vid')
+                media = 'videos';
+            else if (mediatype == 'shop')
+                media = 'shopping';
+            else if (mediatype == 'bks')
+                media = 'books';
+            else if (mediatype == 'app')
+                media = 'apps';
+        }
+        else if (url.indexOf('/flights/')>-1)
+            media = 'flights';
+        else if (url.indexOf('/maps/') > -1 || url.indexOf('/maps?')>-1)
+            media = 'maps';
+   }
     else if (yahoo_reg.test(url)){
         query = url.split('p=')[1].split('&')[0];
-        se = 'yahoo'
-        search = true
-        tmp = url.split('from=')
+        se = 'yahoo';
+        search = true;
+        tmp = url.split('from=');
         if (tmp.length > 1)
             start = parseInt(tmp[1].split('&')[0]);
+        if (url.indexOf('images.search') > -1)
+            media = 'images';
+        else if (url.indexOf('video.search') > -1)
+            media = 'videos';
+        else if (url.indexOf('news.search') > -1)
+            media = 'news';
+        else if (url.indexOf('/local/') > -1)
+            media = 'local';
+        else if (url.indexOf('answers.search') > -1)
+            media = 'answers';
+        else if (url.indexOf('celebrity.search')>-1)
+            media = 'celebrity';
+        else if (url.indexOf('recipes.search') > -1)
+            media = 'recipes';
     }
     else if (bing_reg.test(url)){
         query = url.split('q=')[1].split('&')[0];
-        se = 'bing'
-        search = true
-        tmp = url.split('b=')
+        se = 'bing';
+        search = true;
+        tmp = url.split('b=');
         if (tmp.length > 1)
             start = parseInt(tmp[1].split('&')[0]);
+        if (url.indexOf('/images/') > -1)
+            media = 'images';
+        else if (url.indexOf('/videos/')> -1)
+            media = 'videos'
+        else if (url.indexOf('/maps/')> -1)
+            media = 'maps';
+        else if (url.indexOf('/news/')>-1)
+            media = 'news';
+        else if (url.indexOf('/explore?')>-1)
+            media = 'explore';
     }
-    console.log('startpage', start)
-    return {'se': se, 'query': query, 'search': search, 'start_count': start}
+    //console.log('startpage', start)
+    console.log(media);
+    return {'se': se, 'query': query, 'search': search, 'start_count': start, 'media': media}
 }
 
 /* ======== user navigation requests ========*/

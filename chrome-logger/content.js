@@ -1,3 +1,4 @@
+var max_num_results = 50;
 // bind listeners to forms
 //for (var i = 0; i < document.forms.length; i++){
 //    document.forms[i].addEventListener("submit", function(){
@@ -56,18 +57,90 @@ $(document).on('click', 'a', function(){
     });
 })
 
+
+function wait_loading(){
+    
+    //if page is not loaded, keep waiting
+    
+    //if loaded, send response
+}
+
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg.msg == 'serp loaded'){
-        var res = ''
-        if (msg.se == 'google'){
-            res = document.getElementById('ires').innerHTML;
+        var compress = ''
+        if (msg.media in ['maps', 'flights', 'explore', 'local']){
+            compress = ''
         }
-        else if (msg.se == 'bing'){
-            res = document.getElementById('b_results').innerHTML;
+        else{ 
+            var ele = ''
+            if (msg.se == 'google'){
+                ele = 'ires';
+            }
+            else if (msg.se == 'bing'){
+                ele = 'b_content';
+                if (msg.media == 'news')
+                    ele = 'VerpContent';
+            }
+            else if (msg.se == 'yahoo'){
+                ele = 'bd';
+                if (msg.media == 'images')
+                    ele = 'mdoc'
+            }
+            if (ele != ''){
+                res = document.getElementById(ele);
+                html = res.innerHTML;
+                //Check every 500 ms
+                var wait_load = setInterval(function(){
+                    res = document.getElementById(ele)
+                    console.log(res)
+                    done = (html == res.innerHTML);
+                    if (done){
+                        //stop interval, send response
+                        clearInterval(wait_load);
+                        //check for content length
+                        var serp = res.innerHTML;
+                        compress = pako.deflate(serp, {'to': 'string'})
+                        console.log(compress.length/1024)
+                        //check size
+                        if (compress.length/1024 > 500){
+                            //limit the number of results
+                            if (msg.se == 'google'){
+                                if (msg.media == 'images'){
+                                    var newele = document.createElement('div');
+                                    newele.setAttribute('id', 'ires');
+
+                                    //Keep fc element
+                                    var fc = document.getElementById('fc');
+                                    //limit number of image results
+                                    var rg = document.getElementById('rg');
+                                    links = rg.getElementsByTagName('a');
+                                    var counts = links.length;
+                                    if (max_num_results < counts)
+                                        counts = max_num_results;
+                                    var rg_new = document.createElement('div');
+                                    rg_new.setAttribute('id', 'rg');
+                                    for(var i = 0; i < counts; i++)
+                                        rg_new.appendChild(links[i]); 
+                                    newele.appendChild(fc);
+                                    newele.appendChild(rg_new);
+                                    compress=pako.deflate(newele.innerHTML, {'to': 'string'})
+                                }
+                                else if (msg.media == 'shopping'){
+                                    //remove large image data
+                                    reg_src = /src="data:image\/.+?"/g;
+                                    var tmp = serp.replace(reg_src, 'src=""', {'to': 'string'})
+                                    compress = pako.deflate(tmp, {'to': 'string'})
+                                }
+                            }
+                        }
+                        console.log(compress.length/1024)
+                        sendResponse({'serp': compress});
+                    }
+                    else
+                        html = res.innerHTML;
+                }, 1000);
+            }
         }
-        else if (msg.se == 'yahoo'){
-            res = document.getElementById('results').innerHTML;
-        }
-        sendResponse({'serp': res});
     }
+    return true;
 });
