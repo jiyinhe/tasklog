@@ -8,6 +8,10 @@ var session = require('express-session');
 var MongoStore = require('connect-mongo')(session)
 var flash = require('connect-flash')
 var pako = require('pako')
+var bcrypt = require('bcrypt-nodejs');
+var async = require('async');
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
 
 //Add variables for db connection
 var dbname = "db_tasklog";
@@ -98,7 +102,8 @@ passport.use(new LocalStrategy(
             if (!user) {
                 return done(null, false, {message:'Email not found.'});
             }
-            else if (password != user['pass']) {
+            //else if (password != user['pass']) {
+            else if (!bcrypt.compareSync(password, user['pass'])){
                 return done(null, false, {message: 'Incorrect password.'});
             }
             return done(null, user);
@@ -126,6 +131,85 @@ app.get('/loginSuccess', function(req, res, next) {
   res.send('Successfully authenticated');
 });
 
+
+//Logout
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/users/login');
+});
+
+//Reset password
+app.get('/forgotpassword', function(req, res, next){
+    var messages = req.flash();
+    if ('info' in messages || 'error' in messages || 'success' in messages){
+        res.render('forgotpassword', {'messages': messages});
+    }
+    else {
+        res.render('forgotpassword', {'messages': 
+            {info: 'To reset your password, please enter the email you used to create your user account:'}});
+
+    }
+
+});
+
+//process reset request
+app.post('/forgotpassword', function(req, res, next) {
+    var db = req.db;
+    var collection = db.get('user');
+
+    async.waterfall([
+        //Generate verification token
+        function(done) {
+            crypto.randomBytes(20, function(err, buf) {
+                var token = buf.toString('hex');
+                done(err, token);
+            });
+        },
+        //Check account
+        function(token, done) {
+            if (req.body.email == '')
+                return res.redirect('/forgotpassword');
+
+            User.findOne({ email: req.body.email }, function(err, user) {
+                if (!user) {
+                    req.flash('error', 'No account with email address ' +
+                        req.body.email + ' exists.');
+                    return res.redirect('/forgotpassword');
+                }
+                //If account exists, set token and expire time
+                collection.update({'_id':  user._id}, {
+                    $set: {'resetPasswordToken': token, 
+                            'resetPasswordExpires': Date.now() + 360000*24}}, //24 hours
+                    function(err, docs){
+                        done(err, token, user);
+                    });
+            });
+        },
+        //send email 
+        function(token, user, done) {
+            var smtpTransport = nodemailer.createTransport('SMTP', {
+                service: 'smtp.cs.ucl.ac.uk',
+            });
+            var mailOptions = {
+                to: user.email,
+                from: 'Research Mediafutures UCL',
+                subject: 'Participant account password reset',
+                text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+                  'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                  'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+                  'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+            };
+            smtpTransport.sendMail(mailOptions, function(err) {
+                console.log(err)
+                req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+                done(err, 'done');
+            });
+        }
+    ], function(err) {
+        if (err) return next(err);
+        res.redirect('/forgotpassword');
+    });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

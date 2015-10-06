@@ -1,4 +1,5 @@
 var express = require('express');
+var bcrypt = require('bcrypt-nodejs');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectID;
 
@@ -39,14 +40,16 @@ router.post('/register_user', function(req, res){
     var data = JSON.parse(req.body.data);
 
     collection.find({email: data.email}, {}, function(e, docs){
+        //If user doesn't exist yet, register 
         if (docs.length == 0){
             var token = alphanumeric.shuffle().substring(0, 6);
             //store the user info
+            var pass = bcrypt.hashSync(data.pass);
             collection.insert({
                 'userid': token,
                 'name': data.user,
                 'email': data.email,
-                'pass': data.pass,
+                'pass': pass,
                 'info': data.info,
             }, function(err, doc){
                  // DB error

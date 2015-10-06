@@ -20,7 +20,9 @@
     "serve-favicon": "~2.3.0",
     "mongodb": "~2.0.33",
     "monk": "~1.0.1",
-    "nodemailer": "~1.5.0",
-    "pako": "~0.2.8"
+    "nodemailer": "~0.7.1",
+    "pako": "~0.2.8",
+    "bcrypt-nodejs": "~0.0.3",
+    "async": "~1.4.2"
   }
 }
