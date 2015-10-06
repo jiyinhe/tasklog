@@ -138,7 +138,7 @@ app.get('/logout', function(req, res){
     res.redirect('/users/login');
 });
 
-//Reset password
+//Reset password request
 app.get('/forgotpassword', function(req, res, next){
     var messages = req.flash();
     if ('info' in messages || 'error' in messages || 'success' in messages){
@@ -147,7 +147,6 @@ app.get('/forgotpassword', function(req, res, next){
     else {
         res.render('forgotpassword', {'messages': 
             {info: 'To reset your password, please enter the email you used to create your user account:'}});
-
     }
 
 });
@@ -214,6 +213,79 @@ app.post('/forgotpassword', function(req, res, next) {
         if (err) return next(err);
         res.redirect('/forgotpassword');
     });
+});
+
+app.get('/resetpassword_expire', function(req, res){
+    res.render('resetpassword_expire', {user: req.user});    
+});
+
+app.get('/resetpassword_success', function(req, res){
+    res.render('resetpassword_success', {user: req.user});    
+});
+
+
+//Reset password form following reset link
+app.get('/reset/:token', function(req, res) {
+    User.findOne({ resetPasswordToken: req.params.token, 
+        resetPasswordExpires: { $gt: Date.now() } }, 
+        function(err, user) {
+            if (!user) {
+                console.log(Date.now())
+                return res.redirect('/resetpassword_expire')
+            }
+            //Otherwise, render the page
+            var messages = req.flash();
+            res.render('resetpassword', {
+                user: req.user, 
+                messages: messages,
+            });
+        });
+});
+
+//Process resetting password
+app.post('/reset/:token', function(req, res){
+    //Check if the user token and expire is correct
+    User.findOne({ resetPasswordToken: req.params.token, 
+        resetPasswordExpires: { $gt: Date.now() } }, 
+        function(err, user) {
+            if (!user) {
+                console.log('here', Date.now());
+                res.redirect('/resetpassword_expire') 
+            } 
+
+            //If all correct, update the password
+            var pass1 = req.body.pass1;
+            var pass2 = req.body.pass2;
+            if (pass1 !== pass2){
+                req.flash('error', 'Inconsistent new password and confirmation of password.');
+                res.redirect('/reset/' + req.params.token)
+            }
+            else if (pass1 == ''){
+                req.flash('error', 'New password should not be empty.');
+                res.redirect('/reset/' + req.params.token)
+            }
+            else{
+                //save the new password
+                var db = req.db;
+                var collection = db.get('user');
+                var newpass = bcrypt.hashSync(pass1);
+
+                collection.update({'resetPasswordToken':  req.params.token}, {
+                    $set: {'resetPasswordToken': undefined, 
+                            'resetPasswordExpires': undefined,
+                            'pass': newpass}},
+                    function(err, docs){
+                        if (err){
+                            req.flash('error', err);
+                            res.redirect('/reset/' + req.params.token);
+                        }    
+                        else{
+                            res.redirect('/resetpassword_success')
+                        }           
+                    });
+            }
+            
+        });
 });
 
 // catch 404 and forward to error handler
