@@ -163,6 +163,7 @@ router.get('/account', function(req, res, next) {
 
 /* ajax for todo list (tasks) */
 router.post('/ajax_tasks', function(req, res){
+    console.log(req.body)
     var body = JSON.parse(req.body.data)
     // get db connection
     var db = req.db;

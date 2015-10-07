@@ -183,6 +183,7 @@ function load_tasks(){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify({"event": "retrieve_tasks"})},
+        contentType: "application/json", 
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -201,6 +202,7 @@ function load_done_tasks(){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify({"event": "retrieve_done_tasks"})},
+        contentType: "application/json", 
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
