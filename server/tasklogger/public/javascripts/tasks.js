@@ -422,7 +422,7 @@ function archive_done(data){
     $.ajax({
     type: "POST",
         url: url_ajax_tasks,
-        data: data,
+        data: {"data": JSON.stringify(data)},
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(

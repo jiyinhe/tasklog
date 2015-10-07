@@ -311,17 +311,29 @@ router.post('/ajax_tasks', function(req, res){
                             {'$group': {'_id': '$parent_task', 'number':{ '$sum' : 1}}},
                             ], 
                         function(err, doc){
+                            console.log(doc)
                             var number = 0
-                            if (!doc.number === undefined)
-                                number = doc.number;
-                            callback(err, doc.number)     
+                            if (doc.length > 0)
+                                number = doc[0].number;
+                            callback(err, number)     
                         });
                     }
                 },
                 //remove main task
-                function(to_remove, callback){
-                    if (to_remove == 0)
-                        return callback(null)
+                function(remain_subs, callback){
+//                    console.log(remain_subs)
+                    //It should not be removed
+                    if (remain_subs > 0){
+                        //It still has subtasks in the "done" area
+                        //But no subtasks in the "todo" area
+                        //It should be then set to "done"
+                        collection.update({'_id': body.to_remove.main}, 
+                            {$set: {'done': true, 'time_done': (new Date()).getTime()}}, 
+                            function(err, doc){
+                                return callback(err);
+                            });
+                    }
+                    //It can be removed
                     else
                         collection.remove({'_id': body.to_remove.main}, {}, 
                         function(err, doc){
@@ -339,16 +351,12 @@ router.post('/ajax_tasks', function(req, res){
                 }
         });
     }
-    else if (req.body['event'] == 'archive_done'){
-        var taskids = req.body['to_archive[]'];
+    else if (body['event'] == 'archive_done'){
+        var taskids = body['to_archive'];
         var tasks = [];
-        if (taskids.constructor === Array){
-            for (var i = 0; i<taskids.length; i++){
-                tasks.push(new ObjectId(taskids[i]));
-            }
+        for (var i = 0; i<taskids.length; i++){
+            tasks.push(new ObjectId(taskids[i]));
         }
-        else
-            tasks.push(new ObjectId(taskids));
         //console.log(tasks)
         collection.update({'_id':  {$in: tasks}}, {
             $set: {'done': true}}, 
