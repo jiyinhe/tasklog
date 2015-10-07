@@ -1,5 +1,6 @@
 var express = require('express');
 var bcrypt = require('bcrypt-nodejs');
+var async = require('async');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectID;
 
@@ -162,12 +163,12 @@ router.get('/account', function(req, res, next) {
 
 /* ajax for todo list (tasks) */
 router.post('/ajax_tasks', function(req, res){
-	console.log(req.body)
+    var body = JSON.parse(req.body.data)
     // get db connection
     var db = req.db;
     //set the collection
     var collection = db.get('user_tasks');
-    if (req.body['event'] == 'retrieve_tasks'){
+    if (body['event'] == 'retrieve_tasks'){
         //get unfinished tasks, older goals rank lower
         collection.find({'userid': req.user.userid, 'done': false}, 
             {sort: {timestamp: -1}}, function(e, docs){
@@ -193,7 +194,7 @@ router.post('/ajax_tasks', function(req, res){
                 }
             });
     }
-    else if (req.body['event'] == 'retrieve_done_tasks'){
+    else if (body['event'] == 'retrieve_done_tasks'){
         // get all parent tasks and done tasks
         collection.find({'userid': req.user.userid, $or: [{'done': true}, {'task_level': 0}]}, 
             {sort: {timestamp: -1}}, function(e, docs){
@@ -225,7 +226,7 @@ router.post('/ajax_tasks', function(req, res){
                 }
             });
     }
-    else if (req.body['event'] == 'retrieve_task_counts'){
+    else if (body['event'] == 'retrieve_task_counts'){
         collection.col.aggregate([
                     {"$match": {'userid': req.user.userid}},
                     {'$group': {'_id': '$done', 'number':{ '$sum' : 1}}},
@@ -236,20 +237,20 @@ router.post('/ajax_tasks', function(req, res){
                     res.send({'err': true, 'emsg': e});
                 }
                 else{
-		    console.log(docs)
+		            //console.log(docs)
                     res.send({'err': false, 'res': docs});
                 }
             });
     }
-    else if (req.body['event'] == 'add_task'){
-        var create_time = parseInt(req.body.time_create);
+    else if (body['event'] == 'add_task'){
+        var create_time = parseInt(body.time_create);
         var entry = {
             'userid': req.user.userid,
             'time_created': create_time,
             'time_done': 0,
-            'task': req.body.task,
-            'task_level': parseInt(req.body.level),
-            'parent_task': req.body['parent'],
+            'task': body.task,
+            'task_level': parseInt(body.level),
+            'parent_task': body['parent'],
             'done': false,
             'refresh': create_time,
         }
@@ -263,46 +264,75 @@ router.post('/ajax_tasks', function(req, res){
         });
    
     }
-    else if (req.body['event'] == 'remove_item'){
-        var taskids = req.body['to_remove[]'];
+    else if (body['event'] == 'change_status'){
+        var taskids = body['to_change'];
+        var time_done = body['time_done'];
+        var done = body.done;
         var tasks = [];
-        if (taskids.constructor === Array){
-            for (var i = 0; i<taskids.length; i++){
-                tasks.push(new ObjectId(taskids[i]));
-            }
+
+        for (var i = 0; i<taskids.length; i++){
+            tasks.push(new ObjectId(taskids[i]));
         }
-        else
-            tasks.push(new ObjectId(taskids));
-        collection.remove({'_id': {$in: tasks}}, {}, function(err, doc){
-            if (err){
-                console.log("DB ERROR: "+ err)
-                res.send({'err': true, 'emsg': err});
-            }
-            else
-                res.send('success');
-        });
- 
-    }
-    else if (req.body['event'] == 'change_status'){
-        var taskids = req.body['to_change[]'];
-        var time_done = parseInt(req.body['time_done']);
-        var done = (req.body.done === 'true');
-        var tasks = [];
-        if (taskids.constructor === Array){
-            for (var i = 0; i<taskids.length; i++){
-                tasks.push(new ObjectId(taskids[i]));
-            }
-        }
-        else
-            tasks.push(new ObjectId(taskids));
-        
         collection.update({'_id':  {$in: tasks}}, {
            $set: {'time_done': time_done, 'done': done}}, 
             {multi: true},
             function(err, docs){
                 if (err){
                     console.log('DB ERROR: '+err)
-                    res.send('ERROR: '+err);
+                    res.send({'err': true, 'emsg': 'ERROR: '+err});
+                }
+                else{
+                    res.send('success'); 
+                }
+        });
+    }
+    else if (body['event'] == 'remove_item'){
+        //console.log(body.to_remove)
+        async.waterfall([
+                //remove subtasks
+                function(callback) {
+                    var taskids = body.to_remove.sub;
+                    var tasks = [];
+                    for (var i = 0; i<taskids.length; i++){
+                        tasks.push(new ObjectId(taskids[i]));
+                    }
+                    collection.remove({'_id': {$in: tasks}}, {}, function(err, doc){
+                        callback(err);
+                    });
+                }, 
+                //check if main task should be removed
+                function(callback) {
+                    if (body.to_remove.main == ''){
+                        return callback(null, 0);
+                    }
+                    else{
+                        collection.col.aggregate([
+                            {"$match": {'parent_task': body.to_remove.main}},
+                            {'$group': {'_id': '$parent_task', 'number':{ '$sum' : 1}}},
+                            ], 
+                        function(err, doc){
+                            var number = 0
+                            if (!doc.number === undefined)
+                                number = doc.number;
+                            callback(err, doc.number)     
+                        });
+                    }
+                },
+                //remove main task
+                function(to_remove, callback){
+                    if (to_remove == 0)
+                        return callback(null)
+                    else
+                        collection.remove({'_id': body.to_remove.main}, {}, 
+                        function(err, doc){
+                            callback(err);
+                        });
+                }
+            ], 
+            function(err){
+               if (err){
+                    console.log('DB ERROR: '+err)
+                    res.send({'err': true, 'emsg': err});
                 }
                 else{
                     res.send('success'); 
@@ -357,7 +387,7 @@ router.post('/ajax_annotation', function(req, res){
                 else{
 //                    var time2 = new Date().getTime();
 //                    console.log((time2 - time1)/1000)
-                    console.log(docs.length)
+//                    console.log(docs.length)
                     res.send({'err': false, 'res': docs});
                 }
         });

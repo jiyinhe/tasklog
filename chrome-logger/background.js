@@ -232,7 +232,7 @@ function savedata(logdata){
                 type: "POST",
                 url: data_storage_url,
                 data: {"data": JSON.stringify(stored_log)},
-                dataType: "json",
+//                dataType: "json",
                 success: function(response){
                     if (response.err){
                         //error occured, log stay in storage
@@ -290,7 +290,7 @@ function save_serp(serpdata){
                 type: "POST",
                 url: serp_storage_url,
                 data: {"data": JSON.stringify(stored_log)},
-                dataType: "json",
+                //dataType: "json",
                 success: function(response){
                     console.log(response)
                     if (response.err){

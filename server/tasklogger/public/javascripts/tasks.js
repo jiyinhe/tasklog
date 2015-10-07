@@ -76,13 +76,17 @@ $(document).ready(function(){
     // Remove an item
     $('#div_planlist').on('click', '.rm-item', function(){
         var task_id = $(this).attr('id').split('_')[1];
-        var to_remove = [task_id];
-        //if it's a parent, then all its subtasks should be removed
+        var to_remove = {'main': '', 'sub': []};
+
+        //if it's a parent, then all its subtasks ON THIS PAGE should be removed
         if ($('#'+task_id).hasClass('main-task')){
+            to_remove.main = task_id;
             var subtasks = $('[parent='+ task_id +']');
             for (var i = 0; i < subtasks.length; i++)
-                to_remove.push(subtasks[i].id)
+                to_remove.sub.push(subtasks[i].id)
         }
+        else
+            to_remove.sub.push(task_id);
         remove_item(to_remove);
     });
 
@@ -178,7 +182,7 @@ function load_tasks(){
     $.ajax({
         type: "POST",
         url: url_ajax_tasks,
-        data: {'event': 'retrieve_tasks'}
+        data: {"data": JSON.stringify({"event": "retrieve_tasks"})},
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -196,7 +200,7 @@ function load_done_tasks(){
     $.ajax({
         type: "POST",
         url: url_ajax_tasks,
-        data: {'event': 'retrieve_done_tasks'}
+        data: {"data": JSON.stringify({"event": "retrieve_done_tasks"})},
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -215,7 +219,7 @@ function get_counts(){
      $.ajax({
         type: "POST",
         url: url_ajax_tasks,
-        data: {'event': 'retrieve_task_counts'}
+        data: {"data": JSON.stringify({"event": "retrieve_task_counts"})},
      }).done(function(response) {
         if (!response.err){
             if (response.res.length == 0){
@@ -278,7 +282,7 @@ function add_task(param){
      $.ajax({
         type: "POST",
         url: url_ajax_tasks,
-        data: param
+        data: {"data": JSON.stringify(param)},
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -314,11 +318,12 @@ function add_task(param){
     });  
 }
 
+
 function remove_item(to_remove){
     $.ajax({
         type: "POST",
         url: url_ajax_tasks,
-        data: {'to_remove': to_remove, 'event': 'remove_item'}
+        data: {"data": JSON.stringify({'to_remove': to_remove, 'event': 'remove_item'})},
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -328,36 +333,44 @@ function remove_item(to_remove){
         else{
             //regenerate counts
             get_counts();
+            
             //remove it from UI
-            var main_task = ''
-            var rm_main = false;
-            for (var i = 0; i < to_remove.length; i++){
-                var ele = $('#' + to_remove[i]);
-                //if main_task is removed, no need to change
-                if (ele.hasClass('main-task')){
-                    rm_main = true;
-                }
-                else{
-                    main_task = ele.attr('parent');
-                }
+            var main_task = to_remove.main;
+            var subtasks = to_remove.sub;
+
+            var main_of_sub = '';
+            //Find the main task of the subtasks
+            //remove subtasks
+            for (var i = 0; i<subtasks.length; i++){
+                var ele = $('#' + subtasks[i]);
+                main_of_sub = ele.attr('parent');
                 ele.remove();
             }
-            //if only done subtasks are left, then the main task is done
-            if (main_task != '' && rm_main == false){
+            //remove main task
+            if (!main_task == ''){
+                var ele = $('#' + main_task);
+                ele.remove();
+            }
+            else{
+                //If main task remains, then check if only done subtasks are left, 
+                //If so, then it should also be done
                 //Find all subtasks, check if they are all done
-                var subtasks = $('[parent=' + main_task + ']')
-                if (subtasks.length > 0)
+                var subtasks = $('[parent=' + main_of_sub + ']')
+                if (subtasks.length > 0){
                     var all_done = true;
                     for(var i = 0; i<subtasks.length; i++){
-                        if (subtasks[i].getAttribute('time_done') == 0)
+                        if (subtasks[i].getAttribute('time_done') == 0){
                             all_done = false; 
+                            break;
+                        }
                     }
                     if (all_done){
-                        var to_change = [main_task]
-                        var time_done = (new Date()).getTime();
-                        change_status(to_change, time_done, 'todo');
+                         var to_change = [main_of_sub]
+                         var time_done = (new Date()).getTime();
+                         change_status(to_change, time_done, 'todo');
                     }
-            } 
+                }
+            }
             //update candidate tasks
             load_task_labels();
         }
@@ -378,7 +391,7 @@ function change_status(to_change, time_done, area){
     $.ajax({
         type: "POST",
         url: url_ajax_tasks,
-        data: data,
+        data: {"data": JSON.stringify(data)},
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
