@@ -177,7 +177,7 @@ function load_tasks(){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify({"event": "retrieve_tasks"})},
- //       contentType: "application/json", 
+//        contentType: "application/json", 
 //        dataType: "json",
     }).done(function(response) {
         if (response.err){
@@ -283,6 +283,7 @@ function add_task(param){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify(param)},
+//        contentType: "application/json",
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -324,6 +325,7 @@ function remove_item(to_remove){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify({'to_remove': to_remove, 'event': 'remove_item'})},
+//        contentType: "application/json",
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -392,6 +394,8 @@ function change_status(to_change, time_done, area){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify(data)},
+//        contentType: "application/json",
+
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -423,6 +427,8 @@ function archive_done(data){
     type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify(data)},
+//        contentType: "application/json",
+
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(

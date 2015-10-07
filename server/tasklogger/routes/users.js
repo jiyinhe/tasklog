@@ -163,10 +163,7 @@ router.get('/account', function(req, res, next) {
 
 /* ajax for todo list (tasks) */
 router.post('/ajax_tasks', function(req, res){
-    console.log(req.body)
-    console.log(JSON.parse('{"test": "test string"}'))
     var body = JSON.parse(req.body.data)
-    console.log(body)
     // get db connection
     var db = req.db;
     //set the collection
@@ -314,7 +311,7 @@ router.post('/ajax_tasks', function(req, res){
                             {'$group': {'_id': '$parent_task', 'number':{ '$sum' : 1}}},
                             ], 
                         function(err, doc){
-                            console.log(doc)
+                            //console.log(doc)
                             var number = 0
                             if (doc.length > 0)
                                 number = doc[0].number;
