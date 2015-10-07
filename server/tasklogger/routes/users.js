@@ -166,6 +166,7 @@ router.post('/ajax_tasks', function(req, res){
     console.log(req.body)
     console.log(JSON.parse('{"test": "test string"}'))
     var body = JSON.parse(req.body.data)
+    console.log(body)
     // get db connection
     var db = req.db;
     //set the collection
