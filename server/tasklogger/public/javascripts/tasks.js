@@ -1,9 +1,3 @@
-/*===============================
-Dependency: annotation.js
-
-When updateing task list
-update: candidate task labels 
-==================================*/
 var url_ajax_tasks = '/users/ajax_tasks';
 
 $(document).ready(function(){
@@ -183,7 +177,8 @@ function load_tasks(){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify({"event": "retrieve_tasks"})},
-        contentType: "application/json", 
+ //       contentType: "application/json", 
+//        dataType: "json",
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -202,7 +197,8 @@ function load_done_tasks(){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify({"event": "retrieve_done_tasks"})},
-        contentType: "application/json", 
+  //      contentType: "application/json", 
+  //      dataType: "json"
     }).done(function(response) {
         if (response.err){
             $('#div_addtask').append(
@@ -222,6 +218,8 @@ function get_counts(){
         type: "POST",
         url: url_ajax_tasks,
         data: {"data": JSON.stringify({"event": "retrieve_task_counts"})},
+//        contentType: "application/json",
+//        dataType: "json",
      }).done(function(response) {
         if (!response.err){
             if (response.res.length == 0){
