@@ -162,6 +162,7 @@ router.get('/account', function(req, res, next) {
 
 /* ajax for todo list (tasks) */
 router.post('/ajax_tasks', function(req, res){
+	console.log(req.body)
     // get db connection
     var db = req.db;
     //set the collection
@@ -235,6 +236,7 @@ router.post('/ajax_tasks', function(req, res){
                     res.send({'err': true, 'emsg': e});
                 }
                 else{
+		    console.log(docs)
                     res.send({'err': false, 'res': docs});
                 }
             });

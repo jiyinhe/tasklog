@@ -218,7 +218,11 @@ function get_counts(){
         data: {'event': 'retrieve_task_counts'}
      }).done(function(response) {
         if (!response.err){
-            if (response.res[0]['_id'] == true){
+            if (response.res.length == 0){
+                $('#count_done').text('(0)');
+                $('#count_todo').text('(0)') 
+            }
+            else if (response.res[0]['_id'] == true){
                 $('#count_done').text('('+response.res[0]['number'] + ')');
                 if (response.res.length > 1)
                     $('#count_todo').text('('+response.res[1]['number'] + ')');
