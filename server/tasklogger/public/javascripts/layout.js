@@ -8,7 +8,5 @@
 
 $(document).ready(function () {
     var initial_affix_width = $('.right-column').width();
-    console.log(initial_affix_width)
     $('#myAffix').width(initial_affix_width);
-    console.log($('#myAffix').width())
 });

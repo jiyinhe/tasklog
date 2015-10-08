@@ -378,9 +378,13 @@ router.post('/ajax_annotation', function(req, res){
 //    var time1 = new Date().getTime();
     var db = req.db;
     var collection = db.get('log_chrome');
-    var timestart = new Date(req.body.time_start);
-    var timeend = new Date(req.body.time_end);
-    if (req.body['event'] == 'get_log'){
+
+    var body = JSON.parse(req.body.data);
+    var timestart = new Date(body.time_start);
+    var timeend = new Date(body.time_end);
+
+    //console.log(body)
+    if (body['event'] == 'get_log'){
         collection.find({'userid': req.user.userid, 
                 'timestamp_bson': {$gte: timestart, $lte: timeend}, 
                  'to_annotate': true, 
@@ -400,16 +404,13 @@ router.post('/ajax_annotation', function(req, res){
                 }
         });
     }
-    else if (req.body['event'] == 'remove_logitems'){
-        var itemids = req.body['items[]'];
+    else if (body['event'] == 'remove_logitems'){
+        var itemids = body['items'];
         var items = [];
-        if (itemids.constructor === Array){
-            for (var i = 0; i<itemids.length; i++){
-                items.push(new ObjectId(itemids[i]));
-            }
+        for (var i = 0; i<itemids.length; i++){
+           items.push(new ObjectId(itemids[i]));
         }
-        else
-            items.push(new ObjectId(itemids));
+
         collection.update({'_id':  {$in: items}, 'userid': req.user.userid}, {
            $set: {'removed': true}}, 
             {multi: true},
@@ -423,9 +424,9 @@ router.post('/ajax_annotation', function(req, res){
                 }
         });
     } 
-    else if (req.body['event'] == 'submit_labels_useful'){
-        collection.update({'_id':  req.body['id'], 'userid': req.user.userid}, {
-           $set: {'annotation.useful': req.body.value == 'true'}}, 
+    else if (body['event'] == 'submit_labels_useful'){
+        collection.update({'_id':  body['id'], 'userid': req.user.userid}, {
+           $set: {'annotation.useful': body.value == 'true'}}, 
             function(err, docs){
                 if (err){
                     console.log('DB ERROR: '+err);
@@ -436,20 +437,16 @@ router.post('/ajax_annotation', function(req, res){
                 }
         });
     }
-    else if (req.body['event'] == 'submit_labels_task'){
-        var itemids = req.body['items[]'];
+    else if (body['event'] == 'submit_labels_task'){
+        var itemids = body['items'];
         var items = [];
-        if (itemids.constructor === Array){
-            for (var i = 0; i<itemids.length; i++){
-                items.push(new ObjectId(itemids[i]));
-            }
+        for (var i = 0; i<itemids.length; i++){
+            items.push(new ObjectId(itemids[i]));
         }
-        else
-            items.push(new ObjectId(itemids));
  
         collection.update({'userid': req.user.userid, '_id':  {$in: items}}, 
-            {$set: {'annotation.task.taskid': req.body.taskid,
-                    'annotation.task.name': req.body.taskname,
+            {$set: {'annotation.task.taskid': body.taskid,
+                    'annotation.task.name': body.taskname,
                 }}, 
             {multi: true},
             function(err, docs){
@@ -468,9 +465,11 @@ router.post('/ajax_annotation', function(req, res){
 
 //Ajax call to get annotation options
 router.post('/ajax_annotation_options', function(req, res){
-    // get db connection
+   // get db connection
    var db = req.db;
-   if (req.body['event'] == 'retrieve_candidate_tasks'){
+   var body = JSON.parse(req.body.data);
+//   console.log(body)
+   if (body['event'] == 'retrieve_candidate_tasks'){
         var collection = db.get('user_tasks');
         collection.find({'userid': req.user.userid}, 
             {sort: {timestamp: -1}}, function(e, docs){
@@ -497,7 +496,7 @@ router.post('/ajax_annotation_options', function(req, res){
                 }
         });
     }
-    else if (req.body['event'] == 'get_dates'){
+    else if (body['event'] == 'get_dates'){
         //Check timezone, bson uses UTC time
         var timediff = new Date().getTimezoneOffset()*60*1000;
         var collection = db.get('log_chrome');

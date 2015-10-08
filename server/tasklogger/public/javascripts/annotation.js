@@ -70,34 +70,53 @@ $(document).ready(function(){
     $('#global_checkbox').click(function(){
         if ($(this).is(':checked')){
             $('#global_checkbox').prop('checked', true);
-            $('#div_logarea').find('.logitem-content-checkbox').prop('checked', true);
+            $('#div_logarea').find('.logitem-content-checkbox')
+            .filter(function(){
+                var id = $(this).attr('id').split('_')[3];
+                return !$('#logitem_' + id).hasClass('hidden')
+                }) 
+            .prop('checked', true);
         }
         else {
+            //De-select everything, whether hidden or not
             $('#global_checkbox').prop('checked', false);
-            $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
+            $('#div_logarea').find('.logitem-content-checkbox')
+            .prop('checked', false);
         }
     });
     $('#select_all').click(function(){
         $('#global_checkbox').prop('checked', true);
-        $('#div_logarea').find('.logitem-content-checkbox').prop('checked', true);
+        $('#div_logarea').find('.logitem-content-checkbox')
+            .filter(function(){
+                var id = $(this).attr('id').split('_')[3];
+                return !$('#logitem_' + id).hasClass('hidden')
+                })
+            .prop('checked', true);
     });
 
     $('#select_none').click(function(){
         $('#global_checkbox').prop('checked', false);
+        //De-select everything, whether hidden or not
         $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
     });
 
     $('#select_labelled').click(function(){
+        //Select labelled, but skip the ones that are hidden
         $('#div_logarea').find('.panel-success .logitem-content-checkbox')
+            .filter(function(){
+                var id = $(this).attr('id').split('_')[3];
+                return !$('#logitem_' + id).hasClass('hidden')
+                }) 
             .prop('checked', true);
-        //De-select unlabelled
+        //De-select unlabelled, unlabelled cannot be hidden
         $('#div_logarea').find('.panel-default .logitem-content-checkbox')
             .prop('checked', false);
     });
     $('#select_unlabelled').click(function(){
+        //Select unlabelled, unlablled cannot be hidden 
         $('#div_logarea').find('.panel-default .logitem-content-checkbox')
             .prop('checked', true);
-        //De-select labelled
+        //De-select labelled, whether hidden or not
         $('#div_logarea').find('.panel-success .logitem-content-checkbox')
             .prop('checked', false);
     });
@@ -197,8 +216,9 @@ function get_dates(){
     $.ajax({
         type: "POST",
         url: url_ajax_options,
-        data: {'event': 'get_dates', 
-               }
+        data: {"data": JSON.stringify({'event': 'get_dates', 
+               })}
+
     }).done(function(response) {
         if (response.err){
             console.log(response.err)
@@ -296,8 +316,8 @@ function load_data(){
     $.ajax({
         type: "POST",
         url: url_ajax_options,
-        data: {'event': 'retrieve_candidate_tasks', 
-                'time_thresh': view_date}
+        data: {"data": JSON.stringify({'event': 'retrieve_candidate_tasks', 
+                'time_thresh': view_date})}
     }).done(function(response) {
         if (response.err){
             console.log(response.err)
@@ -335,8 +355,6 @@ function load_data(){
                     }
                 }
             }
-            console.log(candidate_tasks.length)
-            console.log(more_candidate_tasks.length)
 
             display_task_options();
             //After that, task opitons are loaded, load log items for annotation 
@@ -434,14 +452,16 @@ function create_subtasklabel_element(subtask, maintask){
 
 //Get log that is recorded on the viewing date
 function load_log(){
+    console.log(view_date.start, view_date.end)
     $.ajax({
         type: "POST",
         url: url_ajax_annotation,
-        data: {'event': 'get_log', 
+        data: {"data": JSON.stringify({'event': 'get_log', 
                 'time_start': view_date.start,
                 'time_end': view_date.end,
-               }
+               })}
     }).done(function(response) {
+        console.log(response)
         if (response.err){
             console.log(response.emsg)
             $('#div_logarea').append(
@@ -917,9 +937,9 @@ function remove_logitems(items){
     $.ajax({
         type: "POST",
         url: url_ajax_annotation,
-        data: {'event': 'remove_logitems', 
+        data: {"data": JSON.stringify({'event': 'remove_logitems', 
                 'items': items,
-               }
+               })}
     }).done(function(response) {
         if (response.err){
             console.log(response.err)
@@ -942,10 +962,10 @@ function submit_labels_useful(id, value){
      $.ajax({
         type: "POST",
         url: url_ajax_annotation,
-        data: {'event': 'submit_labels_useful', 
+        data: {"data": JSON.stringify({'event': 'submit_labels_useful', 
                 'id': id,
                 'value': value,
-               }
+               })}
     }).done(function(response) {
         if (response.err){
             console.log(response.err)
@@ -983,11 +1003,11 @@ function submit_labels_task(items, taskid, taskname){
      $.ajax({
         type: "POST",
         url: url_ajax_annotation,
-        data: {'event': 'submit_labels_task', 
+        data: {"data": JSON.stringify({'event': 'submit_labels_task', 
                 'items': items, 
                 'taskid': taskid,
                 'taskname': taskname,
-               }
+               })}
     }).done(function(response) {
         if (response.err){
             console.log(response.err)
@@ -1014,7 +1034,7 @@ function submit_labels_task(items, taskid, taskname){
                 }
                 else if(event_type == 'tab-loaded'){
                     var useful = $('#div_logarea').find('#logitem_useful_' + items[i]).attr('useful');
-                    console.log(useful);
+                    //console.log(useful);
                     if (useful != ''){
                         if($('#div_logarea').find(panel_id).hasClass('panel-default'))
                             //done another annotation, update progress
