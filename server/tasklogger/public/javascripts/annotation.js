@@ -10,7 +10,7 @@ var div_item_template = {};
 
  
 var log_data = [];
-var batch_size = 10; 
+var batch_size = 30; 
 
 //Dates where logs are recorded and user progress
 var log_dates_progress = [];
@@ -24,9 +24,11 @@ var more_candidate_tasks = [];
 
 //general labels
 var general_labels = [
+    {id: '000', 'label': 'Not sure', 'subtasks': []},
     {id: '001', 'label': 'Entertainment', 'subtasks': []},
     {id: '002', 'label': 'Social networking', 'subtasks': []},
-    {id: '003', 'label': 'News update', 'subtasks': []}
+    {id: '003', 'label': 'News update', 'subtasks': []},
+    {id: '004', 'label': 'Emailing', 'subtasks': []},
 ]; 
 
 $(document).ready(function(){
@@ -124,7 +126,20 @@ $(document).ready(function(){
 
     //Filter unlabelled items
     $('#global_filter').click(function(){
-        $('#div_logarea').find('.panel-success').toggleClass('hidden');
+        var done_shown = $('#div_logarea').find('.panel-success')
+            .filter(function(){
+                return !$(this).hasClass('hidden')
+            });        
+
+        //If there are labelled panel showing, then hide them all
+        if (done_shown.length > 0){
+            done_shown.addClass('hidden');
+        }
+        //If all labelled panels are hidden, then show them
+        else{
+            $('#div_logarea').find('.panel-success').removeClass('hidden');
+        }
+//        $('#div_logarea').find('.panel-success').toggleClass('hidden');
     });
 
     //Select a different date to view log 
@@ -378,7 +393,10 @@ function display_task_options(){
         ele.setAttribute('id', 'label_' + general_labels[i].id);
         var ele_a = document.createElement('a');
         var ele_span = document.createElement('span');
-        ele_span.setAttribute('class', 'label label-warning');
+        if (general_labels[i].id == '000')
+             ele_span.setAttribute('class', 'label label-danger');
+        else
+            ele_span.setAttribute('class', 'label label-warning');
         ele_span.innerHTML = general_labels[i].label;
         ele_a.appendChild(ele_span);
         ele.appendChild(ele_a);
@@ -452,7 +470,6 @@ function create_subtasklabel_element(subtask, maintask){
 
 //Get log that is recorded on the viewing date
 function load_log(){
-    console.log(view_date.start, view_date.end)
     $.ajax({
         type: "POST",
         url: url_ajax_annotation,
@@ -461,7 +478,6 @@ function load_log(){
                 'time_end': view_date.end,
                })}
     }).done(function(response) {
-        console.log(response)
         if (response.err){
             console.log(response.emsg)
             $('#div_logarea').append(
@@ -667,7 +683,7 @@ function assemble_logitem_elements(elements, item){
 
     var span_label_task = elements.span_label_task.cloneNode(false);
     span_label_task.setAttribute('id', 'logitem_label_chosen_taskname_' + item['_id']);
-
+ 
     var div_candidates = elements.div_candidates.cloneNode(true);
     div_candidates.setAttribute('id', 'logitem_label_candidates_' + item['_id']);
 
@@ -701,8 +717,9 @@ function assemble_logitem_elements(elements, item){
 
         if ('task' in item.annotation){
             //Set chosen task label
-            span_label_task.innerHTML = item.annotation.task.name;        
-            //Set values of chosen label
+            span_label_task.innerHTML = item.annotation.task.name;
+ 
+           //Set values of chosen label
             div_chosen_label.setAttribute('taskid', item.annotation.task.taskid);
             div_chosen_label.setAttribute('taskname', item.annotation.task.name);
             //Set labeling done
@@ -724,6 +741,7 @@ function assemble_logitem_elements(elements, item){
         if ('task' in item.annotation){
             //Set chosen task label
             span_label_task.innerHTML = item.annotation.task.name;
+ 
             //Set values of chosen label
             div_chosen_label.setAttribute('taskid', item.annotation.task.taskid);
             div_chosen_label.setAttribute('taskname', item.annotation.task.name);
@@ -746,6 +764,7 @@ function assemble_logitem_elements(elements, item){
         if(task_done)
             div_item.setAttribute('class', 'panel panel-success'); 
     }
+
 
     var message = [
     '<div class="alert alert-danger">',
@@ -785,7 +804,10 @@ function logitem_load_candidates(){
     var list1 = document.createDocumentFragment();
     for (var i = 0; i < general_labels.length; i++){
         var ele_general = document.createElement('span');
-        ele_general.setAttribute('class', 'label label-warning logitem-label-candidate');
+        if (general_labels[i].id == '000')
+            ele_general.setAttribute('class', 'label label-danger logitem-label-candidate');
+        else
+            ele_general.setAttribute('class', 'label label-warning logitem-label-candidate');
         ele_general.setAttribute('id', 'logitem_label_candidate_' + general_labels[i].id);
         ele_general.innerHTML = general_labels[i].label;
         list1.appendChild(ele_general);
