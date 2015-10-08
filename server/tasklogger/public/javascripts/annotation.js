@@ -2,7 +2,6 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
-//TODO: pagination or continuous loading
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -460,13 +459,13 @@ function display_log(log){
     if (batch_size > log.length)
         counts = log.length;
     //Only load the first batch
-    time1 = new Date().getTime()
+    //time1 = new Date().getTime()
     for (var i = 0; i<counts; i++){
         var div_item = assemble_logitem_elements(div_item_template, log[i]);
         items.appendChild(div_item);
     }
-   time2 = new Date().getTime()
-   console.log(time2-time1)
+   //time2 = new Date().getTime()
+   //console.log(time2-time1)
  
     $('#div_logarea').append(items);
     //Initialise tooltip
@@ -846,7 +845,7 @@ function logitem_create_candidate_label(taskid, taskname, parentname){
 }
 
 function logitem_create_remove_modal(){
-    var time1 = new Date().getTime();
+    //var time1 = new Date().getTime();
     //Modal
     var div_modal = document.createElement('div');
     div_modal.setAttribute('class', 'modal');
@@ -895,8 +894,8 @@ function logitem_create_remove_modal(){
     div_modal_content.appendChild(div_modal_footer);
     div_modal_dialog.appendChild(div_modal_content);
     div_modal.appendChild(div_modal_dialog);
-    var time2  = new Date().getTime()
-    console.log(time2 - time1)
+    //var time2  = new Date().getTime()
+    //console.log(time2 - time1)
     return div_modal;
 }
 

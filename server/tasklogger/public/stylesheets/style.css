@@ -6,10 +6,20 @@ body {
 a {
   color: #00B7FF;
 }
+
 .affix{
     position:fixed;
     top: 100px;
 }
+.affix-top {
+    top: 100px;
+}
+
+#myAffix {
+    top: 100px;
+    position: fixed;
+}
+
 .space30 {
     margin-top: 30px;
     margin-bottom: 30px;
@@ -174,9 +184,10 @@ a {
     margin-top: 10px;
     padding-left: 20px;
 }
+
 .plan-area {
     max-width: 350px;
-    height: 400px;
+    height: 300px;
     overflow: auto;
     margin-top: 10px;
     padding-left: 20px;

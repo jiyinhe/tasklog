@@ -275,6 +275,17 @@ function display_tasks(main_tasks, type){
     }
     //enable tooltips
     $('[data-toggle="tooltip"]').tooltip();
+    //enable affix
+    /*
+    $('#myAffix').affix({
+        offset: {
+            top: 100,
+    //        bottom: function () {
+    //            return (this.bottom = $('.footer').outerHeight(true))
+    //        }
+        }
+    });
+    */
 }
 
 function add_task(param){
@@ -314,7 +325,6 @@ function add_task(param){
             }
             //update candidate task labels
             load_task_labels();
-        
         }
     });  
 }
@@ -566,4 +576,11 @@ function set_task_status(task_id, time_done){
         $('#rm_' + task_id).removeClass('hidden');
         $('#checkbox_' + task_id).prop('checked', false)
     }
+}
+
+
+//Change the candidate task labels in the annotation area
+function load_task_labels(){
+    //It's may be easier to reload the page
+    load_data(); 
 }
