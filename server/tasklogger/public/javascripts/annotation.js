@@ -326,7 +326,8 @@ function load_data(){
                         main_sub_done.subtasks = sub_done;
                         more_candidate_tasks.push(main_sub_done);
                     }
-                    else {
+                    else{ 
+			//No subtasks are done, the main task is also undone, so 		
                         //Corresponding main is stored as undone
                         var main_sub_undone = $.extend(true, {}, response.res[key]);
                         main_sub_undone.subtasks = sub_not_done;
