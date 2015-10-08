@@ -5,7 +5,7 @@
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
-var max_candidates = 7;
+var max_candidates = 5;
 var div_item_template = {};
 
  
