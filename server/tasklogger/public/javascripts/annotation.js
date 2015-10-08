@@ -5,7 +5,7 @@
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
-var max_candidates = 5;
+var max_candidates = 7;
 var div_item_template = {};
 
  
@@ -318,14 +318,25 @@ function load_data(){
                             function(d){return d.time_done < view_date.start && d.time_done > 0});
                     sub_not_done = response.res[key].subtasks.filter(
                             function(d){return d.time_done >= view_date.start || d.time_done == 0});
-                    var main_sub_done = $.extend(true, {}, response.res[key]);
-                    main_sub_done.subtasks = sub_done;
-                    var main_sub_undone = $.extend(true, {}, response.res[key]);
-                    main_sub_undone.subtasks = sub_not_done;
-                    more_candidate_tasks.push(main_sub_done);
-                    candidate_tasks.push(main_sub_undone); 
+
+                    //Corresponding main_task is stored in done to combine with the
+                    //done sub
+                    if (sub_done.length > 0){
+                        var main_sub_done = $.extend(true, {}, response.res[key]);
+                        main_sub_done.subtasks = sub_done;
+                        more_candidate_tasks.push(main_sub_done);
+                    }
+                    else {
+                        //Corresponding main is stored as undone
+                        var main_sub_undone = $.extend(true, {}, response.res[key]);
+                        main_sub_undone.subtasks = sub_not_done;
+                        candidate_tasks.push(main_sub_undone); 
+                    }
                 }
             }
+            console.log(candidate_tasks.length)
+            console.log(more_candidate_tasks.length)
+
             display_task_options();
             //After that, task opitons are loaded, load log items for annotation 
             load_log();
