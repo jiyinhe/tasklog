@@ -74,7 +74,7 @@ router.post('/register_user', function(req, res){
                         'email': data.email,
                         'pass': data.pass
                     });
-                    send_registration_email(data.user, data.email);
+                    send_registration_email(data.user, data.email, token);
                 }
             }); 
         }
@@ -577,7 +577,7 @@ String.prototype.shuffle = function(){
     return a.join("");
 }
 
-function send_registration_email(username, useremail){
+function send_registration_email(username, useremail, userid){
     var smtpTransport = nodemailer.createTransport('SMTP', {
         //host: 'smtp.cs.ucl.ac.uk',
         service: 'Gmail', 
@@ -592,6 +592,7 @@ function send_registration_email(username, useremail){
             subject: 'Thank you for registering with our study',
             text: 'Dear ' + username + ',\n\n' +
             'You have registered as a participant of our computer and search activity study. Welcome!\n\n' +
+            'Your unique userid is: ' + userid + '\n\n' + 
             'In the following 5 days, your tasks are: \n\n' + 
             ' - Use Google chrome as your Web browser; \n' + 
             ' - Keep the chrome search activity logger running;\n' + 
