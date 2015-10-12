@@ -2,41 +2,254 @@ extends layout
 
 block content
     .container
-        .col-md-12
+        .col-md-11
             .page-header
-                h2 
-                    small Thank you for contributing to our research! In this page, you can find information on how to complete this study. If you have further questions, please don't hesitate to   
+                h1 
+                    small Thank you for contributing to our research! Here, you can find information on how to complete this study. If you have any questions, please do not hesitate to   
                         a(href="mailto:research.mediafutures.ucl@gmail.com") contact us.
-
-                ul
-                    li 
-                        a(href="#procedure") General procedure
-                    li
-                        a(href="#intro") Introduction session
-                    li 
-                        a(href="#diary") Diary study
-                    li
-                        a(href="#debrief") Debrief session
-                    li 
-                        a(href="#software") Software configuration
-                    li 
-                        a(href="#account") Find back your userid     
+                h3
+                    ul.u
+                        li 
+                            a(href="#procedure") What to expect
+                        li 
+                            a(href="#diaryhowto") How to perform diary study
+                        li 
+                            a(href="#software") Software configuration
+                        li 
+                            a(href="#account") Find back your userid     
                   
             .page-header 
-                h1#procedure General procedure 
+                h1#procedure What to expect
+
+                p.lead This study consists of 3 stages: the 
+                    a(href="#intro") Introduction Session
+                    =", the "
+                    a(href="#diary") Diary Study
+                    =", and the "
+                    a(href="#debrief") Debrief Session
+                    =". You are invited to participate all three sessions."
+                    =' Upon completing the study, you will receive a '
+                        span.todo 20 pounds 
+                    ='worth of Amazon voucher as a "thank you" gift.'
+
+            .bs-callout.bs-callout-info
+                h4#intro Introduction session
+                p By now you should have already attended the introduction session. The introduction session includes the following steps:
+                ul.s
+                    li A brief introduction of the purpose of the study, and your tasks
+                    li Participant registration, including filling an in-take questionnaire, and signing a participation agreement. 
+                    li Setup softwares on your computer that are necessary for the study.
+                    li A training session to familiarize you with the softwares and tools to complete the study.  
+
+
+            .bs-callout.bs-callout-info
+                h4#diary Diary study
+                p The diary study lasts for 
+                    span.todo 5 
+                    =" days. During this period, you are requested to perform the following tasks:"
+                
+                ol
+                    li Use 
+                        span.todo chrome 
+                        img(src="/images/Googlechromeflatlogo.png", height=20)
+                        =" as your primary Web browser;"
+                    
+                    li Having your search and browsing acitivies recorded by the 
+                        span.todo chrome logger
+                        =";"
+                    li Having your computer usage activities recorded by the 
+                        span.todo application logger
+                        =";"
+                    li 
+                        span.todo Review 
+                        span your search and browsing log by the end of each day, and 
+                        span.todo annotate 
+                        span your search activities with the goals of your daily information seeking activities. 
+
+                p For step 4, you have received a training session during the introduction session in how to perform the log review. In case you need a remind for the instructions, please refer to the section  
+                    a(href="#diaryhowto") How to perform diary study.  
+                p If you encounter any further questions, please 
+                    a(href="mailto:research.mediafutures.ucl@gmail.com") contact us.
+
+            .bs-callout.bs-callout-info
+                h4#debrief Debrief session
+                p In the debrief session, you will meet our researchers again. The goals of this session include:
+                ul.s 
+                    li Remove the softwares from your laptop;
+                    li You will fill in a post-study questionnaire about your information seeking activities during the diary study;
+                    li You will receive a brief interview about your computer usage activities with our researchers;               
+                p This session should take approximately 
+                    span.todo 1 hour
+                    ="." 
 
             .page-header 
-                h1#intro Introduction session
+                h1#diaryhowto How to perform diary study
+                
+                p.lead For diary study, you will perform a 
+                    span.todo daily 
+                    =" review and annotation of your search activitey log online at: " 
+                    a(href="http://tasklog.cs.ucl.ac.uk/users/annotation") http://tasklog.cs.ucl.ac.uk/users/annotation
 
-            .page-header 
-                h1#diary Diary study
+                p.lead It consists of 3 steps: 
+                ul.u
+                    li 
+                        a(href="#step1") Step1: Indicate your information goals
+                    li
+                        a(href="#step2") Step2: Review your log
+                    li
+                        a(href="#step3") Step3: Associate your search and browing activites with your information goals
 
-            .page-header 
-                h1#debrief Debrief session
+            .bs-callout.bs-callout-warning
+                h4 The diary study interface
 
+                p The diary study interface consists of two parts. On the left side, you can view your search and browsing activities performed with the chrome browser. On the right side, you can create a list of information goals that you plan to achieve or have already achieved with your search/browsing activities during the study period.      
+                img(src="/images/annotation_ui.png", height=400)
+
+            .bs-callout.bs-callout-warning
+                h4 Log toolbar
+                p Above the log area, you can see a toolbar, which allows you to perform a number of batch operations. It also shows your progress on a selected day. See also 
+                    a(href="#batch") Batch operations.
+    
+                img(src="/images/global_tools.png", height=50)
+
+            h2#step1 Step 1: Indicate your information goals
+            
+            .bs-callout.bs-callout-primary
+                h4 What are information goals
+                p We consider a broad and loose definition, which includes the purpose of a search or browsing activity, as well as the context within which the search/browsing activity occurs. 
+                p Examples:
+                ul.s 
+                    li searching/browsing for a specific purpose, e.g., find out potential side effect of flu shots;
+                    li searching/browsing without a specific purpose, e.g, browsing for entertainment, for getting news update, etc. 
+                    li search/browsing happened within the context a work task, e.g., planning a trip/party, looking for information for writing a report
+
+
+            .bs-callout.bs-callout-warning
+                h4 Managing your information goals  
+                p In the information goal area, you can 
+                ul.s 
+                    li Create an information goal: by typing it in the text input, and press "Enter";
+                    li Create a sub goal (if necessary): by clicking on the "+" sign;
+                    li Remove a goal or sub goal: by clicking on the 
+                        span.glyphicon.glyphicon-trash
+                    li Stike out a finished goal: by checking the checkbox;
+                    li Archive your finished goals: click on "options", and select "Archive finished items". Goals that have been finished will be moved to the "Items done" section, as shown below: 
+                    img(src="/images/task_options.png", height=200)
+
+
+            h2#step2 Step 2: Review your log
+            p You can review your search and browsing activity log on a specific day by selecting the date from the tool bar.
+            p By reviewing your log, you can remove any log items that contain private or sensitive information, and anything that you feel should not be recorded. 
+           
+
+            h2#step3 Step 3: Associate your search and browing activites with your information goals
+
+            p There are two types of log items: 
+                span.todo search queries history 
+                ="(left), and "
+                span.todo browsing history 
+                ="(right) as shown in the screenshots below. An item of search query history starts with a symbol "
+                span.glyphicon.glyphicon-search.glyphicon-global
+                =", and an item of browsing history starts with a symbol "
+                span.glyphicon.glyphicon-globe.glyphicon-global
+                ="."
+                ="  When you finish annotating a log item, the frame of the item will turn green (as shown in the right screen shot)." 
+
+            img(src="/images/logitem_search.png", height=150, width=500) 
+            img(src="/images/log_item.png", height=150, width=500) 
+
+            .bs-callout.bs-callout-primary
+                h4 Annotating a search query log item
+                p To annotate a search log item, think about in which context you issued that search query. Select one of the information goals you have previously entered, or create a new information goal if it has not yet been indicated.  
+                p To create a new information goal, follow the instructions listed in
+                    =" "
+                    a(href="#step1") Step 1: Indicate your information goal. 
+                    =" The newly created goal will show up as candidate labels for your log items."
+            
+    
+            .bs-callout.bs-callout-primary
+                h4 Annoating a browsing history item
+                p To annotate a browsing hisotry, apart from associating a browsed page to one of your information goals, we would also like to know whether or not that page is useful for approaching that goal.  
+
+            .bs-callout.bs-callout-warning#batch 
+                h4 Use of batch operations 
+                p To facilitate the review and annotaiton process, you can use the batch operations provided in the tool bar.
+                ul.s
+                    li Checkbox: you can select "all", "none", "labeled", "unlabelled" log items for operation.
+                    li 
+                        span.glyphicon.glyphicon-trash.glyphicon-global
+                        =" : allows you to remove all selected items from the log"
+                    li 
+                        span.glyphicon.glyphicon-eye-open.glyphicon-global 
+                        =" : you can use it to hide/show labeled items"
+                    li
+                        span.glyphicon.glyphicon-tag.glyphicon-global
+                        =" : You can use it to assign the same information goal to all selected log items"
+                        
             .page-header 
                 h1#software Software configuration
 
+            p The softwares are configured during the introduction session. If for some reason you need to re-install/configure them, below is a list of things you need to setup:
+
+            .bs-callout.bs-callout-info
+                h4
+                    strong Chrome browser
+                p The Chrome browser can be downloaded at 
+                    a(href="https://www.google.com/chrome/") https://www.google.com/chrome/
+                    ="."
+
+            .bs-callout.bs-callout-info
+                h4 
+                    strong Chrome logger
+                p The chrome logger can be downloaded at 
+                    a.todo TODO: create a download
+               
+                p To install the logger, take the following steps:
+                ol 
+                    li Click on the chrome setting icon on the right end of the browser tool bar: 
+                    img(src="/images/chrome_extension_menu.png", height=50)
+                    p
+
+                    li On the dropdown menu, select "Settings"; 
+                    p
+
+                    li A new tab will then open showing the chrome setting page. Select "Extensions" on the left side of the page. The extension page looks like this: 
+                    img(src="/images/chrome_extension_page.png", height=200)
+                    p
+                
+                    li Click on "Load unpacked extension"; select the directory that contains the chrome logger that you have downloaded. This installs the chrome logger. 
+                    p
+
+                    li Upon successfully install the logger, you will see a new chrome extension showing up:  
+                    img(src="/images/chrome_logger_install.png", height=200)
+                
+                p  You may also need to reset your userid. In this case, please follow the instruction in 
+                    a(href="#account") Find back your userid.
+
+            .bs-callout.bs-callout-info 
+                h4 
+                    strong Application logger 
+
+
             .page-header 
                 h1#account Find back your userid
+
+                p.lead At the introduction session, we have set up the userid for your loggers. If for any reason that this userid is lost or needs to be reset, you can find your userid by logging in at 
+                    a(href="http://tasklog.cs.ucl.ac.uk") http://tasklog.cs.ucl.ac.uk
+
+                p.lead Your userid is shown at the right corner of the navigation bar:
+                img(src="/images/nav_bar.jpg", height=50)
+
+            .bs-callout.bs-callout-warning
+                h4 Set userid in chrome logger 
+                p   When your userid is not set in the chrome logger, an alert will show up on the upper right corner of your screen. It looks like this: 
+                img(src="/images/userid_warning.jpg", height=70)
+
+                p   To set your userid, click the icon 
+                    img(src="/images/icon_19.png") 
+                    =" on the toolbar on your chrome browser. A popup will show up in which you can input your userid:"
+                    img(src="/images/chrome_logger_userid_input.png", height=200)
+ 
+
+
                  
