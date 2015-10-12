@@ -289,7 +289,7 @@ app.post('/reset/:token', function(req, res){
 });
 
 //For downloading the chrome logger
-app.get('/download_chromelogger', function(req, res, next){
+app.get('/download_chromelogger', function(req, res){
     var filename = __dirname + '/public/chrome-logger.zip';
     res.download(filename);
 });
