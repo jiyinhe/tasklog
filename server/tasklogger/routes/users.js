@@ -3,6 +3,8 @@ var bcrypt = require('bcrypt-nodejs');
 var async = require('async');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectID;
+var nodemailer = require('nodemailer');
+
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -71,7 +73,8 @@ router.post('/register_user', function(req, res){
                         'name': data.user,
                         'email': data.email,
                         'pass': data.pass
-                    })
+                    });
+                    send_registration_email(data.user, data.email);
                 }
             }); 
         }
@@ -85,21 +88,6 @@ router.post('/register_user', function(req, res){
     });
 });
 
-/* GET registration page. */
-
-/*
-router.get('/dashboard', function(req, res, next) {
-    if (req.user===undefined){
-        res.redirect('/users/login');
-    }
-    //console.log(req.user)
-    res.render('dashboard', {
-        "user": req.user,
-        "homeclass": "active",
-        "title": "Tasklog - Home",
-    });
-});
-*/
 
 //Check if userid exists
 router.post('/checkid', function(req, res){
@@ -574,9 +562,6 @@ router.post('/ajax_annotation_options', function(req, res){
 */
 });
 
- 
-
-
 //util functions
 var alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 String.prototype.shuffle = function(){
@@ -590,6 +575,37 @@ String.prototype.shuffle = function(){
         a[j] = tmp;
     }
     return a.join("");
+}
+
+function send_registration_email(username, useremail){
+    var smtpTransport = nodemailer.createTransport('SMTP', {
+        //host: 'smtp.cs.ucl.ac.uk',
+        service: 'Gmail', 
+	    auth: {
+    		    user: "research.mediafutures.ucl@gmail.com",
+       		    pass: "research4fun"
+	        }
+        });
+        var mailOptions = {
+            to: useremail,
+            from: 'Research Mediafutures UCL',
+            subject: 'Thank you for registering with our study',
+            text: 'Dear ' + username + ',\n\n' +
+            'You have registered as a participant of our computer and search activity study. Welcome!\n\n' +
+            'In the following 5 days, your tasks are: \n\n' + 
+            ' - Use Google chrome as your Web browser; \n' + 
+            ' - Keep the chrome search activity logger running;\n' + 
+            ' - Keep the application logger running; \n' + 
+            ' - Review and perform a light weight annotation of your search and browsing history every day. \n\n' + 
+            'To review and annotate your search history, please login at http://tasklog.cs.ucl.ac.uk/users/login \n\n' + 
+            'If you have any questions or problems during the experiment period, please do not hesitate to contact us with this email address. \n\n' + 
+            'Kind regards, \n' + 
+            'Jiyin He and Tim Cowlishaw \n'  
+        };
+        smtpTransport.sendMail(mailOptions, function(err) {
+            if (err)
+                console.log(err)
+        });
 }
 
 module.exports = router;

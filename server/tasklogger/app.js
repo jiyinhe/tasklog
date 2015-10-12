@@ -189,10 +189,10 @@ app.post('/forgotpassword', function(req, res, next) {
             var smtpTransport = nodemailer.createTransport('SMTP', {
                 //host: 'smtp.cs.ucl.ac.uk',
                 service: 'Gmail', 
-		auth: {
-        		user: "research.mediafutures.ucl@gmail.com",
-        		pass: "research4fun"
-		}
+		        auth: {
+        		    user: "research.mediafutures.ucl@gmail.com",
+        		    pass: "research4fun"
+		        }
             });
             var mailOptions = {
                 to: user.email,
