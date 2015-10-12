@@ -288,6 +288,14 @@ app.post('/reset/:token', function(req, res){
         });
 });
 
+//For downloading the chrome logger
+app.get('/download_chromelogger', function(req, res, next){
+    var filename = __dirname + '/public/chrome-logger.zip';
+    res.download(filename);
+});
+
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
@@ -318,6 +326,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
