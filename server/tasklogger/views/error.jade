@@ -16,9 +16,10 @@ html
         nav(class=["navbar", "navbar-default", "navbar-fixed-top"])
             .row
                 .navbar-brand tasklog
- 
-    block content
-        h1=error.status + ' ' + message
+
+
+        h1='Page ' + message
+
 
         p It seems you are not finding what you are looking for. To access your personal log, please visit:
         a(href="http://tasklog.cs.ucl.ac.uk/users/login") http://tasklog.cs.ucl.ac.uk/users/login
