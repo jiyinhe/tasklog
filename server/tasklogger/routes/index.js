@@ -13,6 +13,13 @@ router.get('/', function(req, res, next) {
 
 });
 
+/* Get post-questionnaire */
+router.get('/post-questionnaire', function(req, res, next){
+    res.render('post-questionnaire', {});
+});
+
+ 
+
 /* GET page for check db data*/
 router.get('/logpeek', function(req, res, next){
     var db = req.db;

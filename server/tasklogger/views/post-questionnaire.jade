@@ -1,0 +1,35 @@
+doctype html
+html
+  head
+    link(rel="stylesheet", href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+ 
+  body
+    block navbar
+        nav(class=["navbar", "navbar-default", "navbar-fixed-top"])
+            .row
+                .navbar-brand tasklog
+
+
+    block content
+        .container
+            .col-md-10
+                h2.text-center.space30 Post-study questionnaire
+                .form-horizontal
+                    .form-group
+                        label(for="userid", class=["col-sm-2", "control-label"]) UserID:
+                        .col-sm-3
+                            input#input_userid(type="text", class="form-control", name="userid", placeholder="Please enter your userid")
+                        .col-sm-2
+                            button#btn_userid.btn.btn-primary(class="form-control", name="submit_userid") Submit
+
+                        .col-sm-2
+                            button#btn_reset.btn.btn-default.form-control Reset
+
+                        .err#err_userid
+
+                div#task_selection
+
+                hr
+                div#userid_set 
+                div#questionnaire
