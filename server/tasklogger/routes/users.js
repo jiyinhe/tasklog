@@ -157,7 +157,7 @@ router.get('/instructions', function(req, res, next) {
 /* Annotation page */
 router.get('/annotation', function(req, res, next) {
 //    console.log('get_annotation', req.user)
-     console.log('annotationn', req.session.passport)
+//     console.log('annotationn', req.session.passport)
     if (req.user===undefined){
         res.redirect('/users/login');
     }

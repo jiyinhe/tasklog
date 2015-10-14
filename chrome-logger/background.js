@@ -24,8 +24,8 @@ For following activities are recorded:
 ===================================*/ 
 var device = "chrome";
 // TODO: set the url of the server
-//var domain = 'http://localhost:3000';
-var domain = 'http://tasklog.cs.ucl.ac.uk';
+var domain = 'http://localhost:3000';
+//var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
 var serp_storage_url = domain + '/saveserp';
 var check_userid_url = domain + '/users/checkid';
@@ -166,7 +166,7 @@ function savedata(logdata){
     //If a SERP loaded, send message to content.js
     if (logdata['event'] == 'tab-loaded'){
         var se =  check_searchEngine(logdata['url']);
-        //console.log(se)
+        console.log(se)
         if(se.search){
             var tabid = logdata.affected_tab_id;
             chrome.tabs.sendMessage(tabid, {msg: 'serp loaded', 'se': se.se, 
@@ -178,6 +178,7 @@ function savedata(logdata){
                     //var newwindow = window.open();
                     //newwindow.document.write('<html>' + pako.inflate(serp, {'to': 'string'}) + '</html>')
                     //save serp
+                    //console.log(response)
                     if (response!=undefined){
                         var serpdata = {
                             'serp': response.serp,
@@ -251,6 +252,7 @@ function savedata(logdata){
 
 //Save SERP content
 function save_serp(serpdata){
+//    console.log('about to save serp')
     //check if storage is empty
     chrome.storage.sync.get('serpdata', function(item){
         var stored_log = []
@@ -271,6 +273,7 @@ function save_serp(serpdata){
         //if userid is not set, send notification
         //console.log(stored_log);
         if (user_id == ''){
+            console.log('user id not set')
             //store it in storage
             chrome.storage.sync.set({'serpdata': stored_log})
 
@@ -285,6 +288,7 @@ function save_serp(serpdata){
                 });
         }
         else{
+ //           console.log('save serp')
             //otherwise try to store it in db
             $.ajax({
                 type: "POST",
@@ -292,7 +296,7 @@ function save_serp(serpdata){
                 data: {"data": JSON.stringify(stored_log)},
                 //dataType: "json",
                 success: function(response){
-                    console.log(response)
+//                    console.log(response)
                     if (response.err){
                         //error occured, log stay in storage
                         chrome.storage.sync.set({'serpdata': stored_log})

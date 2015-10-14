@@ -88,7 +88,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
             }
             if (ele != ''){
                 res = document.getElementById(ele);
-                html = res.innerHTML;
+                if (res == null)
+                    html = '';
+                else
+                    html = res.innerHTML;
                 //Check every 500 ms
                 var wait_load = setInterval(function(){
                     res = document.getElementById(ele)

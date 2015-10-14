@@ -21,6 +21,7 @@ router.get('/post-questionnaire', function(req, res, next){
  
 
 /* GET page for check db data*/
+/*
 router.get('/logpeek', function(req, res, next){
     var db = req.db;
     var collection = db.get('log_chrome');
@@ -54,8 +55,10 @@ router.get('/logpeek', function(req, res, next){
     else
         res.render('logpeek', {"title": "Logview", "docs": []});
 });
+*/
 
 /* save serp */
+/*
 router.post('/saveserp', function(req, res){
     var db = req.db;
     var data = JSON.parse(req.body.data);
@@ -79,8 +82,10 @@ router.post('/saveserp', function(req, res){
             res.send({"error": false});
     });
 });
+*/
 
 /* process data posting request from chrome */
+/*
 router.post('/savedata', function(req, res){
      console.log('savedata', req.session.passport)
      
@@ -116,7 +121,8 @@ router.post('/savedata', function(req, res){
             res.send({"error": false});
     });
 });
-
+*/
+/*
 function format_records(docs){
     var D = [];
     for (var i = 0; i<docs.length; i++){
@@ -182,5 +188,5 @@ function format_records(docs){
     }
     return D
 }
-
+*/
 module.exports = router;

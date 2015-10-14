@@ -45,7 +45,113 @@ app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+//Not using static files in session 
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use('/', routes);
+
+/* GET page for check db data*/
+app.get('/logpeek', function(req, res, next){
+    //var db = req.db;
+    var collection = db.get('log_chrome');
+
+    var query = {};
+    if (req.query.userid === undefined){}
+    else if (req.query.userid != '')
+        query['userid'] = req.query.userid;
+
+    var query_ts = {}; 
+    if (req.query.from === undefined){}
+    else
+        query_ts.$gte = parseInt(req.query.from);
+
+    if (req.query.to === undefined){}
+    else
+        query_ts.$lte = parseInt(req.query.to);
+
+    if (Object.keys(query_ts).length > 0)
+        query['timestamp'] = query_ts;
+
+    //Query DB
+    if (Object.keys(query).length > 0)
+       collection.find(query, {sort: {timestamp: 1}}, function(e, docs){
+            console.log(docs.length);
+            res.render('logpeek', {
+                "title": "Logview",
+                "docs": format_records(docs),
+                });
+        }); 
+    else
+        res.render('logpeek', {"title": "Logview", "docs": []});
+});
+
+
+/* process data posting request from chrome */
+app.post('/savedata', function(req, res){
+//    console.log(req)
+//    console.log('savedata')
+     
+    // get db connection
+    //var db = req.db;
+    var data = JSON.parse(req.body.data);
+ 
+    // TODO: test this in deployment
+    var IP = req.ip;
+
+    //set the collection
+    var collection = null;
+    // we can do this because if it's sent by batch
+    // its sent by the same device, same user
+    if (data[0].device == "chrome"){
+        collection = db.get('log_chrome');
+        for (var i = 0; i < data.length; i++){
+            data[i]['IP'] = IP;
+            data[i]['timestamp_bson'] = new Date(data[i]['timestamp']);
+        }
+    }
+    //TODO: add for other devices and collections 
+    //store the entry to db
+    collection.col.insert(data, function(err, doc){
+        if (err){
+            res.send({
+                "error": true,
+                "emsg": "error occurred when inserting record",
+            });
+            console.log(err);
+        }
+        else
+            res.send({"error": false});
+    });
+});
+
+app.post('/saveserp', function(req, res){
+//    console.log('saveserp')
+  //  var db = req.db;
+    var data = JSON.parse(req.body.data);
+    for(var i = 0; i<data.length; i++){
+        data[i].serp = pako.inflate(data[i].serp, {'to': 'string'});
+        data[i]['timestamp_bson'] = new Date(data[i]['timestamp']);
+    }
+
+    collection = db.get('log_serp');
+
+    //store the entry to db
+    collection.col.insert(data, function(err, doc){
+        if (err){
+            res.send({
+                "error": true,
+                "emsg": "error occurred when inserting record",
+            });
+            console.log(err);
+        }
+        else
+            res.send({"error": false});
+    });
+});
+
+
+
 
 //middlewares for passport
 app.use(session({secret: 'soncabaret',
@@ -61,6 +167,7 @@ app.use(session({secret: 'soncabaret',
 
 }));
 
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -75,7 +182,7 @@ app.use(function(req, res, next){
 });
 
 
-app.use('/', routes);
+//app.use('/', routes);
 app.use('/users', users);
 
 var User = db.get('user');
@@ -127,7 +234,7 @@ app.post('/users/login',
     }), 
     function(req, res){
 //	console.log('login success', req.user)
-	console.log('login success', req.session.passport)
+//	console.log('login success', req.session.passport)
 	//Add to passport as sometimes it doesn't update this info
 //	console.log(req.session)
 //	req.session.passport = {'user': req.user}
@@ -352,4 +459,69 @@ app.use(function(err, req, res, next) {
   });
 });
 
+function format_records(docs){
+    var D = [];
+    for (var i = 0; i<docs.length; i++){
+        var d = {'count': i+1,
+                 'userid': docs[i].userid, 
+                 'timestamp': docs[i].timestamp,
+                 'event': docs[i]['event'],
+                 'tabId': docs[i]['affected_tab_id'],
+                 'class': ''
+                };
+        if (docs[i]['event'] == 'tab-search'){
+            d['details'] = JSON.stringify({ 
+                'query': docs[i].details.query,
+                'engine': docs[i].details.engine,
+                'start': docs[i].details.start,
+                'media': docs[i].details.media,
+            });
+            d['url'] =  docs[i].details.current_tab.url;
+            d['title'] =  docs[i].details.current_tab.title;
+            d['class'] = 'success';
+        }
+        else if (docs[i]['event'] == 'link_click'){
+            d['details'] = JSON.stringify({'anchor text': docs[i].details.link_data.anchor});
+            d['url'] = docs[i].details.senderTab.url;
+            d['title'] = docs[i].details.senderTab.title;
+            d['class'] = "success";
+        }
+        else if (docs[i]['event'] == 'form_submit'){
+            d['details'] = JSON.stringify(docs[i].details.form_data);
+            d['url'] = docs[i].details.senderTab.url;
+            d['title'] = docs[i].details.senderTab.title;
+            d['class'] = "success";
+        }
+        else if (docs[i]['event'] == 'tab-replaced'){
+            d['details'] = JSON.stringify(docs[i].details);
+            d['url'] = '';
+            d['title'] = '';
+        }
+        else if (docs[i]['event'] == 'tab-close'){
+            d['url'] = '';
+            d['title'] = '';
+            d['details'] = '';
+        }
+        else if (docs[i]['event'].indexOf('tab') > -1){
+            d['url'] = docs[i].details.current_tab.url;
+            d['title'] = docs[i].details.current_tab.title;
+            d['details'] = '';
+            if (docs[i]['event'] == 'tab-open-in-new')
+                d['details'] = JSON.stringify({
+                    'newTabId': docs[i].details.new_tab.id,
+                    'openerTabId': docs[i].details.new_tab.openerTabId,
+                    'newTabTitle': docs[i].details.new_tab.title,
+                    'newTabURL': docs[i].details.new_tab.url,
+                });
+
+        }
+        else if (docs[i]['event'].indexOf('navigation')>-1){
+            d['url'] = docs[i].details.url;
+            d['details'] = 'TransitionType: '+docs[i].details.transitionType; 
+            d['class'] = 'success';
+        }
+        D.push(d);
+    }
+    return D
+}
 module.exports = app;
