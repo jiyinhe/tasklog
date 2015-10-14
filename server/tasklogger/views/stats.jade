@@ -1,0 +1,35 @@
+extends layout
+
+block headextra
+    script(src="https://www.google.com/jsapi")
+    script(src="/javascripts/stats.js")
+    
+
+block content
+    .container
+        .col-md-12
+            .page-header
+                h3 My search and browsing activities 
+
+            .row
+                .col-sm-6
+                    div#plot_search_hour
+                .col-sm-6
+                    div#plot_search_day             
+                
+            .page-header
+                h3 My top 5 information goals
+                    =" "
+                    small Results only include the log items that have been annotated.
+
+            .row
+                .col-sm-6
+                    div#plot_task_hour
+                .col-sm-6
+                    div#plot_task_day
+            
+ 
+            .page-header
+                h3 My search and browsing activities and my information goals
+            .row
+                div#plot_task_distribution 
