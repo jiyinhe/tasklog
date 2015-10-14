@@ -49,9 +49,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //middlewares for passport
 app.use(session({secret: 'soncabaret',
-    //to avoid the warning message
-    //expires in 2 weeks
-    cookie: {maxAge: 360000*24*14},
+    cookie: {
+	//try to add path to fix the req.session.user undefined issue
+        path: '/',
+	maxAge: 360000},
     resave: true,
     saveUninitialized: true,
     store: new MongoStore({
@@ -59,6 +60,7 @@ app.use(session({secret: 'soncabaret',
     }),
 
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
@@ -76,6 +78,8 @@ app.use(function(req, res, next){
 app.use('/', routes);
 app.use('/users', users);
 
+var User = db.get('user');
+
 
 //Set up authentication here
 //After login all req should have a user object
@@ -88,7 +92,6 @@ passport.deserializeUser(function(user, done) {
 });
 
 //authentication process
-var User = db.get('user');
 //User.findOne({email: 'jiyinhe@gmail.com'}, function(e, docs){
 //    console.log(docs['pass']);
 //});
@@ -106,7 +109,9 @@ passport.use(new LocalStrategy(
             else if (!bcrypt.compareSync(password, user['pass'])){
                 return done(null, false, {message: 'Incorrect password.'});
             }
-            return done(null, user);
+            else{
+            	return done(null, user);
+            }		
         });
   });
   }
@@ -116,10 +121,23 @@ passport.use(new LocalStrategy(
 //login request
 app.post('/users/login',
     passport.authenticate('local', {
-        successRedirect: '/users/annotation',
+        //successRedirect: '/users/annotation',
         failureRedirect: '/users/login',
         failureFlash: true,
-    })
+    }), 
+    function(req, res){
+//	console.log('login success', req.user)
+	console.log('login success', req.session.passport)
+	//Add to passport as sometimes it doesn't update this info
+//	console.log(req.session)
+//	req.session.passport = {'user': req.user}
+//        req.session.user = req.user;
+//	console.log(req.session)
+//	req.session.user = req.user;
+//	req.session.save(function(){ 
+	res.redirect('/users/annotation');
+//	});
+    }
 );
 
 app.get('/loginFailure', function(req, res, next) {
@@ -127,7 +145,7 @@ app.get('/loginFailure', function(req, res, next) {
 });
 
 app.get('/loginSuccess', function(req, res, next) {
-  console.log(req)
+  //console.log(req)
   res.send('Successfully authenticated');
 });
 
@@ -135,8 +153,15 @@ app.get('/loginSuccess', function(req, res, next) {
 //Logout
 app.get('/logout', function(req, res){
     req.logout();
-    res.redirect('/users/login');
+//    console.log('logout req', req.user)
+    console.log('logout session',req.session.passport)
+    //Manually remove the session from mangodb
+    //passport logout does not clear the session somehow
+    req.session.destroy(function(){ 
+        res.redirect('/users/login');
+    }); 
 });
+
 
 //Reset password request
 app.get('/forgotpassword', function(req, res, next){

@@ -25,6 +25,9 @@ router.get('/registration', function(req, res, next) {
 /* GET login page */
 router.get('/login', function(req, res, next){
     var err = req.flash();
+    console.log('login get', req.session.passport);
+    //console.log('get login', req.user)
+    //console.log(err)
     if (err['error'] === undefined ){
         res.render('login', {});
     }
@@ -32,6 +35,39 @@ router.get('/login', function(req, res, next){
         res.render('login', {'err': "Login faild: " + err['error']});
     }
 });
+
+/*
+router.post('/login', function(req, res){
+    var username= req.body.username;
+    var password = bcrypt.hashSync(req.body.password);
+    User = req.db.get('user');	
+
+    User.findOne({ email: username }, function (err, user) {
+            if (err) {
+                console.log(err);
+                req.flash('A database error occured, please try again later'); 
+	        res.redirect('/users/login');
+            }
+            else {	
+            if (!user) {
+                req.flash('Email not found');
+                res.redirect('/users/login');
+            }
+            //else if (password != user['pass']) {
+            else if (!bcrypt.compareSync(password, user['pass'])){
+                req.flash('Incorrect password');
+                res.redirect('/users/login');
+            }
+            else{
+                console.log('success')
+                req.user = user;
+                req.session.user = user;
+                res.redirect('/users/annotation');
+            }		
+           }
+    });  
+});
+*/
 
 //process registration data
 router.post('/register_user', function(req, res){
@@ -120,7 +156,8 @@ router.get('/instructions', function(req, res, next) {
        
 /* Annotation page */
 router.get('/annotation', function(req, res, next) {
-//    console.log(req.user)
+//    console.log('get_annotation', req.user)
+     console.log('annotationn', req.session.passport)
     if (req.user===undefined){
         res.redirect('/users/login');
     }

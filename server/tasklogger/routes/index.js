@@ -82,6 +82,8 @@ router.post('/saveserp', function(req, res){
 
 /* process data posting request from chrome */
 router.post('/savedata', function(req, res){
+     console.log('savedata', req.session.passport)
+     
     // get db connection
     var db = req.db;
     var data = JSON.parse(req.body.data);
