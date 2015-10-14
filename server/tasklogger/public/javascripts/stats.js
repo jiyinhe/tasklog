@@ -2,16 +2,21 @@
 var topX_tasks = 5;
 var stats_data_url = '/users/get_stats_data';
 
-google.load('visualization', '1', {packages: ['corechart', 'bar']});
+
+google.load('visualization', '1', {packages: ['corechart', 'bar']}); 
 google.setOnLoadCallback(plot_per_hour_activities());
 google.setOnLoadCallback(plot_per_day_activities());
 google.setOnLoadCallback(plot_task_per_hour());
 google.setOnLoadCallback(plot_task_per_day());
 google.setOnLoadCallback(plot_task_distribution());
 
-
-
-$(document).ready(function(){
+//$(document).ready(function(){
+$(window).load(function(){
+    plot_per_hour_activities();
+    plot_per_day_activities();
+    plot_task_per_hour();
+    plot_task_per_day();
+    plot_task_distribution();
 });
 
 
