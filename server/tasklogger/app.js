@@ -94,7 +94,7 @@ var User = db.get('user');
 //});
 passport.use(new LocalStrategy(
     function(username, password, done) {
-    //process.nextTick(function(){
+    process.nextTick(function(){
         User.findOne({ email: username }, function (err, user) {
             if (err) {
                 console.log(err);
@@ -108,7 +108,7 @@ passport.use(new LocalStrategy(
             }
             return done(null, user);
         });
-  //});
+  });
   }
 ));
 

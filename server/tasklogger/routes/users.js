@@ -67,6 +67,7 @@ router.post('/register_user', function(req, res){
                  } 
                 // success in creating new user
                 else{
+                    send_registration_email(data.user, data.email, token);
                     res.send({
                         'err': false,
                         'userid': token,
@@ -74,7 +75,6 @@ router.post('/register_user', function(req, res){
                         'email': data.email,
                         'pass': data.pass
                     });
-                    send_registration_email(data.user, data.email, token);
                 }
             }); 
         }
@@ -124,17 +124,19 @@ router.get('/annotation', function(req, res, next) {
     if (req.user===undefined){
         res.redirect('/users/login');
     }
-
-    //console.log(req.user)
-    res.render('annotation', {
-        "user": req.user,
-        "annotationclass": "active",
-        "title": "Tasklog - My annotations",
-    });
+    else {
+        //console.log(req.user)
+        res.render('annotation', {
+            "user": req.user,
+            "annotationclass": "active",
+            "title": "Tasklog - My annotations",
+        });
+    }
 });
 
 
 /* Account information page */
+/*
 router.get('/account', function(req, res, next) {
     if (req.user===undefined){
         res.redirect('/users/login');
@@ -146,7 +148,7 @@ router.get('/account', function(req, res, next) {
         "title": "Tasklog - My account", 
     });
 });
-
+*/
 
 
 /* ajax for todo list (tasks) */
