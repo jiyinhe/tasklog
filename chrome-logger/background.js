@@ -24,8 +24,8 @@ For following activities are recorded:
 ===================================*/ 
 var device = "chrome";
 // TODO: set the url of the server
-var domain = 'http://localhost:3000';
-//var domain = 'http://tasklog.cs.ucl.ac.uk';
+//var domain = 'http://localhost:3000';
+var domain = 'http://tasklog.cs.ucl.ac.uk';
 var data_storage_url = domain + '/savedata';
 var serp_storage_url = domain + '/saveserp';
 var check_userid_url = domain + '/users/checkid';
