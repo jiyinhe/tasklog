@@ -562,6 +562,180 @@ router.post('/ajax_annotation_options', function(req, res){
 */
 });
 
+//Request for view user stats
+router.get('/stats', function(req, res, next){
+    res.render('stats', {
+        "user": req.user,
+        "statsclass": "active",
+        "title": "Tasklog - My stats",
+    });
+});
+
+//Request for getting stats data
+router.post('/get_stats_data', function(req, res){
+    var e = req.body.event;
+    var db = req.db;
+    var collection = db.get('log_chrome');
+    var timediff = new Date().getTimezoneOffset()*60*1000;
+ 
+    if (e == 'per_hour_activities'){
+        //Get search and browsing counts group by hour of the day
+        collection.col.aggregate([
+                {'$match': {'userid': req.user.userid,
+                    'to_annotate': true, 
+                    'removed': false}},
+                {$project: {
+                    'year': {$year: {$subtract: ['$timestamp_bson', timediff]}},
+                    'day':  {$dayOfYear: {$subtract: ['$timestamp_bson', timediff]}},
+                    'hour': {$hour: {$subtract: ['$timestamp_bson', timediff]}},
+                    'event': 1,
+                    }
+                },
+                {$group: {
+                    '_id': {hour: '$hour', event: '$event', year: '$year', day: '$day'},
+                    'count': {$sum: 1},
+                    }
+                },
+                {$sort: {'_id': 1}}
+            ],
+            function(e, docs){
+                if (e){
+                    console.log(e);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+//                    console.log(docs)
+                    res.send({'err': false, 'data': docs});
+                }            
+            });
+    }
+    else if (e == 'per_day_activities'){
+        collection.col.aggregate([
+                {'$match': {'userid': req.user.userid,
+                    'to_annotate': true, 
+                    'removed': false}},
+                {$project: {
+                    'day':  {$dayOfWeek: {$subtract: ['$timestamp_bson', timediff]}},
+                    'event': 1,
+                    }
+                },
+                {$group: {
+                    '_id': { event: '$event', day: '$day'},
+                    'count': {$sum: 1},
+                    }
+                },
+                {$sort: {'_id': 1}}
+            ],
+            function(e, docs){
+                if (e){
+                    console.log(e);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+//                    console.log(docs)
+                    res.send({'err': false, 'data': docs});
+                }            
+            }); 
+    }
+    else if (e == 'per_hour_tasks'){
+        collection.col.aggregate([
+                {'$match': {'userid': req.user.userid,
+                    'to_annotate': true, 
+                    'removed': false,
+                    'annotation.task': {$exists: true},
+                    }
+                },
+                {$project: {
+                    'hour': {$hour: {$subtract: ['$timestamp_bson', timediff]}},
+                    'task': '$annotation.task.name',
+                    }
+                },
+                {$group: {
+                    '_id': { hour: '$hour', task: '$task'},
+                    'count': {$sum: 1},
+                    }
+                },
+                {$sort: {'_id': 1}}
+            ],
+            function(e, docs){
+                if (e){
+                    console.log(e);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+//                    console.log(docs)
+                    res.send({'err': false, 'data': docs});
+                }            
+            });
+    }
+    else if (e == 'per_day_tasks'){
+        collection.col.aggregate([
+                {'$match': {'userid': req.user.userid,
+                    'to_annotate': true, 
+                    'removed': false,
+                    'annotation.task': {$exists: true},
+                    }
+                },
+                {$project: {
+                    'day': {$dayOfWeek: {$subtract: ['$timestamp_bson', timediff]}},
+                    'task': '$annotation.task.name',
+                    }
+                },
+                {$group: {
+                    '_id': { day: '$day', task: '$task'},
+                    'count': {$sum: 1},
+                    }
+                },
+                {$sort: {'_id': 1}}
+            ],
+            function(e, docs){
+                if (e){
+                    console.log(e);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+//                    console.log(docs)
+                    res.send({'err': false, 'data': docs});
+                }            
+            });
+    }
+    else if (e == 'task_distribution'){
+        collection.col.aggregate([
+                {'$match': {'userid': req.user.userid,
+                    'to_annotate': true, 
+                    'removed': false,
+                    'annotation.task': {$exists: true},
+                    }
+                },
+                {$project: {
+                    'task': '$annotation.task.name',
+                    }
+                },
+                {$group: {
+                    '_id': { task: '$task'},
+                    'count': {$sum: 1},
+                    }
+                },
+                {$sort: {'_id': 1}}
+            ],
+            function(e, docs){
+                if (e){
+                    console.log(e);
+                    res.send({'err': true, 'emsg': e});
+                }
+                else{
+//                    console.log(docs)
+                    res.send({'err': false, 'data': docs});
+                }            
+            });
+    }
+
+});
+
+
+
+
+
 //util functions
 var alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 String.prototype.shuffle = function(){
