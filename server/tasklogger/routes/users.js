@@ -603,11 +603,16 @@ router.post('/ajax_annotation_options', function(req, res){
 
 //Request for view user stats
 router.get('/stats', function(req, res, next){
-    res.render('stats', {
-        "user": req.user,
-        "statsclass": "active",
-        "title": "Tasklog - My stats",
-    });
+    if (req.user===undefined){
+        res.redirect('/users/login');
+    }
+    else {
+        res.render('stats', {
+            "user": req.user,
+            "statsclass": "active",
+            "title": "Tasklog - My stats",
+        });
+    }
 });
 
 //Request for getting stats data
