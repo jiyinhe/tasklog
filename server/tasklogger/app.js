@@ -158,7 +158,7 @@ app.use(session({secret: 'soncabaret',
     cookie: {
 	//try to add path to fix the req.session.user undefined issue
         path: '/',
-	maxAge: 360000},
+	maxAge: 360000*24},
     resave: true,
     saveUninitialized: true,
     store: new MongoStore({
