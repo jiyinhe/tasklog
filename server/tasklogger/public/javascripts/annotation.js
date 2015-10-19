@@ -158,13 +158,20 @@ $(document).ready(function(){
         load_data();
     });
 
-    //Per-item remove, click on modal confirming removing
+    //Per-item remove, click on modal confirming removing - deprecated
     $('#div_logarea').on('click', '.remove-confirm', function(){
         var item_id = $(this).attr('id').split('_')[2];
         $('#modal_' + item_id).modal('toggle');
         //remove the item
         items = [item_id];
         remove_logitems(items); 
+    });
+
+    //Per-item remove
+    $('#div_logarea').on('click', '.logitem-remove', function(){
+        var item_id = $(this).attr('id').split('_')[2];
+        items = [item_id];
+        remove_logitems(items);
     });
 
     //Global remove selected log items
@@ -590,7 +597,9 @@ function create_logitem_elements(ele_candidate_labels){
         '&times;',
         '</span>',
         ].join('\n');
-    remove.setAttribute('data-toggle', 'modal');
+
+    //Skip removal confirm dialog
+//    remove.setAttribute('data-toggle', 'modal');
  
     //Logitem labels 
     var div_item_label = document.createElement('div');
@@ -627,9 +636,9 @@ function create_logitem_elements(ele_candidate_labels){
     span_useful_false.setAttribute('class', 'label label-default logitem-useful-option logitem-useful-no');
     span_useful_false.innerHTML = 'NOT USEFUL';
 
-    var div_modal = logitem_create_remove_modal();
-
-    elements.div_modal = div_modal;
+    /* Skip using removal confirm, too much work for user */
+    //var div_modal = logitem_create_remove_modal();
+    //elements.div_modal = div_modal;
  
     elements.checkbox = checkbox;
     elements.icon = icon;
@@ -673,7 +682,9 @@ function assemble_logitem_elements(elements, item){
     time.innerHTML = new Date(item.timestamp).toLocaleTimeString();
 
     var remove = elements.remove.cloneNode(true);
-    remove.setAttribute('data-target', '#modal_' + item['_id']);
+    remove.setAttribute('id', 'logitem_remove_' + item['_id']);
+    //Skip the confirm dialog
+//    remove.setAttribute('data-target', '#modal_' + item['_id']);
 
     var div_item_label = elements.div_item_label.cloneNode(false);
     div_item_label.setAttribute('id', 'logitem_label_' + item['_id']);
@@ -695,10 +706,11 @@ function assemble_logitem_elements(elements, item){
     var span_useful_false = elements.span_useful_false.cloneNode(true);
     span_useful_false.setAttribute('id', 'logitem_useful_false_' + item['_id']);
 
-    var div_modal = elements.div_modal.cloneNode(true);
-    div_modal.setAttribute('id', 'modal_' + item['_id']);
-    div_modal.getElementsByClassName('remove-confirm')[0].setAttribute('id', 'remove_confirm_' + item['_id']);
-
+    //Skip the removal dialog
+    //var div_modal = elements.div_modal.cloneNode(true);
+    //div_modal.setAttribute('id', 'modal_' + item['_id']);
+    //div_modal.getElementsByClassName('remove-confirm')[0].setAttribute('id', 'remove_confirm_' + item['_id']);
+    
     var icon = elements.icon.cloneNode(false);
     var text = elements.text.cloneNode(false);
     var icon_literal = '';
@@ -766,22 +778,23 @@ function assemble_logitem_elements(elements, item){
     }
 
 
-    var message = [
-    '<div class="alert alert-danger">',
-    '<h4><strong>Warning</strong> - removing item from log </h4>',
-    icon_literal,
-    text.innerHTML,
-    '</div>',
-    '<h5>Are you sure that you would like this item to be removed from your log?</h5>',
-    ]
-    div_modal.getElementsByClassName('modal-body')[0].innerHTML = message.join('\n');
+    //Skip removal dialog
+   // var message = [
+   // '<div class="alert alert-danger">',
+   // '<h4><strong>Warning</strong> - removing item from log </h4>',
+   // icon_literal,
+   // text.innerHTML,
+   // '</div>',
+   // '<h5>Are you sure that you would like this item to be removed from your log?</h5>',
+   // ]
+   // div_modal.getElementsByClassName('modal-body')[0].innerHTML = message.join('\n');
 
     div_item_content.appendChild(checkbox);
     div_item_content.appendChild(icon); 
     div_item_content.appendChild(text);
     div_item_content.appendChild(time);
     div_item_content.appendChild(remove);
-    div_item_content.appendChild(div_modal);
+    //div_item_content.appendChild(div_modal);
     div_item.appendChild(div_item_content)
 
     div_chosen_label.appendChild(span_label_text);
