@@ -1,0 +1,34 @@
+extend admin_layout
+
+block content
+    .err
+        =err
+    table.table.logview
+        thead
+            tr
+                th #  
+                th Time 
+                th Event 
+                th URL 
+                th Details
+                th Annotation 
+                th Action
+        tbody
+        - for (var i = 0; i<data.length; i++){
+            tr(class=data[i].rowclass)
+                td=i
+                td=data[i].timestamp
+                td=data[i].event
+                td
+                    a(href=data[i].url)=data[i].title
+                td=data[i].details
+                td=data[i].annotation
+                - if(data[i].has_serp){
+                td
+                    .btn.btn-warning.btn-xs(id=data[i].serp_id) See SERP 
+                - }
+                - else {
+                td=""
+                - } 
+        - }
+

@@ -1,0 +1,33 @@
+doctype html
+html
+    head
+        title= title
+        link(rel="stylesheet", href='/stylesheets/bootstrap.min.css')
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        script(src="/javascripts/jquery-1.11.3.min.js")
+        script(src="/javascripts/bootstrap.min.js")
+        script(src="/javascripts/admin.js")
+
+        block headextra
+
+    body
+        nav(class=["navbar", "navbar-inverse", "navbar-fixed-top"])
+            .row
+               .navbar-brand Tasklog
+
+               ul(class=["nav", "navbar-nav", "text"])
+
+               - if (typeof(user) !== 'undefined'){
+               ul(class="nav navbar-nav navbar-right admin-nav")
+                   li 
+                       a=user.name
+                   li 
+                       a(href="/admin/logout") Logout
+               -}
+ 
+        block content
+
+        block footer
+            div(class="footer")                
+
+

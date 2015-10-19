@@ -399,8 +399,8 @@ h5 {
     color: #5bc0de;
 }
 
-/*
-.table .even-row{
-    background-color: #f9f9f9;
+.logview td{
+    max-width: 150px;
+    overflow: hidden;
+    padding: 10px;
 }
-*/

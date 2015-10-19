@@ -1,0 +1,44 @@
+extend admin_layout
+
+
+block content 
+
+    table.table.table-striped
+        thead
+            tr
+                th User
+                th Date
+                th #Actions
+                th #Queries
+                th #Page-viewd
+                th Annotations (
+                    span.label.label-danger removed
+                    span.label.label-success done
+                    span.label.label-default todo
+                    =")"
+                th Action
+        tbody
+        - for (var i = 0; i<data.length; i++){
+          - for(var j = 0; j < data[i].userinfo.length; j++){
+            tr
+                td=data[i].user
+                td=data[i].userinfo[j].date_string
+                td=data[i].userinfo[j].count_actions
+                td=data[i].userinfo[j].count_queries
+                td=data[i].userinfo[j].count_pageviews
+                td
+                    .progress
+                        .progress-bar.progress-bar-danger(style=data[i].userinfo[j].perc_removed) 
+                            =data[i].userinfo[j].count_removed
+                        .progress-bar.progress-bar-success(style=data[i].userinfo[j].perc_done) 
+                            =data[i].userinfo[j].count_done_annotate
+                        //.progress-bar(style=data[i].userinfo[j].perc_todo) 
+                        //    =data[i].userinfo[j].count_todo_annotate
+                td
+                    button.btn.btn-primary.btn-xs.btn-viewlog(id=data[i].userinfo[j].item_id) View log  
+          - }
+        - }
+
+    form#form_viewlog(action="/admin/logview", target="_blank", method="get")
+        input#input_viewlog(type="hidden", name="loginfo", value="")
+            
