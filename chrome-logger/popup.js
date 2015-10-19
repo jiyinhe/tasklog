@@ -11,7 +11,8 @@ userid_status(userid);
 //If not, give error message, show input
 //If valid, store it in local storage, show ID
 $("#submit_userid").click(function(){
-    var uid = $('#input_userid').val();
+    var uid = $('#input_userid').val().replace(/ /g,'');
+    
     BGPage.set_userid(uid, function(response){
         if (!response.err){
             userid = BGPage.check_userid();
