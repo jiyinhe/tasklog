@@ -157,12 +157,21 @@ function savedata(logdata){
     if (logdata['event'] == 'tab-search')
         logdata['to_annotate'] = true;
     else if (logdata['event'] == 'tab-loaded' && 
+        //filter out certain doamins
         !(logdata.url.substring(0, 6) === 'chrome' || 
         logdata.url.substring(0, 16) === 'http://localhost' || 
-        logdata.url.substring(0, 21) === 'http://tasklog.cs.ucl'))
+        logdata.url.substring(0, 21) === 'http://tasklog.cs.ucl') 
+    )
     {
-        logdata['to_annotate'] = true;
+       logdata['to_annotate'] = true;
     } 
+    if (logdata.event == 'tab-loaded' && logdata.details.note != undefined
+        && logdata.details.note == 'load-same'){
+        logdata.to_annotate = false;
+//        console.log('load same')
+    }
+//   console.log(logdata.event, logdata.to_annotate) 
+
     //If a SERP loaded, send message to content.js
     if (logdata['event'] == 'tab-loaded'){
         var se =  check_searchEngine(logdata['url']);
@@ -492,12 +501,21 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
                 details['media'] = search_check['media'];
         }
 
-        var log = {'event': e, 'timestamp': ts,
+        //If it's a tab-loaded, check if it's a contious reloading
+        //like in google doc
+        if (e == 'tab-loaded'){
+            if (previousEvent.event == 'tab-loaded' && 
+                previousEvent.url == tab.url)  
+                details.note = 'load-same';
+        }
+ 
+       var log = {'event': e, 'timestamp': ts,
             'affected_tab_id': tab.id,
             'details': details,
             'url': tab.url,
             }
-        // set the tab tracker to the current tab
+
+       // set the tab tracker to the current tab
         previousTab = tab;
         previousEvent = log;
         savedata(log)
