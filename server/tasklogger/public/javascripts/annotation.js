@@ -570,6 +570,9 @@ function create_logitem_elements(ele_candidate_labels){
     //Logitem content
     var div_item_content = document.createElement('div');
     div_item_content.setAttribute('class', 'panel-heading logitem-content');
+    //Make a sub division for div_content
+    var div_item_content_sub1 = document.createElement('div');
+    var div_item_content_sub2 = document.createElement('div');
 
     //Logitem content - checkbox
     var checkbox = document.createElement('input');
@@ -645,6 +648,9 @@ function create_logitem_elements(ele_candidate_labels){
     elements.text = text;
     elements.time = time;
     elements.div_item_content = div_item_content;
+    elements.div_item_content_sub1 = div_item_content_sub1;
+    elements.div_item_content_sub2 = div_item_content_sub2;
+ 
     elements.remove = remove;
     elements.span_label_text = span_label_text;
     elements.span_label_task = span_label_task;
@@ -674,6 +680,8 @@ function assemble_logitem_elements(elements, item){
     //Set attribute of div_item_content 
     var div_item_content = elements.div_item_content.cloneNode(false);
     div_item_content.setAttribute('id', 'logitem_content_' + item['_id']);
+    var div_item_content_sub1 = elements.div_item_content_sub1.cloneNode(false);
+    var div_item_content_sub2 = elements.div_item_content_sub2.cloneNode(false);
 
     var checkbox = elements.checkbox.cloneNode(false);
     checkbox.setAttribute('id', 'logitem_content_checkbox_' + item['_id']); 
@@ -745,6 +753,19 @@ function assemble_logitem_elements(elements, item){
         icon_literal = '<span class="glyphicon glyphicon-globe logitem-icon"></span>';
         //Set logitem text
         text.innerHTML = '<a href="'+item.url+'">' + item.details.current_tab.title + '</a>';
+
+        //Add page url to it
+        var pageurl = document.createElement('div'); 
+        pageurl.setAttribute('class', 'pageview-url');
+        var item_url = item.url;
+        if(item_url.length > 100){
+            item_url = item_url.slice(0, 80) + '...';
+        }
+        console.log(item.url.length, item.url)
+        console.log(item_url)
+        pageurl.innerHTML = item_url;
+        div_item_content_sub2.appendChild(pageurl);
+
         //Set chosen label explaining text
         span_label_text = elements.span_label_text.cloneNode(false);
         span_label_text.innerHTML = 'I was <i>browsing</i> for: ';
@@ -789,12 +810,14 @@ function assemble_logitem_elements(elements, item){
    // ]
    // div_modal.getElementsByClassName('modal-body')[0].innerHTML = message.join('\n');
 
-    div_item_content.appendChild(checkbox);
-    div_item_content.appendChild(icon); 
-    div_item_content.appendChild(text);
-    div_item_content.appendChild(time);
-    div_item_content.appendChild(remove);
+    div_item_content_sub1.appendChild(checkbox);
+    div_item_content_sub1.appendChild(icon); 
+    div_item_content_sub1.appendChild(text);
+    div_item_content_sub1.appendChild(time);
+    div_item_content_sub1.appendChild(remove);
     //div_item_content.appendChild(div_modal);
+    div_item_content.appendChild(div_item_content_sub1);
+    div_item_content.appendChild(div_item_content_sub2);
     div_item.appendChild(div_item_content)
 
     div_chosen_label.appendChild(span_label_text);
