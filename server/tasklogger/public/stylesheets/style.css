@@ -410,3 +410,19 @@ h5 {
     color: green;
     margin-top: 5px;
 }
+
+.panel-search {
+    border-left-color: #428bca;
+    border-left-width: 5px;
+}
+
+.panel-browse {
+    border-left-color: #f0ad4e;
+    border-left-width: 5px;
+}
+
+.panel-success {
+    border-left-color: #5cb85c;
+    border-left-width: 5px;
+}
+}

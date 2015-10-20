@@ -745,7 +745,9 @@ function assemble_logitem_elements(elements, item){
             //Set labeling done
             div_item.setAttribute('class', 'panel panel-success');
         } 
-        div_useful.className += ' hidden';      
+        div_useful.className += ' hidden';
+        //set search penel style
+        div_item.className += ' panel-search'
    }
    else{
         //Set icon type
@@ -796,6 +798,8 @@ function assemble_logitem_elements(elements, item){
             task_done = false;
         if(task_done)
             div_item.setAttribute('class', 'panel panel-success'); 
+        //set browsing panel style
+        div_item.className += ' panel-browse'
     }
 
 
