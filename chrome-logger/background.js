@@ -507,7 +507,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
             var previous_url = previousEvent.url.split('#')[0];
             var current_url = tab.url.split('#')[0];
             if (previousEvent.event == 'tab-loaded' && 
-                previousEvent_url == current_url)  
+                previous_url == current_url)  
                 details.note = 'load-same';
         }
  
