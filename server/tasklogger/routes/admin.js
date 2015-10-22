@@ -273,6 +273,28 @@ router.get('/logview', function(req, res, next){
 
 });
 
+router.post('/ajax_requests', function(req, res){
+    var data = JSON.parse(req.body.data)
+    if (data.event == 'get_serp'){
+        var userid = data.userid;
+        var timestamp = data.timestamp;
+ //       console.log(userid, timestamp)
+        collection = req.db.get('log_serp');
+        collection.find({
+            'userid': userid,
+            'timestamp': parseInt(timestamp),
+        }, {}, function(e, docs){
+            if (e){
+                res.send({'err': true, 'emsg': e});
+            }
+            else{
+//                console.log(docs.length)
+                res.send({'res': docs})
+            }
+        });
+    }
+});
+
 function format_logview(docs){
     var data = [];
     for(var i = 0; i<docs.length; i++){
@@ -297,7 +319,6 @@ function format_logview(docs){
         }
         else if (e == 'tab-loaded'){
             var se = check_searchEngine(url);
-            console.log(se)
             if (se.search){
                 details.push('Query: ' + se.query);
                 details.push('Engine: ' + se.se);
@@ -424,6 +445,9 @@ function check_searchEngine(url){
     }
     return {'se': se, 'query': query, 'search': search, 'start_count': start, 'media': media}
 }
+
+
+
 
 
 module.exports = router;
