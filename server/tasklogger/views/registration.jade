@@ -113,7 +113,7 @@ html( leng="en" )
                 .jumbotron
                     .form-group
                         .col-sm-12 
-                            h4 III. To what extent do the following statements apply to you? (10 questions)
+                            h4 III. To what extent do the following statements apply to you? (7 questions)
                    
                     .form-group
                         .col-sm-12
@@ -171,117 +171,34 @@ html( leng="en" )
 
                     .form-group
                         .col-sm-12
-                            p 3. How often do you use computers? 
+                            p 3. In case you use multiple computers (including desktops and laptops), how often do you use the laptop you will be using in this experiment?  
                                 span(class="text-danger")=" *"
                             div#err_freq_comp(class="err")
 
                             div(class="radio")
                                 label
                                     input#freq_comp_1(type="radio", name="freq_comp", value="1")
-                                    -//span I normaly don't use computers
-                                    span Once or twice a week, or less
+                                    span Less than 25% of the time 
                             div(class="radio")
                                 label
                                     input#freq_comp_2(type="radio", name="freq_comp", value="2")
-                                    -//span Once or twice a week
-                                    span Daily, less than two hours per day
+                                    span Between 25% - 50% of the time 
                             div(class="radio")
                                 label
                                     input#freq_comp_3(type="radio", name="freq_comp", value="3")
-                                    -//span Every day, less than one hour per day
-                                    span Daily, between two to six hours per day
+                                    span Between 50% - 75% of the time 
                             div(class="radio")
                                 label
                                     input#freq_comp_4(type="radio", name="freq_comp", value="4")
-                                    -//span Every day, one to two hours per day
-                                    span Daily, more than six hours per day
-                            -/*
+                                    span Between 75% - 100% of the time 
                             div(class="radio")
                                 label
                                     input#freq_comp_5(type="radio", name="freq_comp", value="5")
-                                    -//span Every day, more than two hours per day
-                                    span Daily, more than 8 hours per day
-                            -*/
-                    .form-group
-                        .col-sm-12
-                            p 4. How often do you use a smartphone for activities apart from ? 
-                                span(class="text-danger")=" *"
-                            div#err_freq_phone(class="err")
-
-                            div(class="radio")
-                                label
-                                    input#freq_phone_1(type="radio", name="freq_phone", value="1")
-                                    span I normaly don't use a smartphone
-                            div(class="radio")
-                                label
-                                    input#freq_phone_2(type="radio", name="freq_phone", value="2")
-                                    span Once or twice a week
-                            div(class="radio")
-                                label
-                                    input#freq_phone_3(type="radio", name="freq_phone", value="3")
-                                    span Every day, less than one hour per day
-                            div(class="radio")
-                                label
-                                    input#freq_phone_4(type="radio", name="freq_phone", value="4")
-                                    span Every day, one to two hours per day
-                            div(class="radio")
-                                label
-                                    input#freq_phone_5(type="radio", name="freq_phone", value="5")
-                                    span Every day, more than two hours per day
+                                    span I only have this computer and only use this one.
 
                     .form-group
                         .col-sm-12
-                            p 5. How often do you use a PC tablet or iPad? 
-                                span(class="text-danger")=" *"
-                            div#err_freq_tablet(class="err")
-
-                            div(class="radio")
-                                label
-                                    input#freq_tablet_1(type="radio", name="freq_tablet", value="1")
-                                    span I normaly don't use a tablet/iPad
-                            div(class="radio")
-                                label
-                                    input#freq_tablet_2(type="radio", name="freq_tablet", value="2")
-                                    span Once or twice a week
-                            div(class="radio")
-                                label
-                                    input#freq_tablet_3(type="radio", name="freq_tablet", value="3")
-                                    span Every day, less than one hour per day
-                            div(class="radio")
-                                label
-                                    input#freq_tablet_4(type="radio", name="freq_tablet", value="4")
-                                    span Every day, one to two hours per day
-                            div(class="radio")
-                                label
-                                    input#freq_tablet_5(type="radio", name="freq_tablet", value="5")
-                                    span Every day, more than two hours per day
-
-                    .form-group
-                        .col-sm-12
-                            p 6. How often do you use Web search engines (e.g., Google, Bing, Yahoo!)
-                                span(class="text-danger")=" *"
-                            div#err_freq_se(class="err")
-
-                            div(class="radio")
-                                label
-                                    input#freq_se_1(type="radio", name="freq_se", value="1")
-                                    span I normaly don't use search engines 
-                            div(class="radio")
-                                label
-                                    input#freq_se_2(type="radio", name="freq_se", value="2")
-                                    span Once or twice a week
-                            div(class="radio")
-                                label
-                                    input#freq_se_3(type="radio", name="freq_se", value="3")
-                                    span Once or twice a day 
-                            div(class="radio")
-                                label
-                                    input#freq_se_4(type="radio", name="freq_se", value="4")
-                                    span I use them so frequently that I can't count
-
-                    .form-group
-                        .col-sm-12
-                            p 7. How much of your computer use is related to your work? 
+                            p 4. How much of your usage of the laptop that you use in this experiment is related to work?  
                                 span(class="text-danger")=" *"
                             div#err_comp_work(class="err")
 
@@ -305,117 +222,186 @@ html( leng="en" )
                             label(class="radio-inline")
                                 span All of it
 
-                    .form-group
-                        .col-sm-12
-                            p 8. How much of your smartphone use is related to your work? 
-                                span(class="text-danger")=" *"
-                            div#err_phone_work(class="err")
-
-                            label(class=["control-label", "radio-inline"])
-                                span None of it
-                            label(class="radio-inline")
-                                input#phone_work_1(type="radio", name="phone_work", value="1")
-                                span 1
-                            label(class="radio-inline")
-                                input#phone_work_2(type="radio", name="phone_work", value="2")
-                                span 2
-                            label(class="radio-inline")
-                                input#phone_work_3(type="radio", name="phone_work", value="3")
-                                span 3
-                            label(class="radio-inline")
-                                input#phone_work_4(type="radio", name="phone_work", value="4")
-                                span 4
-                            label(class="radio-inline")
-                                input#phone_work_5(type="radio", name="phone_work", value="5")
-                                span 5
-                            label(class="radio-inline")
-                                span All of it
 
                     .form-group
                         .col-sm-12
-                            p 9. How much of your tablet/iPad use is related to your work? 
-                                span(class="text-danger")=" *"
-                            div#err_tablet_work(class="err")
+                            p 5. What type of device do you usually use for searching for information? computers (desktop/laptop) vs. mobile devices (smartphone/iPad/tablet)
 
-                            label(class=["control-label", "radio-inline"])
-                                span None of it
-                            label(class="radio-inline")
-                                input#tablet_work_1(type="radio", name="tablet_work", value="1")
-                                span 1
-                            label(class="radio-inline")
-                                input#tablet_work_2(type="radio", name="tablet_work", value="2")
-                                span 2
-                            label(class="radio-inline")
-                                input#tablet_work_3(type="radio", name="tablet_work", value="3")
-                                span 3
-                            label(class="radio-inline")
-                                input#tablet_work_4(type="radio", name="tablet_work", value="4")
-                                span 4
-                            label(class="radio-inline")
-                                input#tablet_work_5(type="radio", name="tablet_work", value="5")
-                                span 5
-                            label(class="radio-inline")
-                                span All of it
+                                span(class="text-danger")=" *"
+                            div#err_search_device(class="err")
+
+                            div(class="radio")
+                                label
+                                    input#search_device_1(type="radio", name="search_device", value="1")
+                                    span Almost always on computers 
+                            div(class="radio")
+                                label
+                                    input#search_device_2(type="radio", name="search_device", value="2")
+                                    span Mostly on computers, sometimes on mobile devices 
+                            div(class="radio")
+                                label
+                                    input#search_device_3(type="radio", name="search_device", value="3")
+                                    span About half - half 
+
+                            div(class="radio")
+                                label
+                                    input#search_device_4(type="radio", name="search_device", value="4")
+                                    span Mostly on mobile devices, sometimes on computers 
+                            div(class="radio")
+                                label
+                                    input#search_device_5(type="radio", name="search_device", value="5")
+                                    span Almost always on mobile devices 
+ 
+
                 
                     .form-group
                         .col-sm-12
-                            p 10. What do you usually search for on the Internet? (Please indicate the top 5:) 
+                            p 6. What do you usually search for on the Internet on a computer? (Please indicate the top 5:) 
                                 span(class="text-danger")=" *"
-                            div#err_search_for(class="err")
+                            div#err_computer_search_for(class="err")
+
 
                             .checkbox
                                 label
-                                    input(type="checkbox", value="shopping", name="search_for") 
-                                    span Shopping
+                                    input(type="checkbox", value="entertainment", name="computer_search_for") 
+                                    span Entertainment (e.g., games, books, videos, etc)
+
                             .checkbox
                                 label
-                                    input(type="checkbox", value="travel", name="search_for") 
+                                    input(type="checkbox", value="topic", name="computer_search_for") 
+                                    span Exploring information about a specific topic 
+
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="fact", name="computer_search_for") 
+                                    span Finding a fact
+ 
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="person", name="computer_search_for") 
+                                    span Finding information about a person
+
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="task", name="computer_search_for") 
+                                    span Finding information about how to perform a task
+ 
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="routes", name="computer_search_for") 
+                                    span Finding routes or contact information 
+
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="house", name="computer_search_for") 
+                                    span House hunting
+
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="job", name="computer_search_for") 
+                                    span Job hunting
+
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="news", name="computer_search_for") 
+                                    span News or feeds updates
+
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="shopping", name="computer_search_for") 
+                                    span Shopping for products or services
+
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="social", name="computer_search_for") 
+                                    span Social networking (e.g., twitter, facebook, etc.)
+ 
+                             .checkbox
+                                label
+                                    input(type="checkbox", value="travel", name="computer_search_for") 
                                     span Travel/Holiday planning
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="map", name="search_for") 
-                                    span Finding routes
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="health", name="search_for") 
-                                    span Health related
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="entertainment", name="search_for") 
-                                    span Entertainment (e.g., movies, books, videos, etc)
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="knowledge", name="search_for") 
-                                    span Knowledge (e.g., Wikipedia)
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="news", name="search_for") 
-                                    span News articles
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="social", name="search_for") 
-                                    span Social media (e.g., twitter, facebook, etc.)
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="qa", name="search_for") 
-                                    span Answers to specific questions (e.g., Yahoo answers, Quora, etc.)
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="research", name="search_for") 
-                                    span Research articles
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="recipes", name="search_for") 
-                                    span Recipes
-                            .checkbox
-                                label
-                                    input(type="checkbox", value="work", name="search_for") 
-                                    span Information for work
+
                             .checkbox
                                 label 
-                                    input#checkbox_search_for_other(type="checkbox", value="other", name="search_for")
+                                    input#checkbox_computer_search_for_other(type="checkbox", value="other", name="computer_search_for")
                                     span Other
-                                input#search_other(type="text", placeholder="Please specify", class="form-control")
+                                input#search_other(type="text", placeholder="Please specify", class="form-control", name="computer_search_for_other")
+
+                
+                    .form-group
+                        .col-sm-12
+                            p 7. What do you usually search for on the Internet with a mobile device? (Please indicate the top 5:) 
+                                span(class="text-danger")=" *"
+                            div#err_mobile_search_for(class="err")
+
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="entertainment", name="mobile_search_for") 
+                                    span Entertainment (e.g., games, books, videos, etc)
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="topic", name="mobile_search_for") 
+                                    span Exploring information about a specific topic 
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="fact", name="mobile_search_for") 
+                                    span Finding a fact
+ 
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="person", name="mobile_search_for") 
+                                    span Finding information about a person
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="task", name="mobile_search_for") 
+                                    span Finding information about how to perform a task
+ 
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="routes", name="mobile_search_for") 
+                                    span Finding routes or contact information 
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="house", name="mobile_search_for") 
+                                    span House hunting
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="job", name="mobile_search_for") 
+                                    span Job hunting
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="news", name="mobile_search_for") 
+                                    span News or feeds updates
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="shopping", name="mobile_search_for") 
+                                    span Shopping for products or services
+
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="social", name="mobile_search_for") 
+                                    span Social networking (e.g., twitter, facebook, etc.)
+ 
+                            .checkbox
+                                label
+                                    input(type="checkbox", value="travel", name="mobile_search_for") 
+                                    span Travel/Holiday planning
+
+                            .checkbox
+                                label 
+                                    input#checkbox_mobile_search_for_other(type="checkbox", value="other", name="mobile_search_for")
+                                    span Other
+                                input#search_other(type="text", placeholder="Please specify", class="form-control", name="mobile_search_for_other")
+ 
+
  
                 .jumbotron
                     .form-group

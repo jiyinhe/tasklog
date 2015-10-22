@@ -29,13 +29,10 @@ function validate_registration_form(){
 		'exp_comp': {'required': true, 'radio': true, 'order': 8},
         'exp_se': {'required': true, 'radio': true, 'order': 9},
         'freq_comp': {'required': true, 'radio': true, 'order': 10},
-        'freq_phone': {'required': true, 'radio': true, 'order': 11},
-        'freq_tablet': {'required': true, 'radio': true, 'order': 12},
-        'freq_se': {'required': true, 'radio': true, 'order': 13},
-        'comp_work': {'required': true, 'radio': true, 'order': 14},
-        'phone_work': {'required': true, 'radio': true, 'order': 15},
-        'tablet_work': {'required': true, 'radio': true, 'order': 16},
-        'search_for': {'required': true, 'checkbox': true, 'order': 17},
+        'comp_work': {'required': true, 'radio': true, 'order': 11},
+        'search_device': {'required': true, 'radio': true, 'order': 12},
+        'computer_search_for': {'required': true, 'checkbox': true, 'order': 13},
+        'mobile_search_for': {'required': true, 'checkbox': true, 'order': 14},
 	};
 	
 	errs = validate(rules);
@@ -85,7 +82,7 @@ function validate_registration_form(){
 	}
     else{
         //Focus to the first error 
-        err_r.sort(function(a, b){return b.order - a.order});
+        err_r.sort(function(a, b){return a.order - b.order});
         focus = err_r[0].name;
         // hack so radio buttons grouped by name are also in focus
 		value = $("#"+focus); 
