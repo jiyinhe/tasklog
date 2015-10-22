@@ -3,12 +3,15 @@ html
   head
     link(rel="stylesheet", href='/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src="/javascripts/jquery-1.11.3.min.js")
+    script(src="/javascripts/bootstrap.min.js")
+    script(src="/javascripts/postq.js")
  
   body
     block navbar
         nav(class=["navbar", "navbar-default", "navbar-fixed-top"])
             .row
-                .navbar-brand tasklog
+                .navbar-brand Tasklog
 
 
     block content
@@ -31,5 +34,9 @@ html
                 div#task_selection
 
                 hr
-                div#userid_set 
+                div#tasklist
                 div#questionnaire
+
+
+
+

@@ -250,7 +250,6 @@ router.get('/logview', function(req, res, next){
                 'timestamp': 1,
                 },
             }, 
-
         ], function(e, docs){
         if (e){
             res.render('admin/admin_logview', {
@@ -357,6 +356,10 @@ function format_logview(docs){
         }
         data.push(d);
     }
+    data.sort(function(a, b){if (a.timestamp< b.timestamp) return -1; 
+            else if (a.timestamp > b.timestamp) return 1;
+            else return 0;
+         })
     return data;
 }
 
