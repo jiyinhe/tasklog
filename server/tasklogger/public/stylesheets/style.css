@@ -434,17 +434,17 @@ h5 {
 
 .panel-search {
     border-left-color: #428bca;
-    border-left-width: 5px;
+    border-left-width: 9px;
 }
 
 .panel-browse {
-    border-left-color: #f0ad4e;
+    border-left-color: grey; /*#f0ad4e;*/
     border-left-width: 5px;
 }
 
 .panel-success {
     border-left-color: #5cb85c;
-    border-left-width: 5px;
+    border-left-width: 1px;
 }
 
 .text-intro {
