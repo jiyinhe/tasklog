@@ -178,27 +178,33 @@ html( leng="en" )
                             div(class="radio")
                                 label
                                     input#freq_comp_1(type="radio", name="freq_comp", value="1")
-                                    span I normaly don't use computers
+                                    -//span I normaly don't use computers
+                                    span Once or twice a week, or less
                             div(class="radio")
                                 label
                                     input#freq_comp_2(type="radio", name="freq_comp", value="2")
-                                    span Once or twice a week
+                                    -//span Once or twice a week
+                                    span Daily, less than two hours per day
                             div(class="radio")
                                 label
                                     input#freq_comp_3(type="radio", name="freq_comp", value="3")
-                                    span Every day, less than one hour per day
+                                    -//span Every day, less than one hour per day
+                                    span Daily, between two to six hours per day
                             div(class="radio")
                                 label
                                     input#freq_comp_4(type="radio", name="freq_comp", value="4")
-                                    span Every day, one to two hours per day
+                                    -//span Every day, one to two hours per day
+                                    span Daily, more than six hours per day
+                            -/*
                             div(class="radio")
                                 label
                                     input#freq_comp_5(type="radio", name="freq_comp", value="5")
-                                    span Every day, more than two hours per day
-
+                                    -//span Every day, more than two hours per day
+                                    span Daily, more than 8 hours per day
+                            -*/
                     .form-group
                         .col-sm-12
-                            p 4. How often do you use a smartphone? 
+                            p 4. How often do you use a smartphone for activities apart from ? 
                                 span(class="text-danger")=" *"
                             div#err_freq_phone(class="err")
 

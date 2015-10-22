@@ -504,8 +504,10 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
         //If it's a tab-loaded, check if it's a contious reloading
         //like in google doc
         if (e == 'tab-loaded'){
+            var previous_url = previousEvent.url.split('#')[0];
+            var current_url = tab.url.split('#')[0];
             if (previousEvent.event == 'tab-loaded' && 
-                previousEvent.url == tab.url)  
+                previousEvent_url == current_url)  
                 details.note = 'load-same';
         }
  
