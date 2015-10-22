@@ -10,10 +10,17 @@ $('#reg_btn').click(function(){
 
 //When click on the input box for spcifying "others", don't 
 //deselect the checkbox
-$('#search_other').click(function(){
+$('#computer_search_for_other').click(function(){
     //console.log($('#checkbox_search_for_other'))
-    $('#checkbox_search_for_other').prop('checked', true);
+    $('#checkbox_computer_search_for_other').prop('checked', true);
 });
+
+$('#mobile_search_for_other').click(function(){
+    //console.log($('#checkbox_search_for_other'))
+    $('#checkbox_mobile_search_for_other').prop('checked', true);
+});
+
+
 
 });//document
 
@@ -33,6 +40,9 @@ function validate_registration_form(){
         'search_device': {'required': true, 'radio': true, 'order': 12},
         'computer_search_for': {'required': true, 'checkbox': true, 'order': 13},
         'mobile_search_for': {'required': true, 'checkbox': true, 'order': 14},
+        'computer_search_for_other': {'required': false, order: 15},
+        'mobile_search_for_other': {'required': false, order: 16},
+        'search_habit': {'required': false, order: 17},
 	};
 	
 	errs = validate(rules);
@@ -62,10 +72,10 @@ function validate_registration_form(){
                 else if ("checkbox" in rules[r]){
                     var checks = [];
                     $('input[name="' + r +'"]:checked').each(function(){
-                        if ($(this).val() == 'other')
-                            checks.push($(this).val() + ':' + $('#search_other').val());
-                        else
-                            checks.push($(this).val());
+                        //if ($(this).val() == 'other')
+                        //    checks.push($(this).val() + ':' + $('#search_other').val());
+                        //else
+                        checks.push($(this).val());
                     });
                     data['info'][r] = checks;
                 }   
