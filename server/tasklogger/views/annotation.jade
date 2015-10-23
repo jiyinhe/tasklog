@@ -54,6 +54,27 @@ block navbar-extension
 
                             li(class="task-more divider hidden")
 
+                div(class=["navbar-text", "anno-option"])
+                    div(class="dropdown" id="div_useful_dropdown")
+                        span#global_tag(class=["glyphicon glyphicon-thumbs-up glyphicon-global cursor-help"], 
+                            data-toggle="tooltip", data-placement="bottom", title="Usefulness of the selected items")
+                        =" "
+                        span#global_useful_option(class="spanspace", data-toggle="dropdown",
+                            aria-haspopup="true", aria-expanded="false")
+                            span(class="caret")
+
+                        ul#useful_dropdown(class="dropdown-menu scrollable-menu", aria-labelledby="global_useful_option")
+                            li.global-useful#global_useful_true
+                                a
+                                    span.label.label-success Useful
+                            li.global-useful#global_useful_false
+                                a 
+                                    span.label.label-danger  Not useful
+                            li.global-useful#global_useful_na
+                                a 
+                                    span.label.label-info Not applicable
+
+
                    
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown view-date")

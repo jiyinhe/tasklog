@@ -203,12 +203,26 @@ $(document).ready(function(){
         submit_labels_task(selected_items, taskid, taskname);
     });
 
+    //Global assign usefulness
+    $('.global-useful').click(function(){
+        var value = $(this).attr('id').split('_')[2];
+        var selected_items = []
+        $('#div_logarea input:checked').each(function(){
+            var id = $(this).attr('id').split('_')[3];
+//            console.log($('#logitem_' + id))
+            if($('#logitem_' + id).attr('event_type') == 'tab-loaded')
+                selected_items.push(id);
+        });
+ //       console.log(selected_items)
+        submit_labels_useful(selected_items, value);
+    });
+
     //Per-item assign usefulness
     $('#div_logarea').on('click', '.logitem-useful-option', function(){
         var useful = $(this).attr('id').split('_');
         var id = useful[3];
         var value = useful[2];
-        submit_labels_useful(id, value);
+        submit_labels_useful([id], value);
     });
 
     //Per-item show more labels
@@ -1033,13 +1047,13 @@ function remove_logitems(items){
     });
 }
 
-//Submit the label of usefulness of single log item
-function submit_labels_useful(id, value){
+//Submit the labels of usefulness
+function submit_labels_useful(ids, value){
      $.ajax({
         type: "POST",
         url: url_ajax_annotation,
         data: {"data": JSON.stringify({'event': 'submit_labels_useful', 
-                'id': id,
+                'ids': ids,
                 'value': value,
                })}
     }).done(function(response) {
@@ -1048,42 +1062,45 @@ function submit_labels_useful(id, value){
         }
         else{
             //Show the selected label in UI
-            if (value == 'true'){
-                $('#logitem_useful_true_' + id)
-                    .removeClass('label label-default').addClass('label label-success');
-                $('#logitem_useful_false_' + id)
-                    .removeClass('label label-danger').addClass('label label-default');
-                $('#logitem_useful_na_' + id)
-                     .removeClass('label label-info').addClass('label label-default');
+            for(var i = 0; i<ids.length; i++){
+                var id = ids[i];
+                if (value == 'true'){
+                    $('#logitem_useful_true_' + id)
+                        .removeClass('label label-default').addClass('label label-success');
+                    $('#logitem_useful_false_' + id)
+                        .removeClass('label label-danger').addClass('label label-default');
+                    $('#logitem_useful_na_' + id)
+                         .removeClass('label label-info').addClass('label label-default');
+                }
+                else if (value == 'false'){
+                    $('#logitem_useful_true_' + id)
+                        .removeClass('label label-success').addClass('label label-default');
+                    $('#logitem_useful_false_' + id)
+                        .removeClass('label label-default').addClass('label label-danger');
+                    $('#logitem_useful_na_' + id)
+                         .removeClass('label label-info').addClass('label label-default');
+                }
+                else if (value == 'na'){
+                    $('#logitem_useful_true_' + id)
+                        .removeClass('label label-success').addClass('label label-default');
+                    $('#logitem_useful_false_' + id)
+                        .removeClass('label label-danger').addClass('label label-default');
+                    $('#logitem_useful_na_' + id)
+                        .removeClass('label label-default').addClass('label label-info');
+                }
+                //Set value to useful div
+                $('#div_logarea').find('#logitem_useful_' + id).attr('useful', value);
+                //Set the panel to done if it also has task set
+                var task = $('#div_logarea').find('#logitem_label_chosen_' + id).attr('taskid');
+                if (task != ''){ 
+                    //Done another annotation, update progress
+                    if ($('#div_logarea').find('#logitem_' + id).hasClass('panel-default'))
+                        update_progress('done', 1, false);
+                    $('#div_logarea').find('#logitem_' + id)
+                        .removeClass('panel-default').addClass('panel-success');
+                }
             }
-            else if (value == 'false'){
-                $('#logitem_useful_true_' + id)
-                    .removeClass('label label-success').addClass('label label-default');
-                $('#logitem_useful_false_' + id)
-                    .removeClass('label label-default').addClass('label label-danger');
-                $('#logitem_useful_na_' + id)
-                     .removeClass('label label-info').addClass('label label-default');
-            }
-            else if (value == 'na'){
-                $('#logitem_useful_true_' + id)
-                    .removeClass('label label-success').addClass('label label-default');
-                $('#logitem_useful_false_' + id)
-                    .removeClass('label label-danger').addClass('label label-default');
-                $('#logitem_useful_na_' + id)
-                     .removeClass('label label-default').addClass('label label-info');
-            }
-            //Set value to useful div
-            $('#div_logarea').find('#logitem_useful_' + id).attr('useful', value);
-            //Set the panel to done if it also has task set
-            var task = $('#div_logarea').find('#logitem_label_chosen_' + id).attr('taskid');
-            if (task != ''){ 
-                //Done another annotation, update progress
-                if ($('#div_logarea').find('#logitem_' + id).hasClass('panel-default'))
-                    update_progress('done', 1, false);
-                $('#div_logarea').find('#logitem_' + id)
-                    .removeClass('panel-default').addClass('panel-success');
-           }
-       }
+        }
     });
 }
 //Submit the task labels
@@ -1130,10 +1147,10 @@ function submit_labels_task(items, taskid, taskname){
                         $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
                     }
                 }
-                //If the task is set to a predefined category, set uesful to "na"
-                if (general_label_ids.indexOf(taskid) > -1){
-                    submit_labels_useful(items[i], 'na');
-                }
+            }
+            //If the task is set to a predefined category, set uesful to "na"
+            if (general_label_ids.indexOf(taskid) > -1){
+                submit_labels_useful(items, 'na');
             }
         }
     });
