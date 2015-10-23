@@ -452,8 +452,9 @@ router.post('/ajax_annotation', function(req, res){
         });
     } 
     else if (body['event'] == 'submit_labels_useful'){
+        var useful_value = body.value;
         collection.update({'_id':  body['id'], 'userid': req.user.userid}, {
-           $set: {'annotation.useful': body.value == 'true'}}, 
+           $set: {'annotation.useful': useful_value}}, 
             function(err, docs){
                 if (err){
                     console.log('DB ERROR: '+err);

@@ -30,6 +30,7 @@ var general_labels = [
     {id: '003', 'label': 'News update', 'subtasks': []},
     {id: '004', 'label': 'Emailing', 'subtasks': []},
 ]; 
+var general_label_ids = ['000', '001', '002', '003', '004'];
 
 $(document).ready(function(){
     //Initialize tooltips
@@ -638,6 +639,10 @@ function create_logitem_elements(ele_candidate_labels){
     var span_useful_false = document.createElement('span');
     span_useful_false.setAttribute('class', 'label label-default logitem-useful-option logitem-useful-no');
     span_useful_false.innerHTML = 'NOT USEFUL';
+    var span_useful_na = document.createElement('span');
+    span_useful_na.setAttribute('class', 'label label-default logitem-useful-option logitem-useful-na');
+    span_useful_na.innerHTML = 'NOT APPLICABLE';
+
 
     /* Skip using removal confirm, too much work for user */
     //var div_modal = logitem_create_remove_modal();
@@ -665,6 +670,7 @@ function create_logitem_elements(ele_candidate_labels){
     elements.span_useful_text = span_useful_text;
     elements.span_useful_true = span_useful_true;
     elements.span_useful_false = span_useful_false;
+    elements.span_useful_na = span_useful_na;
     elements.div_useful = div_useful;
     elements.div_item = div_item;
 
@@ -713,6 +719,9 @@ function assemble_logitem_elements(elements, item){
     span_useful_true.setAttribute('id', 'logitem_useful_true_' + item['_id']);
     var span_useful_false = elements.span_useful_false.cloneNode(true);
     span_useful_false.setAttribute('id', 'logitem_useful_false_' + item['_id']);
+    var span_useful_na = elements.span_useful_na.cloneNode(true);
+    span_useful_na.setAttribute('id', 'logitem_useful_na_' + item['_id']);
+
 
     //Skip the removal dialog
     //var div_modal = elements.div_modal.cloneNode(true);
@@ -763,8 +772,8 @@ function assemble_logitem_elements(elements, item){
         if(item_url.length > 100){
             item_url = item_url.slice(0, 80) + '...';
         }
-        console.log(item.url.length, item.url)
-        console.log(item_url)
+//        console.log(item.url.length, item.url)
+//        console.log(item_url)
         pageurl.innerHTML = item_url;
         div_item_content_sub2.appendChild(pageurl);
 
@@ -785,12 +794,16 @@ function assemble_logitem_elements(elements, item){
             task_done = false;
         //Set useful label
         if ('useful' in item.annotation){
-            if (item.annotation.useful)
+            if (item.annotation.useful == 'true')
                 span_useful_true.setAttribute('class',
                     'label label-success logitem-useful-option logitem-useful-yes');
-            else
+            else if(item.annotation.useful == 'false')
                 span_useful_false.setAttribute('class',
                     'label label-danger logitem-useful-option logitem-useful-no');
+            else if (item.annotation.useful == 'na')
+                 span_useful_na.setAttribute('class',
+                    'label label-info logitem-useful-option logitem-useful-na');
+                
             //set chosen useful label
             div_useful.setAttribute('useful', item.annotation.useful);
         }
@@ -833,6 +846,7 @@ function assemble_logitem_elements(elements, item){
     div_useful.appendChild(span_useful_text);
     div_useful.appendChild(span_useful_true);
     div_useful.appendChild(span_useful_false);
+    div_useful.appendChild(span_useful_na);
     div_item.appendChild(div_useful);
     return div_item;
 }
@@ -1039,12 +1053,24 @@ function submit_labels_useful(id, value){
                     .removeClass('label label-default').addClass('label label-success');
                 $('#logitem_useful_false_' + id)
                     .removeClass('label label-danger').addClass('label label-default');
+                $('#logitem_useful_na_' + id)
+                     .removeClass('label label-info').addClass('label label-default');
             }
-            else{
+            else if (value == 'false'){
                 $('#logitem_useful_true_' + id)
                     .removeClass('label label-success').addClass('label label-default');
                 $('#logitem_useful_false_' + id)
                     .removeClass('label label-default').addClass('label label-danger');
+                $('#logitem_useful_na_' + id)
+                     .removeClass('label label-info').addClass('label label-default');
+            }
+            else if (value == 'na'){
+                $('#logitem_useful_true_' + id)
+                    .removeClass('label label-success').addClass('label label-default');
+                $('#logitem_useful_false_' + id)
+                    .removeClass('label label-danger').addClass('label label-default');
+                $('#logitem_useful_na_' + id)
+                     .removeClass('label label-default').addClass('label label-info');
             }
             //Set value to useful div
             $('#div_logarea').find('#logitem_useful_' + id).attr('useful', value);
@@ -1103,6 +1129,10 @@ function submit_labels_task(items, taskid, taskname){
                             update_progress('done', 1, false);
                         $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
                     }
+                }
+                //If the task is set to a predefined category, set uesful to "na"
+                if (general_label_ids.indexOf(taskid) > -1){
+                    submit_labels_useful(items[i], 'na');
                 }
             }
         }
