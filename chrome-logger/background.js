@@ -165,18 +165,25 @@ function savedata(logdata){
     {
        logdata['to_annotate'] = true;
     } 
+    //If tab keeps loading the same url, then don't repaetedly annotate it
+    //This usually happens in case such as editing google doc
+    //Or people follow in-page links
+    //It doesn't help though if people browse in-page links 
+    //in between other activities
     if (logdata.event == 'tab-loaded' && logdata.details.note != undefined
         && logdata.details.note == 'load-same'){
         logdata.to_annotate = false;
-//        console.log('load same')
     }
-//   console.log(logdata.event, logdata.to_annotate) 
 
     //If a SERP loaded, send message to content.js
     if (logdata['event'] == 'tab-loaded'){
         var se =  check_searchEngine(logdata['url']);
         console.log(se)
         if(se.search){
+            //If it's a serp, then it doesn't need to be annotated
+            //as the query will be annotated
+            logdata.to_annotate = false;
+
             var tabid = logdata.affected_tab_id;
             chrome.tabs.sendMessage(tabid, {msg: 'serp loaded', 'se': se.se, 
                 'start': se.start_count, 'media': se.media},
