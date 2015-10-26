@@ -75,7 +75,6 @@ block navbar-extension
                                     span.label.label-info Not applicable
 
 
-                   
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown view-date")
                         span#global_date_selected(class="cursor-help", data-toggle="tooltip", 
@@ -99,7 +98,13 @@ block navbar-extension
                             )
                             span#progress_done_label
 
- 
+                div(class=["navbar-nav", "anno-option"])
+                    div(data-toggle="tooltip", data-placement="bottom", title="Filter log items with matching strings in URLs")
+                        .form-inline
+                            input#url_filter(class="form-control url-filter", type="text", placeholder="Filter string")
+                            button#btn_filter.btn.btn-sm.btn-primary.btn-filter(status="no-filter")
+                                span#btn_filter_status Filter
+                                span#btn_filter_count 
 block content
     div(class=["container"])
         div#div_logarea(class=["col-md-7", "log-area"])

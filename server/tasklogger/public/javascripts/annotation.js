@@ -10,6 +10,7 @@ var div_item_template = {};
 
  
 var log_data = [];
+var log_data_filtered = [];
 var batch_size = 30; 
 
 //Dates where logs are recorded and user progress
@@ -157,6 +158,18 @@ $(document).ready(function(){
         date.setDate(day);
         set_view_date(date, year, day);
         set_progress_bar(count_tot, count_todo, count_rm);
+
+        //Reset filter - user may forget the filter is selected if it's persistent
+        //Change status
+        $('#btn_filter').attr('status', 'no-filter');
+        //Change button text
+        $('#btn_filter_status').html('filter');
+        $('#btn_filter_count').html('');
+        //Change button look
+        $('#btn_filter').removeClass('btn-default').addClass('btn-primary');
+        //Reset the input field
+        $('#url_filter').val('');
+
         //reload the tasks and log items
         load_data();
     });
@@ -243,14 +256,69 @@ $(document).ready(function(){
     });
 
 
+    //Filter based on URL prefixed
+    $('#btn_filter').click(function(){
+        //check the status
+        if ($(this).attr('status') == 'no-filter'){
+            //Get the filter string
+            var string = $('#url_filter').val().replace('https://', '').replace('http://', '');
+            if (string != ''){
+                //Prepare the filtered log
+                filter_urls(string);
+                //Reload the log, also handel the load_more function
+                display_log(log_data_filtered);
+
+                //Reset the global selection as it does not select anything after log
+                //reload
+                $('#global_checkbox').prop('checked', false);
+ 
+                //Change status after click
+                $(this).attr('status', 'filtered');
+                //Change button text
+                $('#btn_filter_status').html('Un-filter');
+                $('#btn_filter_count').html(' (' + log_data_filtered.length + ')');
+                //Change button look
+                $(this).removeClass('btn-primary').addClass('btn-default');
+                
+           }
+        }
+        else{
+            //Change status after click
+            $(this).attr('status', 'no-filter');
+            //Change button text
+            $('#btn_filter_status').html('filter');
+            $('#btn_filter_count').html('');
+            //Change button look
+            $(this).removeClass('btn-default').addClass('btn-primary');
+            //Reset the input field
+            $('#url_filter').val('');
+ 
+            //Reload the original log to get all updates
+            //Other conditions: dates, tasks should remain the same
+            load_log();
+
+            //Reset the global selection as it does not select anything after log
+            //reload
+            $('#global_checkbox').prop('checked', false);
+ 
+       }
+    });
+
+
     //Bind scroll for load more
-    $(window).scroll(bindScroll);
+    $(window).scroll(bindScroll());
 
 });
 
 /*================================
     Functions for log annoation
 ===================================*/
+function filter_urls(string){
+    log_data_filtered = log_data.filter(function(d, i){
+        return (d.url.indexOf(string) > -1)
+    });
+}
+
 function get_dates(){
     $.ajax({
         type: "POST",
@@ -511,8 +579,23 @@ function load_log(){
         }
         else{
             log_data = response.res;
-            display_log(response.res);
-        }
+            //Check if filter is on, if filter is on, then use the filtered log
+            if ($('#btn_filter').attr('status') == 'filtered'){
+                //Get the filter string
+                var string = $('#url_filter').val().replace('https://', '').replace('http://', '');
+                if (string != ''){
+                    //Prepare the filtered log
+                    filter_urls(string);
+                    //Reload the log, also handel the load_more function
+                    display_log(log_data_filtered);
+                    //Update the counts for the different condition
+                    $('#btn_filter_count').html(' (' + log_data_filtered.length + ')');
+                }
+            }
+            else{
+                display_log(log_data);
+            }
+       }
     });
 }
 
@@ -548,9 +631,15 @@ function display_log(log){
 //Continuous loading
 function load_more()
 {
+    //Check if we are loding the filtered or unfiltered version
+    var log = log_data;
+    if ($('#btn_filter').attr('status') == 'filtered'){
+        log = log_data_filtered;
+    }
+
     //Chcek how many results are loaded 
     var shown = $('#div_logarea').find('.panel').length;
-    var tot = log_data.length;
+    var tot = log.length;
     if (shown < tot){
         var counts = tot;
         if (shown + batch_size < tot)
@@ -558,7 +647,7 @@ function load_more()
         //Load more results
         var items = document.createDocumentFragment();
         for(var i = shown; i < counts; i++){
-            var div_item = assemble_logitem_elements(div_item_template, log_data[i]);
+            var div_item = assemble_logitem_elements(div_item_template, log[i]);
             items.appendChild(div_item);
         }
         $('#div_logarea').append(items);

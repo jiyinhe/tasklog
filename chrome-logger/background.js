@@ -200,6 +200,7 @@ function savedata(logdata){
     //console.log(logdata.url)
     var to_log = true;
     for(var i = 0; i<blacklist.length; i++){
+        //Strip out https:// or http:// part
         var tmp_url = logdata.url.replace('https://', '').replace('http://', '');
         if (blacklist[i].prefix){
             if (tmp_url.substring(0, blacklist[i].str.length) == blacklist[i].str){

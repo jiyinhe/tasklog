@@ -424,7 +424,7 @@ router.post('/ajax_annotation', function(req, res){
                     res.send({'err': true, 'emsg': e});
                 }
                 else{
-                    console.log(docs[0].timestamp_bson, docs[docs.length-1].timestamp_bson)
+                    //console.log(docs[0].timestamp_bson, docs[docs.length-1].timestamp_bson)
                     res.send({'err': false, 'res': docs});
                 }
         });
