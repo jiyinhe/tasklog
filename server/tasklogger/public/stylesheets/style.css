@@ -188,6 +188,10 @@ h4 li {
     cursor: pointer;
 }
 
+.rm-item {
+    margin-left: 5px;
+}
+
 
 .plan-options {
     max-width: 350px;

@@ -73,6 +73,7 @@ $(document).ready(function(){
     $('#global_checkbox').click(function(){
         if ($(this).is(':checked')){
             $('#global_checkbox').prop('checked', true);
+            //Only select those that are not hidden
             $('#div_logarea').find('.logitem-content-checkbox')
             .filter(function(){
                 var id = $(this).attr('id').split('_')[3];
@@ -89,6 +90,7 @@ $(document).ready(function(){
     });
     $('#select_all').click(function(){
         $('#global_checkbox').prop('checked', true);
+        //Only select those that are not hidden
         $('#div_logarea').find('.logitem-content-checkbox')
             .filter(function(){
                 var id = $(this).attr('id').split('_')[3];
@@ -310,7 +312,8 @@ function set_progress_bar(count_tot, count_todo, count_rm){
     $('#progress_rm_label').text(count_rm);
     //Done
     var count_done = count_tot - count_rm - count_todo;
-    var done_perc = Math.round((count_done)/count_tot*100);
+    //Give a bit progress in case the base number is too large to see the progress
+    var done_perc = Math.max(Math.round((count_done)/count_tot*100), 1);
     $('#progress_done').attr('style', 'width:'+done_perc + '%');
     $('#progress_done_label').text(count_done+'/'+(count_tot-count_rm));
 }
@@ -1157,6 +1160,9 @@ function submit_labels_task(items, taskid, taskname){
    
 }
 
+//Type: "done"/"remove" a new item
+//count: number of done/remove
+//done: if the item was originally "done" -- matters for remove
 function update_progress(type, count, done){
     //Find the the currently viewed date where changes happen
     var view_year = $('#global_date_selected').attr('year');
@@ -1168,9 +1174,11 @@ function update_progress(type, count, done){
     var count_total = parseInt(ele.attr('count_total'));
 
     if (type == 'done'){
+        //number of items left to do
         count_todo = count_todo - count;
         ele.attr('count_todo', count_todo);
     }
+
     else if (type == 'remove'){
         count_remove = count_removed + count;
         ele.attr('count_removed', count_remove);
@@ -1180,8 +1188,13 @@ function update_progress(type, count, done){
         }
     }
     set_progress_bar(ele.attr('count_total'), ele.attr('count_todo'), ele.attr('count_removed'));
+    //Set the span_counts
+    //Numbers that are done
+    var count_done = count_total - count_todo - count_removed;
+    //Total number that needs to be done (including done and the ones left to do)
+    var count_tot_todo = count_total - count_removed;
     ele.find('.span_counts').html( 
-        '('+ count_todo +'/'+ (count_total - count_removed) +')');
+        '('+ count_done +'/'+ count_tot_todo +')');
 
 }
 

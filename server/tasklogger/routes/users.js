@@ -424,9 +424,7 @@ router.post('/ajax_annotation', function(req, res){
                     res.send({'err': true, 'emsg': e});
                 }
                 else{
-//                    var time2 = new Date().getTime();
-//                    console.log((time2 - time1)/1000)
-//                    console.log(docs.length)
+                    console.log(docs[0].timestamp_bson, docs[docs.length-1].timestamp_bson)
                     res.send({'err': false, 'res': docs});
                 }
         });
@@ -533,22 +531,26 @@ router.post('/ajax_annotation_options', function(req, res){
     else if (body['event'] == 'get_dates'){
         //Check timezone, bson uses UTC time
         var timediff = new Date().getTimezoneOffset()*60*1000;
+
         var collection = db.get('log_chrome');
         collection.col.aggregate([
             {$match: {'userid': req.user.userid, 
-                      'to_annotate': true}},
+                      'to_annotate': true},
+                },
             {$project: {
-                'year': {$year: {$subtract: ['$timestamp_bson', timediff]}},
-                'day':  {$dayOfYear: {$subtract: ['$timestamp_bson', timediff]}},
+                'adjusted_time':  {$subtract: ['$timestamp_bson', timediff]},
                 'removed': 1,
                 'event': 1,
                 'annotation.useful': {$ifNull: ['$annotation.useful', 0]},
                 'annotation.task': {$ifNull: ['$annotation.task', 0]},
+                'timestamp_bson': 1
                 }
             },
             {$project: {
-                    'year': '$year',
-                    'day': '$day',
+                    'year': {$year: '$adjusted_time'},
+                    'day': {$dayOfYear: '$adjusted_time'},
+                    'adjusted_time': 1,
+                    'timestamp_bson': 1,
                     'event': 1,
                     'removed': {$cond: [{$eq: ['$removed', true]}, 1, 0]},
                     'annotation.useful': 1,
@@ -565,7 +567,7 @@ router.post('/ajax_annotation_options', function(req, res){
                     '_id': {year: '$year', day: '$day'},
                     'count_logitem': {$sum: 1},
                     'count_removed': {$sum: '$removed'},
-                    'count_to_annotate': {$sum: '$annotation_not_done'}
+                    'count_to_annotate': {$sum: '$annotation_not_done'},
                 }
             },
             {$sort: {'_id': 1}}
@@ -576,7 +578,7 @@ router.post('/ajax_annotation_options', function(req, res){
                 res.send({'err': true, 'emsg': e});
             }
             else{
-    //            console.log(docs);
+        //        console.log(docs);
                 if (docs.length == 0)
                     res.send({'err': false, 'res': []});
                 else
@@ -584,28 +586,6 @@ router.post('/ajax_annotation_options', function(req, res){
             } 
         });
     }
-/*
-    else if (req.body['event'] == 'get_date_range'){
-        var collection = db.get('log_chrome');
-        collection.col.aggregate([
-                   {$match: {'userid': req.user.userid}},
-                   {$group: {'_id': '$userid',  
-                             'min': {$min: '$timestamp'},
-                             'max': {$max: '$timestamp'}
-                            }
-                    },
-            ],
-            function(e, docs){
-                if (e){
-                    console.log(e) 
-                    res.send({'err': true, 'emsg': e});
-                }
-                else{
-                    res.send({'err': false, 'res': docs[0]});
-                } 
-            });
-    }
-*/
 });
 
 //Request for view user stats
