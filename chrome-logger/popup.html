@@ -19,6 +19,18 @@
         </form>
 
         <hr>
+        <h4>My blacklist</h4>
+        <form>
+            <div class="form-group">
+            <textarea name="blacklist" id="input_blacklist" class="form-control" rows="6"
+                placeholder="Please enter the list of urls that should not be logged.
+One url per line. Example: http://tasklog.cs.ucl.ac.uk/*"></textarea>
+            </div>
+            <div class="err" id="blacklist_err"></div>
+            <button name="submit_blacklist" id="submit_blacklist" class="btn btn-primary btn-sm"> Save </button>
+        </form>
+
+        <hr>
         <a  href="http://tasklog.cs.ucl.ac.uk/users/instructions">&raquo; Login to retrieve userid</a><br/>
         <a  href="http://tasklog.cs.ucl.ac.uk/users/annotation">&raquo; Review/annotate my log</a><br/>
     </div>

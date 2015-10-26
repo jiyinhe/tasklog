@@ -6,6 +6,10 @@ var BGPage = chrome.extension.getBackgroundPage();
 var userid = BGPage.check_userid();
 userid_status(userid);
 
+var blacklist_as_input = BGPage.check_blacklist();
+blacklist_status(blacklist_as_input);
+
+
 //Submit userid: 
 //Check if ID is valid
 //If not, give error message, show input
@@ -27,21 +31,27 @@ $('body').on('click', 'a', function(){
     return false;
 });
 
-//Reset the userid
-/*
-$('#reset_userid').click(function(){
-    BGPage.reset_userid(function(response){
-        if (!response.err){
-            var current_id = response.current_userid;
-            $('#input_userid').attr('placeholder', current_id).prop('disabled', false);
-            $('#input_userid').val('');
-            $('#submit_userid').removeClass('disabled').addClass('active');
-        }
+//Press enter when input blacklist
+$('#input_blacklist').keyup(function(e){
+    if (e.keyCode == 13){
+        var content = $(this).val();
+        BGPage.set_blacklist(content, function(response){
+             blacklist_as_input = BGPage.check_blacklist();
+             blacklist_status(blacklist_as_input);
+        });
+    }
+});
+
+//When click on "Save" when input blacklist
+$('#submit_blacklist').click(function(){
+    var content = $('#input_blacklist').val();
+    BGPage.set_blacklist(content, function(response){
+        blacklist_as_input = BGPage.check_blacklist();
+        blacklist_status(blacklist_as_input);
     });
 });
-*/
-});
- 
+
+}); 
 
 function userid_status(userid){
     if (userid == ''){
@@ -58,5 +68,9 @@ function userid_status(userid){
     }
 }
 
-
-
+function blacklist_status(blacklist_as_input){
+    console.log(blacklist_as_input)
+    if (blacklist_as_input != ''){
+        $('#input_blacklist').val(blacklist_as_input);
+    }
+}

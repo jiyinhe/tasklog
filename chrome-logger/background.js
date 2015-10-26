@@ -68,20 +68,6 @@ var check_userid = function(){
     return user_id;
 }
 
-//reset userid
-/*
-var reset_userid = function(){
-    var response = {}
-    response.current_userid = user_id;
-
-    user_id = '';
-    chrome.storage.sync.set({'userid': ''});
-
-    if (typeof callback == 'function'){
-         callback.call(this, response);
-    }
-};
-*/
 //set userid that is input from popup
 var set_userid = function(userid, callback){
     //check if the userid exists in db
@@ -130,6 +116,73 @@ var set_userid = function(userid, callback){
     });
 }
 
+var blacklist = [];
+var blacklist_as_input = '';
+get_blacklist();
+
+//process  blacklist
+var set_blacklist = function(content, callback){
+    blacklist_as_input = content;
+    var urls = content.split('\n');
+    //list to match
+    blacklist = [];
+    for(var i = 0; i<urls.length; i++){
+        //remove http:// or https://
+        var tmp = urls[i].replace('https://', '').replace('http://', '');
+        if (tmp == '')
+            continue
+        //match all urls following a prefix 
+        if(tmp.split('*').length > 1){
+            blacklist.push({'prefix': true, 'str':tmp.split('*')[0]});
+        }
+        //exact match
+        else{
+            blacklist.push({'prefix': false, 'str': tmp});
+        }
+    }
+    //Save it in local storage
+    //The parse list
+    //and the raw input
+    chrome.storage.sync.set({'blacklist': blacklist, 
+            'blacklist_as_input': blacklist_as_input,
+        });
+
+    if (typeof callback == 'function'){
+          callback.call(this, blacklist_as_input);
+    }
+}
+
+//Get the blacklist from storage
+function get_blacklist(){
+    blacklist == [];
+    blacklist_as_input = '';
+    chrome.storage.sync.get('blacklist', function(item){
+        if (item["blacklist"] === undefined){
+            blacklist = [];
+        }
+        else{
+            blacklist = item['blacklist'];
+            
+        }
+    });
+    chrome.storage.sync.get('blacklist_as_input', function(item){
+        if (item["blacklist_as_input"] === undefined){
+            blacklist_as_input = '';
+        }
+        else{
+            blacklist_as_input = item['blacklist_as_input'];
+            
+        }
+    });
+}
+
+//communicating with popup
+var check_blacklist = function(){
+    return blacklist_as_input;
+}
+
+/* Functions for logging */
+
 // Global variables persistent as the script runs
 var previousTab = {};
 var activeTabId = 0;
@@ -142,6 +195,30 @@ chrome.tabs.query({'active': true}, function(tabs){
 
 //function for send post request to store data
 function savedata(logdata){
+    //First check if the url is in the blacklist
+    //console.log(blacklist)
+    //console.log(logdata.url)
+    var to_log = true;
+    for(var i = 0; i<blacklist.length; i++){
+        var tmp_url = logdata.url.replace('https://', '').replace('http://', '');
+        if (blacklist[i].prefix){
+            if (tmp_url.substring(0, blacklist[i].str.length) == blacklist[i].str){
+                to_log = false;
+                break;
+            }
+        }
+        else{
+            //exact match
+            if (tmp_url == blacklist[i].str){
+                to_log = false;
+                break;
+            }
+        }
+    }
+    //console.log(to_log)
+    if (!to_log)
+        return false
+
     //console.log(logdata.event)
     logdata['userid'] = user_id;
     logdata['device'] = device;
@@ -178,7 +255,7 @@ function savedata(logdata){
     //If a SERP loaded, send message to content.js
     if (logdata['event'] == 'tab-loaded'){
         var se =  check_searchEngine(logdata['url']);
-        console.log(se)
+        //console.log(se)
         if(se.search){
             //If it's a serp, then it doesn't need to be annotated
             //as the query will be annotated
