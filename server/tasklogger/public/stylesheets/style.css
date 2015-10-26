@@ -453,3 +453,7 @@ h5 {
 .text-strong {
     font-weight: bold;
 }
+p.footer {
+    font-size: 10px;
+    color: grey;
+}
