@@ -6,8 +6,8 @@ block headextra
 
 block navbar-extension
     .container
-        .row(class="navbar-extension")
-            .col-xs-4
+        .col-xs-12(class="navbar-extension")
+            .col-xs-8
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown")
                         input#global_checkbox(type="checkbox", data-toggle="tooltip",
@@ -73,7 +73,6 @@ block navbar-extension
                                 a 
                                     span.label.label-info Not applicable
                 
-            .col-xs-5
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown view-date")
                         span#global_date_selected(class="cursor-help", data-toggle="tooltip", 
@@ -96,7 +95,7 @@ block navbar-extension
                             data-toggle="tooltip", data-placement="top", title="Items annotated"
                             )
                             span#progress_done_label
-            .col-xs-3
+            .col-xs-4
                 div(class=["navbar-nav", "anno-option"])
                     div(data-toggle="tooltip", data-placement="bottom", title="Filter log items with matching strings in URLs")
                         .form-inline
