@@ -11,7 +11,7 @@ var div_item_template = {};
  
 var log_data = [];
 var log_data_filtered = [];
-var batch_size = 30; 
+var batch_size = 10; 
 
 //Dates where logs are recorded and user progress
 var log_dates_progress = [];

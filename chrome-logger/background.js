@@ -232,8 +232,12 @@ function savedata(logdata){
     // We only ask for a few events to be annotated
     // use tab-loaded for the pages users browsed
     // use tab-search for Web search users performed with google, bing, yahoo. 
-    if (logdata['event'] == 'tab-search')
-        logdata['to_annotate'] = true;
+    if (logdata['event'] == 'tab-search'){
+        //Sometimes SE directly brings to a page without a query
+        if (! logdata['details'].query == ''){
+            logdata['to_annotate'] = true;
+        }
+    }
     else if (logdata['event'] == 'tab-loaded' && 
         //filter out certain doamins
         !(logdata.url.substring(0, 6) === 'chrome' || 
@@ -617,6 +621,7 @@ function check_searchEngine(url){
     var yahoo_reg = /.+?\.search\.yahoo\..+?p=.+/
     var bing_reg = /.+?\.bing\..+?q=.+/ 
 
+//    var test = 'https://www.google.co.uk/search?q=asos+dresses+clearence&rlz=1C1CAFA_enGB612GB612&oq=asos+dresses+clearence&aqs=chrome..69i57.7426j0j7&sourceid=chrome&es_sm=93&ie=UTF-8#q=new+look+dresses' 
 //    test = 'https://www.google.co.uk/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8#q=UK+visa'
 //    console.log(test.match(google_reg))
 
@@ -626,7 +631,13 @@ function check_searchEngine(url){
     var start = 0;
     var media = 'web';
     if (google_reg.test(url)){
-        query = url.split('q=')[1].split('&')[0];
+        var google_q_reg = /(\?|#|&)q=.+?(&|$)/g
+        var q = []
+        while( match = google_q_reg.exec(url))
+            q.push(match[0])
+        query = q[q.length-1].split('q=')[1].split('&')[0];
+//        console.log(query)
+//        query = url.split('q=')[1].split('&')[0];
         se = 'google'
         search = true
         tmp = url.split('start=');

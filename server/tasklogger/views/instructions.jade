@@ -22,10 +22,15 @@ block content
                             a(href="#diaryhowto") How to perform the diary study
                         li
                             a(href="#software") Software configuration
-                        li
-                            a(href="#account") Find back your userid
+
                         li
                             a(href="#log") What do we log?
+
+                        li
+                            a(href="#blacklist") Setup a logger blacklist
+
+                        li
+                            a(href="#account") Find back your userid
 
             .page-header
                 h2#procedure What to expect
@@ -82,8 +87,10 @@ block content
                 p If you encounter any further questions, please
                     a(href="mailto:research.mediafutures.ucl@gmail.com")=" contact us."
 
+                -/*
                 .alert.alert-danger
                     p  Note: During the experiment period, you will need to work on at least 5 information goals. For example, they can be the 5 goals that you have named during the introduction session.
+                -*/
 
             .bs-callout.bs-callout-info
                 h4#debrief Debrief session
@@ -201,9 +208,17 @@ block content
                     span.glyphicon.glyphicon-globe.glyphicon-global
                     ="."
 
-                img(src="/images/log_item.png", height=150, width=500)
+                img(src="/images/log_item.png", height=200, width=500)
 
-                p In the header of each log item, you can see either the query you have issued or the title (link) of the Web page you have browsed. Below the header, you can see a list of the candidate information goals that you have entered in the information goal panel. For browsing history items, you can see an additional question asking whether or not the browsed page was useful for your information goal.
+                p In the header of each log item, you can see either the query you have issued or the title (link) of the Web page you have browsed. 
+    
+                p Below the header, you can see a list of the 
+                    span.todo=" candidate information goals "
+                    span=" that you have entered in the information goal panel."
+
+                p For browsing history items, you can see an additional question about the
+                    span.todo=" usefulness "
+                    span="of the browsed page with respect to your information goal."
 
                 p When you finish labelling a log item, its frame turns green.
 
@@ -218,7 +233,10 @@ block content
 
             .bs-callout.bs-callout-primary
                 h4 Annotating a browsing history item
-                p To annotate a browsing history item, apart from associating a browsed page to one of your information goals, we would also like to know whether or not that page is useful for approaching that goal.
+                p To annotate a browsing history item, apart from associating a browsed page to one of your information goals, we would also like to know whether or not that page is useful for approaching that goal. 
+                p
+                p.todo Useful, not useful, or not applicable
+                p Of course, not all entries can be classified as "useful" or "not useful". In case you feel it is not appropriate to describe a browsing history item in its usefulness, you can assign it to "Not applicable". By default, we consider browsing activities dedicated to predefined information goals such as "entertainment, emailing" as "Not applicable" cases. However, depending on your specific situation, they may still be classified as "useful" or "not useful". 
 
             .bs-callout.bs-callout-warning#batch
                 h4 Use of batch operations
@@ -326,6 +344,42 @@ block content
                     li In the logger user interface, select 'CSV file from the 'Backend' menu, and select a location for your log file.
 
                     li  Leave this running for the duration of the study. You may temporarily pause the logging process with the 'pause' button if necessary.
+
+            .page-header
+                h2#log What do we log?
+
+            .bs-callout.bs-callout-info
+                h4 Chrome logger
+                p The chrome logger logs the following activities:
+                ul
+                    li Your search queries when you use Google, Bing, or Yahoo.
+                    li The pages you have browsed.
+                    li The links you have followed that leads to a browsing of a page.
+                    li Your tab operations, e.g., open-a-new-tab, close-a-tab, switch-tab, etc.
+                p While you only review the search queries and browsed pages in your diary study, other operations related to the items that you have removed will also be removed in a post processing step.
+
+            .bs-callout.bs-callout-info
+                h4 Application logger
+
+
+            .page-header
+                h2#blacklist Setup a logger blacklist
+
+                p.lead Within the 
+                    span.todo=" chrome logger"
+                    span=", you can setup a blacklist that filters out urls that you do not want to be logged. "
+                    span="The blacklist UI element looks like this:"
+                img(src="/images/blacklist.png", height="200") 
+
+            .bs-callout.bs-callout-warning
+                h4 How to setup the blacklist
+                ul 
+                    li  Write one url per line;
+                    li  Exact match: By default, the filter will filter out urls that match exactly an item in the blacklist.
+                    li  URL prefix: To filter out urls that match an item as prefix, end the item with a *. For example, 'http://www.example.com/*' filters out all urls under the domain "www.example.com/"  
+
+
+
             .page-header
                 h2#account Find back your userid
 
@@ -346,18 +400,4 @@ block content
                     =" on the toolbar on your chrome browser. A popup will show up in which you can input your userid:"
                     img(src="/images/chrome_logger_userid_input.png", height=200)
 
-            .page-header
-                h2#log What do we log?
 
-            .bs-callout.bs-callout-info
-                h4 Chrome logger
-                p The chrome logger logs the following activities:
-                ul
-                    li Your search queries when you use Google, Bing, or Yahoo.
-                    li The pages you have browsed.
-                    li The links you have followed that leads to a browsing of a page.
-                    li Your tab operations, e.g., open-a-new-tab, close-a-tab, switch-tab, etc.
-                p While you only review the search queries and browsed pages in your diary study, other operations related to the items that you have removed will also be removed in a post processing step.
-
-            .bs-callout.bs-callout-info
-                h4 Application logger
