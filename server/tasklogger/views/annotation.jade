@@ -5,9 +5,9 @@ block headextra
     script(src="/javascripts/tasks.js")
 
 block navbar-extension
-    .row(class="navbar-extension")
-        .container 
-            .div(class="col-md-12")
+    .container
+        .row(class="navbar-extension")
+            .col-xs-4
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown")
                         input#global_checkbox(type="checkbox", data-toggle="tooltip",
@@ -33,7 +33,6 @@ block navbar-extension
                 div(class=["navbar-text", "anno-option"])
                     div(data-toggle="tooltip", data-placement="bottom", title="Filter on unlabelled items")
                         span#global_filter(class=["glyphicon glyphicon-eye-open glyphicon-global"])
-
 
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown" id="div_task_dropdown")
@@ -73,8 +72,8 @@ block navbar-extension
                             li.global-useful#global_useful_na
                                 a 
                                     span.label.label-info Not applicable
-
-
+                
+            .col-xs-5
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown view-date")
                         span#global_date_selected(class="cursor-help", data-toggle="tooltip", 
@@ -97,7 +96,7 @@ block navbar-extension
                             data-toggle="tooltip", data-placement="top", title="Items annotated"
                             )
                             span#progress_done_label
-
+            .col-xs-3
                 div(class=["navbar-nav", "anno-option"])
                     div(data-toggle="tooltip", data-placement="bottom", title="Filter log items with matching strings in URLs")
                         .form-inline
@@ -105,12 +104,14 @@ block navbar-extension
                             button#btn_filter.btn.btn-sm.btn-primary.btn-filter(status="no-filter")
                                 span#btn_filter_status Filter
                                 span#btn_filter_count 
+
 block content
     div(class=["container"])
-        div#div_logarea(class=["col-md-7", "log-area"])
+
+        div#div_logarea(class=["col-xs-8", "log-area"])
             div#div_empty(class="well hidden")     
 
-        div#task_area(class=["col-md-5", "right-column"])
+        div#task_area(class=["col-xs-4","right-column"])
             //div#myaffix(class=["affix"], data-spy="affix", data-offset-top="200")
             div#myAffix
                 div(class="header")
@@ -123,9 +124,9 @@ block content
                                 span#count_done
 
                 div(class=["plan-options", "row"], id="plan_options")
-                    div(class=["col-sm-8"])
+                    div(class=["col-md-8"])
                         input#input_addtask(type="text", class="form-control", placeholder="+Add a goal")
-                    div(class=["col-sm-4", "dropdown", "options"])
+                    div(class=["col-md-4", "dropdown", "options"])
                         a#options(class="options" data-target="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") 
                             span(class=["glyphicon glyphicon-cog"]) 
                             span=" Options"
