@@ -2,7 +2,11 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
-//TODO: filter on DOM instead of array
+//TODO: filter and selection
+//TODO: filter and remove
+//TODO: filter and label
+//TODO: filter and date selection
+//TODO: filter and usefulness?
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -270,6 +274,10 @@ $(document).ready(function(){
                         return ($(this).attr('url').indexOf(string) == -1)
                     }).addClass('strfilter-hidden');
 
+                var has_string = $('#div_logarea').find('.panel').filter(function(){
+                        return ($(this).attr('url').indexOf(string) > -1);
+                    })
+
                 //filter_urls(string);
                 //Reload the log, also handel the load_more function
                 //display_log(log_data_filtered);
@@ -282,7 +290,7 @@ $(document).ready(function(){
                 $(this).attr('status', 'filtered');
                 //Change button text
                 $('#btn_filter_status').html('Un-filter');
-                //$('#btn_filter_count').html(' (' + log_data_filtered.length + ')');
+                $('#btn_filter_count').html(' (' + has_string.length + ')');
                 //Change button look
                 $(this).removeClass('btn-primary').addClass('btn-default');
                 
