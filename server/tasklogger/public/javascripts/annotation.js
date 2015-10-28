@@ -654,6 +654,9 @@ function load_log(){
             //After that, reset the filter in case it's on.
             //It's easier for people to forget that the filter is on 
             unfilter_urls();
+            //Also reset the done_filter (it should be already reset, just update the
+            //icon)
+            $('#global_filter').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
 
             /*
             log_data = response.res;
