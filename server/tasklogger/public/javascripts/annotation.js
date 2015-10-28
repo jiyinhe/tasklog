@@ -520,7 +520,7 @@ function load_data(){
                         more_candidate_tasks.push(main_sub_done);
                     }
                     else{ 
-			//No subtasks are done, the main task is also undone, so 		
+			            //No subtasks are done, the main task is also undone, so 		
                         //Corresponding main is stored as undone
                         var main_sub_undone = $.extend(true, {}, response.res[key]);
                         main_sub_undone.subtasks = sub_not_done;
@@ -644,6 +644,10 @@ function load_log(){
         }
         else{
             display_log(response.res);
+            //After that, reset the filter in case it's on.
+            //It's easier for people to forget that the filter is on 
+            unfilter_urls();
+
             /*
             log_data = response.res;
             //Check if filter is on, if filter is on, then use the filtered log
