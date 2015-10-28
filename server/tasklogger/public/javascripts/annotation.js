@@ -3,10 +3,6 @@
  ===================== */
 //TODO: instruction
 //TODO: filter and selection
-//TODO: filter and remove
-//TODO: filter and label
-//TODO: filter and date selection
-//TODO: filter and usefulness?
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -79,11 +75,13 @@ $(document).ready(function(){
     $('#global_checkbox').click(function(){
         if ($(this).is(':checked')){
             $('#global_checkbox').prop('checked', true);
+
             //Only select those that are not hidden
             $('#div_logarea').find('.logitem-content-checkbox')
-            .filter(function(){
-                var id = $(this).attr('id').split('_')[3];
-                return !$('#logitem_' + id).hasClass('hidden')
+                .filter(function(){
+                    var id = $(this).attr('id').split('_')[3];
+                    return !($('#logitem_' + id).hasClass('hidden')||
+                        $('#logitem_' + id).hasClass('strfilter-hidden'))
                 }) 
             .prop('checked', true);
         }
@@ -93,45 +91,67 @@ $(document).ready(function(){
             $('#div_logarea').find('.logitem-content-checkbox')
             .prop('checked', false);
         }
+
+//        console.log($('#div_logarea input:checked').length)
     });
+
     $('#select_all').click(function(){
         $('#global_checkbox').prop('checked', true);
         //Only select those that are not hidden
         $('#div_logarea').find('.logitem-content-checkbox')
             .filter(function(){
                 var id = $(this).attr('id').split('_')[3];
-                return !$('#logitem_' + id).hasClass('hidden')
+                return !($('#logitem_' + id).hasClass('hidden')||
+                 $('#logitem_' + id).hasClass('strfilter-hidden'))
                 })
             .prop('checked', true);
+
+//        console.log($('#div_logarea input:checked').length)
     });
 
     $('#select_none').click(function(){
         $('#global_checkbox').prop('checked', false);
         //De-select everything, whether hidden or not
         $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
+
+//        console.log($('#div_logarea input:checked').length)
     });
 
     $('#select_labelled').click(function(){
+        //First de-select everything
+        $('#div_logarea').find('.panel .logitem-content-checkbox')
+            .prop('checked', false);
+
         //Select labelled, but skip the ones that are hidden
         $('#div_logarea').find('.panel-success .logitem-content-checkbox')
             .filter(function(){
                 var id = $(this).attr('id').split('_')[3];
-                return !$('#logitem_' + id).hasClass('hidden')
-                }) 
+                return !($('#logitem_' + id).hasClass('hidden')||
+                 $('#logitem_' + id).hasClass('strfilter-hidden'))
+                })
             .prop('checked', true);
-        //De-select unlabelled, unlabelled cannot be hidden
-        $('#div_logarea').find('.panel-default .logitem-content-checkbox')
-            .prop('checked', false);
-    });
-    $('#select_unlabelled').click(function(){
-        //Select unlabelled, unlablled cannot be hidden 
-        $('#div_logarea').find('.panel-default .logitem-content-checkbox')
-            .prop('checked', true);
-        //De-select labelled, whether hidden or not
-        $('#div_logarea').find('.panel-success .logitem-content-checkbox')
-            .prop('checked', false);
+//        console.log($('#div_logarea input:checked').length)
+
+
     });
 
+    $('#select_unlabelled').click(function(){
+        //First deselect all
+        $('#div_logarea').find('.panel .logitem-content-checkbox')
+            .prop('checked', false);
+
+        //Select unlabelled, but only those are visible
+        $('#div_logarea').find('.panel-default .logitem-content-checkbox')
+            .filter(function(){
+                var id = $(this).attr('id').split('_')[3];
+                return !($('#logitem_' + id).hasClass('strfilter-hidden')||
+                 $('#logitem_' + id).hasClass('hidden'))
+                })
+            .prop('checked', true);
+
+//        console.log($('#div_logarea input:checked').length)
+
+    });
 
     //Filter unlabelled items
     $('#global_filter').click(function(){
@@ -319,9 +339,11 @@ function unfilter_urls(){
    //Reset the input field
    $('#url_filter').val('');
 
-   //Reset the global selection as it does not select anything after log
-   //reload
+   //Reset all checked boxes after unfilter
+   //to avoid inconsistency between global selection
+   //and actual selected items 
    $('#global_checkbox').prop('checked', false);
+   $('.logitem-content-checkbox').prop('checked', false);
 }
 
 function filter_urls(string){
@@ -343,6 +365,11 @@ function filter_urls(string){
     //Change button status
     $('#btn_filter').attr('status', 'filtered')
         .removeClass('btn-primary').addClass('btn-default');
+
+    //Reset all checked boxes after filter
+    //as some hidden ones may still be selected, which doesn't make sense
+    $('#global_checkbox').prop('checked', false);
+    $('.logitem-content-checkbox').prop('checked', false);
 }
 
 function update_strfilter_count(){
