@@ -2,6 +2,7 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
+//TODO: reset selection after done_filtering
 //TODO: reset selection after labeling
 //TODO: url/query encoding
 
@@ -133,7 +134,6 @@ $(document).ready(function(){
             .prop('checked', true);
 //        console.log($('#div_logarea input:checked').length)
 
-
     });
 
     $('#select_unlabelled').click(function(){
@@ -174,6 +174,13 @@ $(document).ready(function(){
         }
         //Update filtered counts
         update_strfilter_count();
+
+        //Reset all checked boxes after filter
+        //as some hidden ones may still be selected, which doesn't make sense
+        $('#global_checkbox').prop('checked', false);
+        $('.logitem-content-checkbox').prop('checked', false);
+//        console.log($('#div_logarea input:checked').length)
+ 
     });
 
     //Select a different date to view log 
@@ -297,6 +304,7 @@ $(document).ready(function(){
 
        }
     });
+
     //Also use "enter" in the url_filter input
     $('#url_filter').keyup(function(e){
         if (e.keyCode == 13){
