@@ -180,6 +180,9 @@ h4 li {
     display: none;  
 }
 
+.strfilter-hidden {
+    display: none;
+}
 
 .add-subtask {
     color: steelblue;

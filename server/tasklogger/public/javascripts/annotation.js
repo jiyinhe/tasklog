@@ -2,16 +2,17 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
+//TODO: filter on DOM instead of array
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
 var max_candidates = 5;
 var div_item_template = {};
 
- 
-var log_data = [];
-var log_data_filtered = [];
-var batch_size = 10; 
+//Do not maintain the original data array 
+//var log_data = [];
+//var log_data_filtered = [];
+//var batch_size = 1000; 
 
 //Dates where logs are recorded and user progress
 var log_dates_progress = [];
@@ -263,10 +264,15 @@ $(document).ready(function(){
             //Get the filter string
             var string = $('#url_filter').val().replace('https://', '').replace('http://', '');
             if (string != ''){
-                //Prepare the filtered log
-                filter_urls(string);
+                /* Filter on DOM, deprecate bookkeeping log item array*/
+                $('#div_logarea').find('.panel')
+                    .filter(function(){
+                        return ($(this).attr('url').indexOf(string) == -1)
+                    }).addClass('strfilter-hidden');
+
+                //filter_urls(string);
                 //Reload the log, also handel the load_more function
-                display_log(log_data_filtered);
+                //display_log(log_data_filtered);
 
                 //Reset the global selection as it does not select anything after log
                 //reload
@@ -276,7 +282,7 @@ $(document).ready(function(){
                 $(this).attr('status', 'filtered');
                 //Change button text
                 $('#btn_filter_status').html('Un-filter');
-                $('#btn_filter_count').html(' (' + log_data_filtered.length + ')');
+                //$('#btn_filter_count').html(' (' + log_data_filtered.length + ')');
                 //Change button look
                 $(this).removeClass('btn-primary').addClass('btn-default');
                 
@@ -295,8 +301,8 @@ $(document).ready(function(){
  
             //Reload the original log to get all updates
             //Other conditions: dates, tasks should remain the same
-            load_log();
-
+            //load_log();
+            unfilter_urls();
             //Reset the global selection as it does not select anything after log
             //reload
             $('#global_checkbox').prop('checked', false);
@@ -305,18 +311,28 @@ $(document).ready(function(){
     });
 
 
-    //Bind scroll for load more
-    $(window).scroll(bindScroll());
+    //Bind scroll for load more - Deprecate lazy loading
+    //$(window).scroll(bindScroll());
 
 });
 
 /*================================
     Functions for log annoation
 ===================================*/
-function filter_urls(string){
-    log_data_filtered = log_data.filter(function(d, i){
-        return (d.url.indexOf(string) > -1)
-    });
+//function filter_urls(string){
+    //Get the logitems
+//    log_data_filtered = log_data.filter(function(d, i){
+//        return (d.url.indexOf(string) > -1)
+//    });
+//}
+
+//It should be called when:
+// - click on un-filter
+// - release done filter
+// - change dates
+function unfilter_urls(){
+    $('#div_logarea').find('.panel.strfilter-hidden')
+        .removeClass('strfilter-hidden');
 }
 
 function get_dates(){
@@ -578,6 +594,8 @@ function load_log(){
             );
         }
         else{
+            display_log(response.res);
+            /*
             log_data = response.res;
             //Check if filter is on, if filter is on, then use the filtered log
             if ($('#btn_filter').attr('status') == 'filtered'){
@@ -595,6 +613,7 @@ function load_log(){
             else{
                 display_log(log_data);
             }
+            */
        }
     });
 }
@@ -611,6 +630,13 @@ function display_log(log){
     div_item_template = create_logitem_elements(labels);
 
     var items = document.createDocumentFragment();
+    //Directly load everything without lazy loading
+    for (var i = 0; i<log.length; i++){
+        var div_item = assemble_logitem_elements(div_item_template, log[i]);
+        items.appendChild(div_item);
+    }
+
+    /*
     var counts = batch_size;
     if (batch_size > log.length)
         counts = log.length;
@@ -622,12 +648,14 @@ function display_log(log){
     }
    //time2 = new Date().getTime()
    //console.log(time2-time1)
- 
+     */
+
     $('#div_logarea').append(items);
     //Initialise tooltip
     $('[data-toggle="tooltip"]').tooltip();
 }
 
+/* Deprecate lazying loading
 //Continuous loading
 function load_more()
 {
@@ -663,6 +691,8 @@ function bindScroll(){
        load_more();
    }
 }
+*/
+
 
 //For each item, the annotation property should have the
 //following structure:
@@ -788,6 +818,7 @@ function assemble_logitem_elements(elements, item){
     var div_item = elements.div_item.cloneNode(false);
     div_item.setAttribute('id', 'logitem_' + item['_id']);
     div_item.setAttribute('event_type', item.event);
+    div_item.setAttribute('url', item.url);
 
     //Set attribute of div_item_content 
     var div_item_content = elements.div_item_content.cloneNode(false);
@@ -1195,6 +1226,7 @@ function submit_labels_useful(ids, value){
         }
     });
 }
+
 //Submit the task labels
 function submit_labels_task(items, taskid, taskname){
      $.ajax({
