@@ -148,7 +148,6 @@ $(document).ready(function(){
         else{
             $('#div_logarea').find('.panel-success').removeClass('hidden');
         }
-//        $('#div_logarea').find('.panel-success').toggleClass('hidden');
     });
 
     //Select a different date to view log 
@@ -164,8 +163,12 @@ $(document).ready(function(){
         set_view_date(date, year, day);
         set_progress_bar(count_tot, count_todo, count_rm);
 
+        //reset the string filter if there is any
+        unfilter_urls();
+
         //reload the tasks and log items
         load_data();
+
     });
 
     //Per-item remove, click on modal confirming removing - deprecated
