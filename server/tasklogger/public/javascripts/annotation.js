@@ -164,17 +164,6 @@ $(document).ready(function(){
         set_view_date(date, year, day);
         set_progress_bar(count_tot, count_todo, count_rm);
 
-        //Reset filter - user may forget the filter is selected if it's persistent
-        //Change status
-        $('#btn_filter').attr('status', 'no-filter');
-        //Change button text
-        $('#btn_filter_status').html('filter');
-        $('#btn_filter_count').html('');
-        //Change button look
-        $('#btn_filter').removeClass('btn-default').addClass('btn-primary');
-        //Reset the input field
-        $('#url_filter').val('');
-
         //reload the tasks and log items
         load_data();
     });
@@ -268,57 +257,31 @@ $(document).ready(function(){
             //Get the filter string
             var string = $('#url_filter').val().replace('https://', '').replace('http://', '');
             if (string != ''){
-                /* Filter on DOM, deprecate bookkeeping log item array*/
-                $('#div_logarea').find('.panel')
-                    .filter(function(){
-                        return ($(this).attr('url').indexOf(string) == -1)
-                    }).addClass('strfilter-hidden');
-
-                var has_string = $('#div_logarea').find('.panel').filter(function(){
-                        return ($(this).attr('url').indexOf(string) > -1);
-                    })
-
-                //filter_urls(string);
-                //Reload the log, also handel the load_more function
-                //display_log(log_data_filtered);
-
-                //Reset the global selection as it does not select anything after log
-                //reload
-                $('#global_checkbox').prop('checked', false);
- 
-                //Change status after click
-                $(this).attr('status', 'filtered');
-                //Change button text
-                $('#btn_filter_status').html('Un-filter');
-                $('#btn_filter_count').html(' (' + has_string.length + ')');
-                //Change button look
-                $(this).removeClass('btn-primary').addClass('btn-default');
-                
+                filter_urls(string)               
            }
         }
         else{
-            //Change status after click
-            $(this).attr('status', 'no-filter');
-            //Change button text
-            $('#btn_filter_status').html('filter');
-            $('#btn_filter_count').html('');
-            //Change button look
-            $(this).removeClass('btn-default').addClass('btn-primary');
-            //Reset the input field
-            $('#url_filter').val('');
- 
             //Reload the original log to get all updates
             //Other conditions: dates, tasks should remain the same
             //load_log();
             unfilter_urls();
-            //Reset the global selection as it does not select anything after log
-            //reload
-            $('#global_checkbox').prop('checked', false);
- 
+
        }
     });
-
-
+    //Also use "enter" in the url_filter input
+    $('#url_filter').keyup(function(e){
+        if (e.keyCode == 13){
+            var string = $(this).val().replace('https://', '').replace('http://', '');
+            //If there is a string, then do the filter, replace the previous filter
+            if (string != ''){
+                 filter_urls(string)               
+            }
+            //If no string is set, then reset the filter
+            else
+                unfilter_urls();
+        }
+    }) 
+    
     //Bind scroll for load more - Deprecate lazy loading
     //$(window).scroll(bindScroll());
 
@@ -341,6 +304,42 @@ $(document).ready(function(){
 function unfilter_urls(){
     $('#div_logarea').find('.panel.strfilter-hidden')
         .removeClass('strfilter-hidden');
+
+   //Reset filter - user may forget the filter is selected if it's persistent
+   //Change status
+   //Change button text
+   $('#btn_filter_status').html('filter');
+   $('#btn_filter_count').html('');
+   //Change button status
+   $('#btn_filter').attr('status', 'no-filter')
+        .removeClass('btn-default').addClass('btn-primary');
+   //Reset the input field
+   $('#url_filter').val('');
+
+   //Reset the global selection as it does not select anything after log
+   //reload
+   $('#global_checkbox').prop('checked', false);
+}
+
+function filter_urls(string){
+    /* Filter on DOM, deprecate bookkeeping log item array*/
+    //First clear the previous filter
+    //Then apply the new filter
+    $('#div_logarea').find('.panel').removeClass('strfilter-hidden')
+       .filter(function(){
+            return ($(this).attr('url').indexOf(string) == -1)
+            }).addClass('strfilter-hidden');
+
+    var has_string = $('#div_logarea').find('.panel').filter(function(){
+        return ($(this).attr('url').indexOf(string) > -1);
+        })
+    //Change button text
+    $('#btn_filter_status').html('Un-filter');
+    $('#btn_filter_count').html(' (' + has_string.length + ')');
+
+    //Change button status
+    $('#btn_filter').attr('status', 'filtered')
+        .removeClass('btn-primary').addClass('btn-default');
 }
 
 function get_dates(){
