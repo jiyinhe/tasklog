@@ -2,6 +2,8 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
+//TODO: reset selection after labeling
+//TODO: url/query encoding
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -938,6 +940,7 @@ function assemble_logitem_elements(elements, item){
         icon.className += ' glyphicon glyphicon-search logitem-icon';
         icon_literal = '<span class="glyphicon glyphicon-search logitem-icon"></span>'
         //Set logitem content
+        console.log(item.details.query)
         text.innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
 
        //Set chosen label explaining text
