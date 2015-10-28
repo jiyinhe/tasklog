@@ -940,8 +940,7 @@ function assemble_logitem_elements(elements, item){
         icon.className += ' glyphicon glyphicon-search logitem-icon';
         icon_literal = '<span class="glyphicon glyphicon-search logitem-icon"></span>'
         //Set logitem content
-        console.log(item.details.query)
-        text.innerHTML = '"' + decodeURI(item.details.query.replace(/\+/g, ' ')) + '"';
+        text.innerHTML = '"' + decodeURIComponent(item.details.query.replace(/\+/g, ' ')) + '"';
 
        //Set chosen label explaining text
         var span_label_text = elements.span_label_text.cloneNode(false);
