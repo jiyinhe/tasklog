@@ -2,7 +2,6 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
-//TODO: filter and selection
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -154,6 +153,7 @@ $(document).ready(function(){
     });
 
     //Filter unlabelled items
+    //This filter has a join relation with string filter
     $('#global_filter').click(function(){
         var done_shown = $('#div_logarea').find('.panel-success')
             .filter(function(){
@@ -163,11 +163,15 @@ $(document).ready(function(){
         //If there are labelled panel showing, then hide them all
         if (done_shown.length > 0){
             done_shown.addClass('hidden');
+            $('#global_filter').removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
         }
         //If all labelled panels are hidden, then show them
         else{
             $('#div_logarea').find('.panel-success').removeClass('hidden');
+            $('#global_filter').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
         }
+        //Update filtered counts
+        update_strfilter_count();
     });
 
     //Select a different date to view log 
@@ -370,6 +374,9 @@ function filter_urls(string){
     //as some hidden ones may still be selected, which doesn't make sense
     $('#global_checkbox').prop('checked', false);
     $('.logitem-content-checkbox').prop('checked', false);
+
+   //update counts, as it may be in a join relateion with the done filter
+    update_strfilter_count();
 }
 
 function update_strfilter_count(){
@@ -377,7 +384,7 @@ function update_strfilter_count(){
    if($('#btn_filter').attr('status') == 'filtered'){
         var tot = $('#div_logarea').find('.panel');
         var hidden = tot.filter(function(){
-            return ($(this).hasClass('strfilter-hidden')) 
+            return ($(this).hasClass('strfilter-hidden')||$(this).hasClass('hidden')) 
         })
         var count = tot.length - hidden.length;
         $('#btn_filter_count').html(' (' + count + ')');
