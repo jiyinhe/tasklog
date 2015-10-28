@@ -345,6 +345,18 @@ function filter_urls(string){
         .removeClass('btn-primary').addClass('btn-default');
 }
 
+function update_strfilter_count(){
+   //If the filter is on, then update it
+   if($('#btn_filter').attr('status') == 'filtered'){
+        var tot = $('#div_logarea').find('.panel');
+        var hidden = tot.filter(function(){
+            return ($(this).hasClass('strfilter-hidden')) 
+        })
+        var count = tot.length - hidden.length;
+        $('#btn_filter_count').html(' (' + count + ')');
+   } 
+}
+
 function get_dates(){
     $.ajax({
         type: "POST",
@@ -1176,6 +1188,9 @@ function remove_logitems(items){
                 ele.remove(); 
                 update_progress('remove', 1, done); 
             }
+            //If some of the filtered results are removed, update the counts of
+            //filtered results
+            update_strfilter_count(items.length);
         }
     });
 }
