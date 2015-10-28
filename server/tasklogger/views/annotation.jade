@@ -7,7 +7,7 @@ block headextra
 block navbar-extension
     .container
         .col-xs-12(class="navbar-extension")
-            .col-xs-8
+            .col-xs-7
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown")
                         input#global_checkbox(type="checkbox", data-toggle="tooltip",
@@ -29,10 +29,6 @@ block navbar-extension
                 div(class=["navbar-text", "anno-option"])
                     div(data-toggle="tooltip", data-placement="bottom", title="Remove selected items")
                         span#global_trash(class=["glyphicon glyphicon-trash glyphicon-global"])
-
-                div(class=["navbar-text", "anno-option"])
-                    div(data-toggle="tooltip", data-placement="bottom", title="Filter on unlabelled items")
-                        span#global_filter(class=["glyphicon glyphicon-eye-open glyphicon-global"])
 
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown" id="div_task_dropdown")
@@ -72,7 +68,20 @@ block navbar-extension
                             li.global-useful#global_useful_na
                                 a 
                                     span.label.label-info Not applicable
-                
+
+                div(class=["navbar-text", "anno-option"])
+                    div(data-toggle="tooltip", data-placement="bottom", title="Filter on unlabelled items")
+                        span#global_filter(class=["glyphicon glyphicon-eye-open glyphicon-global"])
+
+                div(class=["navbar-nav", "anno-option"])
+                    div(data-toggle="tooltip", data-placement="bottom", title="Filter log items with matching strings in URLs")
+                        .form-inline
+                            input#url_filter(class="form-control url-filter", type="text", placeholder="Filter string")
+                            button#btn_filter.btn.btn-sm.btn-primary.btn-filter(status="no-filter")
+                                span#btn_filter_status Filter
+                                span#btn_filter_count 
+
+            .col-xs-5
                 div(class=["navbar-text", "anno-option"])
                     div(class="dropdown view-date")
                         span#global_date_selected(class="cursor-help", data-toggle="tooltip", 
@@ -95,14 +104,6 @@ block navbar-extension
                             data-toggle="tooltip", data-placement="top", title="Items annotated"
                             )
                             span#progress_done_label
-            .col-xs-4
-                div(class=["navbar-nav", "anno-option"])
-                    div(data-toggle="tooltip", data-placement="bottom", title="Filter log items with matching strings in URLs")
-                        .form-inline
-                            input#url_filter(class="form-control url-filter", type="text", placeholder="Filter string")
-                            button#btn_filter.btn.btn-sm.btn-primary.btn-filter(status="no-filter")
-                                span#btn_filter_status Filter
-                                span#btn_filter_count 
 
 block content
     div(class=["container"])
