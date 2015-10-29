@@ -65,11 +65,6 @@ $(document).ready(function(){
         $('.task-more').toggleClass('hidden');
     });
 
-    //TODO: Create new candidate task labels - maybe not 
-    $('#task_dropdown').on('click', '#task_label_new', function(){
-    });
-
-
     //Select all/none/labelled/unlablled
     $('#global_checkbox').click(function(){
         if ($(this).is(':checked')){
@@ -86,12 +81,9 @@ $(document).ready(function(){
         }
         else {
             //De-select everything, whether hidden or not
-            $('#global_checkbox').prop('checked', false);
-            $('#div_logarea').find('.logitem-content-checkbox')
-            .prop('checked', false);
+            deselect_all();
         }
-
-//        console.log($('#div_logarea input:checked').length)
+        //console.log($('#div_logarea input:checked').length)
     });
 
     $('#select_all').click(function(){
@@ -109,17 +101,18 @@ $(document).ready(function(){
     });
 
     $('#select_none').click(function(){
-        $('#global_checkbox').prop('checked', false);
         //De-select everything, whether hidden or not
-        $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
-
+        deselect_all();
 //        console.log($('#div_logarea input:checked').length)
     });
 
+
+    //Skip the selection of labelled and unlablled
+    //This can be donw better with the done_filter
+    /*
     $('#select_labelled').click(function(){
         //First de-select everything
-        $('#div_logarea').find('.panel .logitem-content-checkbox')
-            .prop('checked', false);
+        deselect_all();
 
         //Select labelled, but skip the ones that are hidden
         $('#div_logarea').find('.panel-success .logitem-content-checkbox')
@@ -130,13 +123,11 @@ $(document).ready(function(){
                 })
             .prop('checked', true);
 //        console.log($('#div_logarea input:checked').length)
-
     });
 
     $('#select_unlabelled').click(function(){
         //First deselect all
-        $('#div_logarea').find('.panel .logitem-content-checkbox')
-            .prop('checked', false);
+        deselect_all();
 
         //Select unlabelled, but only those are visible
         $('#div_logarea').find('.panel-default .logitem-content-checkbox')
@@ -147,9 +138,10 @@ $(document).ready(function(){
                 })
             .prop('checked', true);
 
-//        console.log($('#div_logarea input:checked').length)
+        console.log($('#div_logarea input:checked').length)
 
     });
+    */
 
     //Filter unlabelled items
     //This filter has a join relation with string filter
@@ -174,9 +166,8 @@ $(document).ready(function(){
 
         //Reset all checked boxes after filter
         //as some hidden ones may still be selected, which doesn't make sense
-        $('#global_checkbox').prop('checked', false);
-        $('.logitem-content-checkbox').prop('checked', false);
-//        console.log($('#div_logarea input:checked').length)
+        deselect_all();
+        console.log($('#div_logarea input:checked').length)
  
     });
 
@@ -202,6 +193,7 @@ $(document).ready(function(){
     });
 
     //Per-item remove, click on modal confirming removing - deprecated
+    /*
     $('#div_logarea').on('click', '.remove-confirm', function(){
         var item_id = $(this).attr('id').split('_')[2];
         $('#modal_' + item_id).modal('toggle');
@@ -209,7 +201,7 @@ $(document).ready(function(){
         items = [item_id];
         remove_logitems(items); 
     });
-
+    */
     //Per-item remove
     $('#div_logarea').on('click', '.logitem-remove', function(){
         var item_id = $(this).attr('id').split('_')[2];
@@ -336,6 +328,17 @@ $(document).ready(function(){
 //}
 
 //It should be called when:
+//- on every selection operation
+//- after string filter/unfilter
+//- after done filter/unfilter
+//- after assigning a label
+function deselect_all(){
+    $('#global_checkbox').prop('checked', false);
+    $('#div_logarea').find('.logitem-content-checkbox')
+         .prop('checked', false);
+}
+
+//It should be called when:
 // - click on un-filter
 // - release done filter
 // - change dates
@@ -350,15 +353,14 @@ function unfilter_urls(){
    $('#btn_filter_count').html('');
    //Change button status
    $('#btn_filter').attr('status', 'no-filter')
-        .removeClass('btn-default').addClass('btn-primary');
+        .removeClass('btn-danger').addClass('btn-primary');
    //Reset the input field
    $('#url_filter').val('');
 
    //Reset all checked boxes after unfilter
    //to avoid inconsistency between global selection
    //and actual selected items 
-   $('#global_checkbox').prop('checked', false);
-   $('.logitem-content-checkbox').prop('checked', false);
+   deselect_all();
 }
 
 function filter_urls(string){
@@ -379,13 +381,11 @@ function filter_urls(string){
 
     //Change button status
     $('#btn_filter').attr('status', 'filtered')
-        .removeClass('btn-primary').addClass('btn-default');
+        .removeClass('btn-primary').addClass('btn-danger');
 
     //Reset all checked boxes after filter
     //as some hidden ones may still be selected, which doesn't make sense
-    $('#global_checkbox').prop('checked', false);
-    $('.logitem-content-checkbox').prop('checked', false);
-
+    deselect_all();
    //update counts, as it may be in a join relateion with the done filter
     update_strfilter_count();
 }
@@ -1370,9 +1370,7 @@ function submit_labels_task(items, taskid, taskname){
             //}
 
             //Afterwards, deselect the selected items if any, in case users forget
-            $('#global_checkbox').prop('checked', false);
-            //De-select everything, whether hidden or not
-            $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
+            deselect_all();
         }
     });
    
