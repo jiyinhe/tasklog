@@ -106,7 +106,6 @@ $(document).ready(function(){
 //        console.log($('#div_logarea input:checked').length)
     });
 
-
     //Skip the selection of labelled and unlablled
     //This can be donw better with the done_filter
     /*
@@ -145,7 +144,9 @@ $(document).ready(function(){
 
     //Filter unlabelled items
     //This filter has a join relation with string filter
+    //TODO: simplify: just filter - unfilter, don't do continuous filtering
     $('#global_filter').click(function(){
+        /*
         var done_shown = $('#div_logarea').find('.panel-success')
             .filter(function(){
                 return !$(this).hasClass('hidden')
@@ -161,6 +162,18 @@ $(document).ready(function(){
             $('#div_logarea').find('.panel-success').removeClass('hidden');
             $('#global_filter').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
         }
+        */
+        //Simplified version
+        if ($('#global_filter').hasClass('glyphicon-eye-open')){
+            //Filter
+            $('#div_logarea').find('.panel-success').addClass('hidden');
+            $('#global_filter').removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close');
+        } 
+        else{
+            $('#div_logarea').find('.panel-success').removeClass('hidden');
+            $('#global_filter').removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open');
+        }
+
         //Update filtered counts
         update_strfilter_count();
 
