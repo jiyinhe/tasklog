@@ -2,8 +2,6 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
-//TODO: reset selection after labeling
-//TODO: remove usefulness
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -39,8 +37,8 @@ $(document).ready(function(){
     //Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
 
-    //Stop dismiss dropdown after click for task label menu
-    $('#task_dropdown').on('click', function(e){
+    //Stop dismiss dropdown after click for getting more task labels
+    $('#task_dropdown').on('click', '.li-more-task', function(e){
         e.stopPropagation();
     });
 
@@ -1370,6 +1368,11 @@ function submit_labels_task(items, taskid, taskname){
             //if (general_label_ids.indexOf(taskid) > -1){
             //    submit_labels_useful(items, 'na');
             //}
+
+            //Afterwards, deselect the selected items if any, in case users forget
+            $('#global_checkbox').prop('checked', false);
+            //De-select everything, whether hidden or not
+            $('#div_logarea').find('.logitem-content-checkbox').prop('checked', false);
         }
     });
    
