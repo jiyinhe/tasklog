@@ -195,6 +195,7 @@ chrome.tabs.query({'active': true}, function(tabs){
 
 //function for send post request to store data
 function savedata(logdata){
+//    console.log(logdata)
     //First check if the url is in the blacklist
     //console.log(blacklist)
     //console.log(logdata.url)
@@ -753,6 +754,7 @@ chrome.webNavigation.onCommitted.addListener(function(details){
             inputtype = ['link']
             if (details.transitionQualifiers.indexOf('forward_back')>-1)
                 inputtype.push('forward_back');
+//            console.log(previousEvent)
         }
         else
             inputtype = [details.transitionType]
