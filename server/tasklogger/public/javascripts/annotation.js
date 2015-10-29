@@ -2,9 +2,8 @@
    Dependancy: tasks.js
  ===================== */
 //TODO: instruction
-//TODO: reset selection after done_filtering
 //TODO: reset selection after labeling
-//TODO: url/query encoding
+//TODO: remove usefulness
 
 var url_ajax_options = '/users/ajax_annotation_options';
 var url_ajax_annotation = '/users/ajax_annotation';
@@ -248,7 +247,8 @@ $(document).ready(function(){
         submit_labels_task(selected_items, taskid, taskname);
     });
 
-    //Global assign usefulness
+    //Global assign usefulness - Deprecated
+    /*
     $('.global-useful').click(function(){
         var value = $(this).attr('id').split('_')[2];
         var selected_items = []
@@ -261,14 +261,17 @@ $(document).ready(function(){
  //       console.log(selected_items)
         submit_labels_useful(selected_items, value);
     });
+    */
 
-    //Per-item assign usefulness
+    //Per-item assign usefulness - Deprecated
+    /*
     $('#div_logarea').on('click', '.logitem-useful-option', function(){
         var useful = $(this).attr('id').split('_');
         var id = useful[3];
         var value = useful[2];
         submit_labels_useful([id], value);
     });
+    */
 
     //Per-item show more labels
     $('#div_logarea').on('click', '.logitem-label-candidate-more', function(){
@@ -837,7 +840,9 @@ function create_logitem_elements(ele_candidate_labels){
     div_candidates.setAttribute('class', 'logitem-label-candidates');
     div_candidates.innerHTML = ele_candidate_labels.innerHTML;
 
+    //Skip usefulness labeling
     //Logitem label - useful
+    /*
     var div_useful = document.createElement('div');
     div_useful.setAttribute('class', 'logitem-useful panel-footer');
     div_useful.setAttribute('useful', '');
@@ -851,7 +856,7 @@ function create_logitem_elements(ele_candidate_labels){
     var span_useful_na = document.createElement('span');
     span_useful_na.setAttribute('class', 'label label-default logitem-useful-option logitem-useful-na');
     span_useful_na.innerHTML = 'NOT APPLICABLE';
-
+    */
 
     /* Skip using removal confirm, too much work for user */
     //var div_modal = logitem_create_remove_modal();
@@ -872,15 +877,16 @@ function create_logitem_elements(ele_candidate_labels){
     elements.div_candidates = div_candidates;
     elements.div_item_label = div_item_label;
 
-    var span_useful_text = document.createElement('span');
-    span_useful_text.setAttribute('class', 'logitem-useful-text');
-    span_useful_text.innerHTML = 'For what I was doing, I find this page ';
+    //var span_useful_text = document.createElement('span');
+    //span_useful_text.setAttribute('class', 'logitem-useful-text');
+    //span_useful_text.innerHTML = 'For what I was doing, I find this page ';
 
-    elements.span_useful_text = span_useful_text;
-    elements.span_useful_true = span_useful_true;
-    elements.span_useful_false = span_useful_false;
-    elements.span_useful_na = span_useful_na;
-    elements.div_useful = div_useful;
+    //elements.span_useful_text = span_useful_text;
+    //elements.span_useful_true = span_useful_true;
+    //elements.span_useful_false = span_useful_false;
+    //elements.span_useful_na = span_useful_na;
+    //elements.div_useful = div_useful;
+
     elements.div_item = div_item;
 
     return elements;
@@ -922,6 +928,8 @@ function assemble_logitem_elements(elements, item){
     var div_candidates = elements.div_candidates.cloneNode(true);
     div_candidates.setAttribute('id', 'logitem_label_candidates_' + item['_id']);
 
+    //Skip the usefulness labeling
+    /*
     var div_useful = elements.div_useful.cloneNode(false);
     div_useful.setAttribute('id', 'logitem_useful_' + item['_id']);
     var span_useful_text = elements.span_useful_text.cloneNode(true);
@@ -931,7 +939,7 @@ function assemble_logitem_elements(elements, item){
     span_useful_false.setAttribute('id', 'logitem_useful_false_' + item['_id']);
     var span_useful_na = elements.span_useful_na.cloneNode(true);
     span_useful_na.setAttribute('id', 'logitem_useful_na_' + item['_id']);
-
+    */
 
     //Skip the removal dialog
     //var div_modal = elements.div_modal.cloneNode(true);
@@ -964,7 +972,8 @@ function assemble_logitem_elements(elements, item){
             //Set labeling done
             div_item.setAttribute('class', 'panel panel-success');
         } 
-        div_useful.className += ' hidden';
+        //Skip the usefulness labeling - no div_useful
+        //div_useful.className += ' hidden';
         //set search penel style
         div_item.className += ' panel-search'
    }
@@ -982,8 +991,6 @@ function assemble_logitem_elements(elements, item){
         if(item_url.length > 100){
             item_url = item_url.slice(0, 80) + '...';
         }
-//        console.log(item.url.length, item.url)
-//        console.log(item_url)
         pageurl.innerHTML = item_url;
         div_item_content_sub2.appendChild(pageurl);
 
@@ -1002,7 +1009,10 @@ function assemble_logitem_elements(elements, item){
         } 
         else
             task_done = false;
+
+        //Skip the usefulness labeling
         //Set useful label
+        /*
         if ('useful' in item.annotation){
             if (item.annotation.useful == 'true')
                 span_useful_true.setAttribute('class',
@@ -1019,6 +1029,8 @@ function assemble_logitem_elements(elements, item){
         }
         else
             task_done = false;
+        */
+
         if(task_done)
             div_item.setAttribute('class', 'panel panel-success'); 
         //set browsing panel style
@@ -1053,11 +1065,13 @@ function assemble_logitem_elements(elements, item){
     div_item_label.appendChild(div_candidates);
     div_item.appendChild(div_item_label);
 
-    div_useful.appendChild(span_useful_text);
-    div_useful.appendChild(span_useful_true);
-    div_useful.appendChild(span_useful_false);
-    div_useful.appendChild(span_useful_na);
-    div_item.appendChild(div_useful);
+    //Skip usefulness
+    //div_useful.appendChild(span_useful_text);
+    //div_useful.appendChild(span_useful_true);
+    //div_useful.appendChild(span_useful_false);
+    //div_useful.appendChild(span_useful_na);
+    //div_item.appendChild(div_useful);
+
     return div_item;
 }
 
@@ -1162,6 +1176,7 @@ function logitem_create_candidate_label(taskid, taskname, parentname){
     return span_candidate;
 }
 
+//Deprecated, skip the removal dialog
 function logitem_create_remove_modal(){
     //var time1 = new Date().getTime();
     //Modal
@@ -1246,6 +1261,7 @@ function remove_logitems(items){
     });
 }
 
+//Deprecated: Skip the usefulness labeling
 //Submit the labels of usefulness
 function submit_labels_useful(ids, value){
      $.ajax({
@@ -1329,29 +1345,31 @@ function submit_labels_task(items, taskid, taskname){
                 var event_type = $('#div_logarea').find('#logitem_' +
                         items[i]).attr('event_type');
                 var panel_id = '#logitem_' + items[i];
-    
-                if (event_type == 'tab-search'){
+   
+                //Skip the usefulness labeling
+                //As long as task is labelled, it's done  
+                if (event_type == 'tab-search' || event_type == 'tab-loaded'){
                     if ($('#div_logarea').find(panel_id).hasClass('panel-default')){
                         //Done another annotation, update progress
                         update_progress('done', 1, false);
                     }
                     $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
                 }
-                else if(event_type == 'tab-loaded'){
-                    var useful = $('#div_logarea').find('#logitem_useful_' + items[i]).attr('useful');
-                    //console.log(useful);
-                    if (useful != ''){
-                        if($('#div_logarea').find(panel_id).hasClass('panel-default'))
-                            //done another annotation, update progress
-                            update_progress('done', 1, false);
-                        $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
-                    }
-                }
+                //else if(event_type == 'tab-loaded'){
+                //    var useful = $('#div_logarea').find('#logitem_useful_' + items[i]).attr('useful');
+                //    if (useful != ''){
+                //        if($('#div_logarea').find(panel_id).hasClass('panel-default'))
+                //            //done another annotation, update progress
+                //            update_progress('done', 1, false);
+                //        $('#div_logarea').find(panel_id).removeClass('panel-default').addClass('panel-success');
+                //    }
+                //}
             }
+            //Skip the usefulness labeling
             //If the task is set to a predefined category, set uesful to "na"
-            if (general_label_ids.indexOf(taskid) > -1){
-                submit_labels_useful(items, 'na');
-            }
+            //if (general_label_ids.indexOf(taskid) > -1){
+            //    submit_labels_useful(items, 'na');
+            //}
         }
     });
    

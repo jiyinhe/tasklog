@@ -449,6 +449,7 @@ router.post('/ajax_annotation', function(req, res){
                 }
         });
     } 
+    //Skip usefulness labeling: not used
     else if (body['event'] == 'submit_labels_useful'){
         var useful_value = body.value;
         var ids = body['ids'];
@@ -541,7 +542,9 @@ router.post('/ajax_annotation_options', function(req, res){
                 'adjusted_time':  {$subtract: ['$timestamp_bson', timediff]},
                 'removed': 1,
                 'event': 1,
-                'annotation.useful': {$ifNull: ['$annotation.useful', 0]},
+                //Skip usefulness labeling - not consider useful for compeleting
+                //labling
+                //'annotation.useful': {$ifNull: ['$annotation.useful', 0]},
                 'annotation.task': {$ifNull: ['$annotation.task', 0]},
                 'timestamp_bson': 1
                 }
@@ -553,14 +556,18 @@ router.post('/ajax_annotation_options', function(req, res){
                     'timestamp_bson': 1,
                     'event': 1,
                     'removed': {$cond: [{$eq: ['$removed', true]}, 1, 0]},
-                    'annotation.useful': 1,
+                    //'annotation.useful': 1,
                     'annotation.task': 1,
                     'annotation_not_done': {$cond: [
                         {$and: [{$eq: ['$removed', false]},
-                            {$or: [{$eq: ['$annotation.task', 0]},
-                                {$and: [{$eq: ['$event', 'tab-loaded']}, 
-                                        {$eq: ['$annotation.useful', 0]}]} 
-                            ]}]}, 1, 0]}
+                            //Skip the usefulness labeling
+                            //as long as task is labeled, considered as done
+                            //{$or: [{$eq: ['$annotation.task', 0]},
+                            //    {$and: [{$eq: ['$event', 'tab-loaded']}, 
+                            //            {$eq: ['$annotation.useful', 0]}]} 
+                            //]}
+                            {$eq: ['$annotation.task', 0]},
+                            ]}, 1, 0]}
                 }
             },
            {$group: {
