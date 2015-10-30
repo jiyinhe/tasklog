@@ -393,8 +393,6 @@ app.get('/download_chromelogger', function(req, res){
     res.download(filename);
 });
 
-
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

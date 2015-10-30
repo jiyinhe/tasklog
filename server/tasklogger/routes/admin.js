@@ -17,6 +17,18 @@ router.get('/', function(req, res, next) {
         res.redirect('/admin/listing');
 });
 
+//For downloading the chrome logger
+router.get('/dld_log', function(req, res){
+    if (req.session.admin===undefined){
+        res.redirect('/admin/login');
+    }
+    else{
+        var filename = __dirname + '../bak/db_tasklog.zip';
+        res.download(filename);
+    }    
+});
+
+
 /* Admin login */
 router.get('/login', function(req, res, next) {
     if (req.session.admin===undefined){
@@ -267,7 +279,7 @@ router.get('/reminder', function(req, res, next){
                     res.send({'err': true, 'emsg': err});
                 }
                 else{
-                    console.log(data)
+                    //console.log(data)
                     res.render('admin/admin_reminder', {
                         'data': data, 
                     });
