@@ -436,6 +436,7 @@ router.post('/ajax_requests', function(req, res){
         async.waterfall([
             //Get user 
             function(done) {
+                var User = req.db.get('user') 
                 User.findOne({ 'userid': userid}, function(err, user) {
                     if (!user) {
                         return res.send({'err': true, 'emsg': 'uesrid not found.'});
