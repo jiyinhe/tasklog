@@ -188,6 +188,7 @@ router.get('/reminder', function(req, res, next){
 
             //Get email history 
             function (docs, callback){
+                var User = req.db.get('user');
                 var data = [];
                 for (var i = 0; i<docs.length; i++){
                    var d = {
@@ -202,7 +203,6 @@ router.get('/reminder', function(req, res, next){
                         d.class="danger"
                     }
                     //Check email history
-                    User = req.db.get('user');
                     User.findOne({'userid': d.userid}, function(err, user){
                         if (user){
                            //Haven't sent user email yet
