@@ -1,0 +1,33 @@
+extend admin_layout
+
+
+block content 
+    table.table.table-striped
+        thead
+            tr
+                th User
+                th Dates
+                th To annotate
+                th Annotated
+                th Gap
+                th Action
+                th Reminder history            
+        tbody
+            - for (var i = 0; i<data.length; i++){
+                tr(class=data[i].class)
+                    td=data[i].userid
+                    td=data[i].time
+                    td=data[i].to_annotate
+                    td=data[i].annotated
+                    td.err=data[i].gap
+                    td
+                        btn.btn-reminder.btn.btn-primary.btn-xs(id=data[i].userid) Send email 
+                    -var l = data[i].reminder_history.length;
+                    td
+                        ul.u 
+                            -for (var j = 0; j < data[i].reminder_history.length; j++){
+                            li=data[i].reminder_history[j]
+                            -}
+            - }
+
+            
