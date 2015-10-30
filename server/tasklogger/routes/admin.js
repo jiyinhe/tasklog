@@ -188,8 +188,10 @@ router.get('/reminder', function(req, res, next){
 
             //Get email history 
             function (docs, callback){
+//                console.log(docs)
                 var User = req.db.get('user');
-                var data = [];
+                var data = {};
+                var userids = [];
                 for (var i = 0; i<docs.length; i++){
                    var d = {
                         'userid': docs[i]._id,
@@ -202,7 +204,37 @@ router.get('/reminder', function(req, res, next){
                     if (d.gap > 100){
                         d.class="danger"
                     }
-                    //Check email history
+                    data[d.userid] = d;
+                    userids.push(d.userid);
+                }
+                //Check email history
+                User.find({'userid': {$in: userids}}, function(err, users){
+                    for (var i = 0; i < users.length; i++){
+                        if (users[i].reminder_history == undefined)
+                            data[users[i].userid].reminder_history = [];
+                        else{
+                            var history = []
+                            var user = users[i];
+                            for (var j = 0; j < user.reminder_history.length; j++){
+                                var datetime = new Date(user.reminder_history[j].timestamp);
+                                var time = datetime.toDateString() + ' ' + 
+                                           datetime.toLocaleTimeString();
+                                var g = user.reminder_history[j].tot_gap;
+                                var tot = user.reminder_history[j].total_entries;
+                                history.push(time + ' (Gap: ' + g + '/' + tot + ')');
+                            }
+                            data[user.userid].reminder_history = history;
+                        }
+                    }
+                    //Make data to array
+                    var data_array = [];
+                    userids.sort();
+                    for(var i = 0; i< userids.length; i++){
+                        data_array[i] = data[userids[i]];
+                    }
+                    callback(null, data_array);
+                });
+                /*
                     User.findOne({'userid': d.userid}, function(err, user){
                         if (user){
                            //Haven't sent user email yet
@@ -225,7 +257,7 @@ router.get('/reminder', function(req, res, next){
                         data.push(d);
                         return callback(null, data)
                     });
-                }
+                */
             }
 
             ], 
