@@ -10,7 +10,12 @@ $(document).ready(function(){
     $('.btn-serp').click(function(){
         var id = $(this).attr('id').split('_')
         show_serp(id[0], id[1]);
-    });    
+    });
+
+    $('.btn-reminder').click(function(){
+        userid = $(this).attr('id');
+        send_reminder(userid);
+    });
 });
 
 function show_serp(userid, timestamp){
@@ -46,3 +51,27 @@ function display_serp(res){
         )
     }
 } 
+
+function send_reminder(userid){
+    $.ajax({
+        type: "POST",
+        url: url_ajax_admin,
+        data: {'data': JSON.stringify(
+            {'event': 'send_reminder', 
+            'userid': userid, 
+            })},
+    }).done(function(response) {
+        if (response.err){
+            console.log('ERR: ', response.emsg)
+        }
+        else{
+            location.reload(true);
+        }
+    });
+
+}
+
+
+
+
+

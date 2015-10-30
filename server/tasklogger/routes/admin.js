@@ -2,6 +2,10 @@ var express = require('express');
 var bcrypt = require('bcrypt-nodejs');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectID;
+var async = require('async');
+var nodemailer = require('nodemailer');
+
+
 
 /* GET admin listing. */
 router.get('/', function(req, res, next) {
@@ -75,7 +79,7 @@ router.get('/listing', function(req, res, next){
                 'removed': 1,
                 'event': 1,
                 'to_annotate': 1,
-                'annotation.useful': {$ifNull: ['$annotation.useful', 0]},
+            //    'annotation.useful': {$ifNull: ['$annotation.useful', 0]},
                 'annotation.task': {$ifNull: ['$annotation.task', 0]},
                 }
             },
@@ -95,14 +99,16 @@ router.get('/listing', function(req, res, next){
                     'to_annotate': {$cond: [{$eq: ['$to_annotate', true]}, 1, 0]}, 
                     'removed': {$cond: [{$eq: ['$removed', true]}, 1, 0]},
                     //'annotation.useful': 1,
-                    //'annotation.task': 1,
+                    'annotation.task': 1,
                     'annotation_not_done': {$cond: [
                         {$and: [{$eq: ['$removed', false]}, 
                                 {$eq: ['$to_annotate', true]},
-                            {$or: [{$eq: ['$annotation.task', 0]},
-                                {$and: [{$eq: ['$event', 'tab-loaded']}, 
-                                        {$eq: ['$annotation.useful', 0]}]} 
-                            ]}]}, 1, 0]}
+                                {$eq: ['$annotation.task', 0]},
+//                            {$or: [{$eq: ['$annotation.task', 0]},
+//                                {$and: [{$eq: ['$event', 'tab-loaded']}, 
+//                                        {$eq: ['$annotation.useful', 0]}]} 
+//                            ]}
+                        ]}, 1, 0]}
                 }
             },
            {$group: {
@@ -135,6 +141,107 @@ router.get('/listing', function(req, res, next){
                     });
             }
         });
+
+    }
+});
+
+router.get('/reminder', function(req, res, next){
+    //Get user
+    if (req.session.admin === undefined)
+        res.redirect('/admin/login');
+    else{
+        async.waterfall([
+            //Get each user's progress 
+            function(callback){
+                var Log = req.db.get('log_chrome');
+                Log.col.aggregate([
+                    {$match: {'to_annotate': true, 
+                            'removed': false,
+                        }},
+                    {$project: {
+                        'userid': 1,
+                        'annotation.task': {$ifNull: ['$annotation.task', 0]},
+                        'to_annotate': 1,  
+                        'timestamp': 1 
+                        }}, 
+                    {$project: {
+                        'userid': 1, 
+                        'done': {$cond: [{$eq: ['$annotation.task', 0]}, 0, 1]},
+                        'not_done': {$cond: [{$eq: ['$annotation.task', 0]}, 1, 0]},
+                        'to_annotate': 1, 
+                        'timestamp': 1,  
+                        }},
+                    
+                    {$group: {'_id': '$userid', 
+                            'count_to_annotate': {$sum: 1},
+                            'gap': {$sum: '$not_done'},
+                            'done': {$sum: '$done'},
+                            'min_timestamp': {$min: '$timestamp'},
+                            'max_timestamp': {$max: '$timestamp'},
+                       }},
+                    {$sort: {'_id': 1}}
+                ], 
+                function(err, docs){
+                    callback(err, docs)
+                });
+            }, 
+
+            //Get email history 
+            function (docs, callback){
+                var data = [];
+                for (var i = 0; i<docs.length; i++){
+                   var d = {
+                        'userid': docs[i]._id,
+                        'to_annotate': docs[i].count_to_annotate,
+                        'annotated': docs[i].done,
+                        'gap': docs[i].gap,
+                        'time': (new Date(docs[i].min_timestamp)).toLocaleDateString()  
+                                 + '-' + (new Date(docs[i].max_timestamp)).toLocaleDateString(),
+                    } 
+                    if (d.gap > 100){
+                        d.class="danger"
+                    }
+                    //Check email history
+                    User = req.db.get('user');
+                    User.findOne({'userid': d.userid}, function(err, user){
+                        if (user){
+                           //Haven't sent user email yet
+                           if (user.reminder_history == undefined){
+                                d.reminder_history = [];
+                            }
+                           else{
+                                var history = []
+                                for (var j = 0; j < user.reminder_history.length; j++){
+                                    var datetime = new Date(user.reminder_history[j].timestamp);
+                                    var time = datetime.toLocaleDateString() + ' ' + 
+                                                datetime.toLocaleTimeString();
+                                    var g = user.reminder_history[j].tot_gap;
+                                    var tot = user.reminder_history[j].total_entries;
+                                    history.push(time + ' (Gap: ' + g + '/' + tot + ')');
+                                }
+                                d.reminder_history = history
+                            }
+                        }
+                        data.push(d);
+                        return callback(null, data)
+                    });
+                }
+            }
+
+            ], 
+            function(err, data){
+               if (err){
+                    console.log('DB ERROR: '+err)
+                    res.send({'err': true, 'emsg': err});
+                }
+                else{
+                    console.log(data)
+                    res.render('admin/admin_reminder', {
+                        'data': data, 
+                    });
+                }
+            }
+        );
 
     }
 });
@@ -290,6 +397,130 @@ router.post('/ajax_requests', function(req, res){
 //                console.log(docs.length)
                 res.send({'res': docs})
             }
+        });
+    }
+    else if (data.event == 'send_reminder'){
+        var userid = data.userid;
+        async.waterfall([
+            //Get user 
+            function(done) {
+                User.findOne({ 'userid': userid}, function(err, user) {
+                    if (!user) {
+                        return res.send({'err': true, 'emsg': 'uesrid not found.'});
+                    }
+                    else{
+                        //If account exists, go to next step
+                        done(err, user);
+                    }
+                });
+            },
+            //Get counts
+            function(user, done){
+                var timediff = new Date().getTimezoneOffset()*60*1000;
+                collection = req.db.get('log_chrome');
+                collection.col.aggregate([
+                    {$match: {'userid': user.userid, 
+                        'removed': false,
+                        'to_annotate': true}},
+                    {$project: {
+                        'userid': 1, 
+                        'to_annotate': {$cond: [{$eq: ['$to_annotate', true]}, 1, 0]},
+                        'year': {$year: {$subtract: ['$timestamp_bson', timediff]}},
+                        'day':  {$dayOfYear: {$subtract: ['$timestamp_bson', timediff]}},
+                        'annotation.task': {$ifNull: ['$annotation.task', 1]},
+                        }},
+                    {$group: {
+                        '_id': {year: '$year', day: '$day'}, 
+                        'to_annotate': {$sum: '$to_annotate'}, 
+                        'not_done': {$sum: '$annotation.task'},
+                    }}, 
+                    {$sort: {'_id': 1}}
+                ], function(err, docs){
+                        done(err, user, docs);
+                    });
+            },
+            //send email 
+            function(user, docs, done) {
+                var progress_list = [];
+                var dates = [];
+                var tot = 0, not_done = 0;
+                for(var i = 0; i< docs.length; i++){
+                    var date = new Date(docs[i]._id.year, 0);
+                    date.setDate(docs[i]._id.day);
+                    dates.push(date.toLocaleDateString());
+
+                    var d = [
+                        '    ',
+                        date.toLocaleDateString() + ':',
+                        (docs[i].to_annotate-docs[i].not_done) + '/' + docs[i].to_annotate,
+                        'done;'
+                    ].join(' ');
+
+                    progress_list.push(d);
+                    tot += docs[i].to_annotate;
+                    not_done += docs[i].not_done;
+                }
+               
+                var mail_content = [
+                    'Dear ' + user.name + ',\n', 
+                    'This is a gentle reminder about the diary study you are currently participating. \n',
+                    'Between ' + dates[0] + ' and ' + dates[dates.length-1] + ','
+                        + ' you have a log file of ' + tot + ' entries, while ' 
+                        + not_done + ' of them are still waiting for your annotation. \n', 
+                    'You detailed progress is listed below: \n', 
+                    progress_list.join('\n'),
+                    '\n',
+                    'Would you be so kind to finish your annotation as soon as possible? \n', 
+                    'Thank you, \nJiyin and Tim \n'
+                ].join('\n');
+                var smtpTransport = nodemailer.createTransport('SMTP', {
+                    //host: 'smtp.cs.ucl.ac.uk',
+                    service: 'Gmail', 
+		            auth: {
+        		        user: "research.mediafutures.ucl@gmail.com",
+        		        pass: "research4fun"
+		            }
+                });
+                var mailOptions = {
+                    to: user.email,
+                    cc: 'research.mediafutures.ucl@gmail.com',
+                    from: 'Research Mediafutures UCL',
+                    subject: 'Reminder: your diary study',
+                    text: mail_content, 
+                };
+               smtpTransport.sendMail(mailOptions, function(err) {
+                    var timestamp = new Date();
+                    done(null, user, timestamp, docs, tot, not_done);
+               });
+            },
+
+            //save reminder history
+            function(user, timestamp, docs, tot, not_done, done){
+                var history = {
+                    'timestamp': timestamp, 
+                    'total_entries': tot, 
+                    'tot_gap': not_done,
+                } 
+                var reminder_history = [];
+                if (user.reminder_history != undefined){
+                     reminder_history = user.reminder_history;
+                }
+                reminder_history.push(history);
+                collection = req.db.get('user');
+                collection.update({'_id':  user._id}, {
+                    $set: {'reminder_history': reminder_history,
+                          }},
+                    function(err, docs){
+                        done(err);
+                });
+            }
+
+        ], function(err) {
+            if (err) {
+                res.send({'err': true, 'emsg': err});
+            }
+            else
+                res.send('success');
         });
     }
 });
