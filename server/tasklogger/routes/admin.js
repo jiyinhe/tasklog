@@ -195,8 +195,8 @@ router.get('/reminder', function(req, res, next){
                         'to_annotate': docs[i].count_to_annotate,
                         'annotated': docs[i].done,
                         'gap': docs[i].gap,
-                        'time': (new Date(docs[i].min_timestamp)).toLocaleDateString()  
-                                 + '-' + (new Date(docs[i].max_timestamp)).toLocaleDateString(),
+                        'time': (new Date(docs[i].min_timestamp)).toDateString()  
+                                 + '-' + (new Date(docs[i].max_timestamp)).toDateString(),
                     } 
                     if (d.gap > 100){
                         d.class="danger"
@@ -213,7 +213,7 @@ router.get('/reminder', function(req, res, next){
                                 var history = []
                                 for (var j = 0; j < user.reminder_history.length; j++){
                                     var datetime = new Date(user.reminder_history[j].timestamp);
-                                    var time = datetime.toLocaleDateString() + ' ' + 
+                                    var time = datetime.toDateString() + ' ' + 
                                                 datetime.toLocaleTimeString();
                                     var g = user.reminder_history[j].tot_gap;
                                     var tot = user.reminder_history[j].total_entries;
@@ -447,11 +447,11 @@ router.post('/ajax_requests', function(req, res){
                 for(var i = 0; i< docs.length; i++){
                     var date = new Date(docs[i]._id.year, 0);
                     date.setDate(docs[i]._id.day);
-                    dates.push(date.toLocaleDateString());
+                    dates.push(date.toDateString());
 
                     var d = [
                         '    ',
-                        date.toLocaleDateString() + ':',
+                        date.toDateString() + ':',
                         (docs[i].to_annotate-docs[i].not_done) + '/' + docs[i].to_annotate,
                         'done;'
                     ].join(' ');
