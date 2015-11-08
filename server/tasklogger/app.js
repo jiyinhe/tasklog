@@ -29,6 +29,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var admin = require('./routes/admin'); 
+var postQ = require('./routes/postQ');
 
 var app = express();
 //allow getting user IP
@@ -151,6 +152,7 @@ app.use(function(req, res, next){
 //app.use('/', routes);
 app.use('/users', users);
 app.use('/admin', admin);
+app.use('/postQ', postQ);
 
 var User = db.get('user');
 

@@ -16,7 +16,7 @@ html
 
     block content
         .container
-            .col-md-10
+            .col-sm-10
                 h2.text-center.space30 Post-study questionnaire
                 .form-horizontal
                     .form-group
@@ -27,16 +27,162 @@ html
                             button#btn_userid.btn.btn-primary(class="form-control", name="submit_userid") Submit
 
                         .col-sm-2
-                            button#btn_reset.btn.btn-default.form-control Reset
+                            button#btn_reset.btn.btn-danger.form-control Reset
 
                         .err#err_userid
 
-                div#task_selection
+
+                .tasklist.hidden#tasklist
+                    .err#err_tasklist
+                    .panel.panel-default
+                        .panel-heading
+                            h4.panel-title Below is a list of information tasks you have worked on during the diary study. Please select 5 to 10 tasks that you feel that are most important or that you have spent significant effort on.    
+
+                        .panel-body#task_selection
+                       
+                    button.btn.btn-primary#submit_tasklist Submit my list
+                    .err#err_submit_tasklist
+
 
                 hr
-                div#tasklist
-                div#questionnaire
+                .questionnaire.hidden#questionnaire
+                    h3 Please fill in the following questionnaire by categorising your selected tasks into the categories as specified in each quesiton.  
+                  
+                    .question
+                        p 1. The following tasks 
+                        ol.postq-options(type="a")
+                            li were conducted at the first time
+                            li have been conducted for multiple times, but not frequently
+                            li were frequently conducted as a routine
+                        .bs-callout.bs-callout-primary.answers#task_frequency
+
+                    .question
+                        p 2. The following tasks 
+                        ol.postq-options(type="a")
+                            li could be finished in a short period (e.g., within a day)
+                            li need some time (e.g., within one or two weeks)
+                            li take a long time to finish (e.g., take more than two weeks) 
+                        .bs-callout.bs-callout-primary.answers#task_length
+
+                    .question
+                        p 3. During the experiment period, the following tasks
+                        ol.postq-options(type="a")
+                            li were just launched
+                            li have already been running for a while before the experiment period, and is still in the mid-way when the experiment period ended
+                            li were completed or near completion  
+                        .bs-callout.bs-callout-primary.answers#task_stage
+                        
+                    .question
+                        p 4. The following tasks
+                        ol.postq-options(type="a")
+                            li were to produce a physical product
+                            li were to produce new ideas or findings
+                            li involve decision making or problem solving
+                            li were to locate fact, data, or similar information items with a search system
+                            li were to locate images/videos, etc., with a search system
+                            li were to locate different types of information items with a search system
+                        .bs-callout.bs-callout-primary.answers#task_product
+
+                    .question
+                        p 5. The following tasks
+                        ol.postq-options(type="a")
+                            li were accomplished through one process without repeated procedures 
+                            li were accomplished through repeatly engaging same or similar procedures
+                        .bs-callout.bs-callout-primary.answers#task_process
+ 
+                    .question
+                        p 6. The following tasks
+                        ol.postq-options(type="a")
+                            li can be seen as a single to-do item
+                            li can be divided into two or more sub-tasks 
+                        .bs-callout.bs-callout-primary.answers#task_goals_quantity
+
+                    .question
+                        p 7. Which type of cognitive activities do the following tasks involve?
+                        ol.postq-options(type="a")
+                            li 
+                                span.todo Remember: 
+                                span retrieving, recognizing, and recalling relevant knowledge from long-term memory
+                            li 
+                                span.todo Understand: 
+                                span constructing meaning from oral, written, and graphic messages through interpreting, exemplifying, classifying, summarizing, inferring, comparing, and explaining
+                            li 
+                                span.todo Apply: 
+                                span carrying out or using a procedure through executing or implementing
+                            li 
+                                span.todo Analyse: 
+                                span breaking material into constituent parts, determining how the parts relate to one another and to an overall structure or purpose through differentiating, organizing, and attributing
+                            li 
+                                span.todo Evaluate: 
+                                span making judgments based on criteria and standards through checking and critiquing 
+                            li 
+                                span.todo Create: 
+                                span putting elements together to form a coherent or functional whole; reorganizing elements into a new pattern or structure through generating, planning, or producing.  
+                        .bs-callout.bs-callout-primary.answers#task_complexity_objective
+
+                    .question
+                        p 8. The following tasks 
+                        ol.postq-options(type="a")
+                            li were conducted through a group of people (>2 people)
+                            li were conducted by yourself with suggestions or help from other people
+                            li were conducted solely by yourself without help from others
+                        .bs-callout.bs-callout-primary.answers#task_collaboration
+
+                    .question
+                        p 9. The following tasks
+                        ol.postq-options(type="a")
+                            li were very important
+                            li were moderatedly important, or that their importance depends on its specific situation
+                            li were not unimportant
+                        .bs-callout.bs-callout-primary.answers#task_sailence_subjective
+
+                    .question
+                        p 10. The following tasks
+                        ol.postq-options(type="a")
+                            li were highly urgent 
+                            li were moderately important, or that its urgency depends on specific situations 
+                            li were not urgent
+                        .bs-callout.bs-callout-primary.answers#task_urgency_subjective
 
 
+                    .question
+                        p 11. The following tasks
+                        ol.postq-options(type="a")
+                            li were highly difficult
+                            li were moderately difficult, or that its difficulty depends on specific situations
+                            li were easy
+                        .bs-callout.bs-callout-primary.answers#task_difficulty_subjective
+
+                    .question
+                        p 12. The following tasks 
+                        ol.postq-options(type="a")
+                            li were highly complex
+                            li were moderately complex, or that its complexity depends on specific situation
+                            li were simple
+                        .bs-callout.bs-callout-primary.answers#task_complexity_subjective
+
+                    .question
+                        p 13. For the following tasks, I was
+                        ol.postq-options(type="a")
+                            li highly knowledgeable on the task related topics
+                            li moderately knowledgeable on the task related topics, or that the degree of my knowledge on the task topic depends on specific situations
+                            li unknowledgeable on the task related topics.  
+                        .bs-callout.bs-callout-primary.answers#task_knowledge_topic
+
+                    .question
+                        p 14. For the following tasks, I was
+                        ol.postq-options(type="a")
+                            li highly knowledgeable on the method or procedures for completing the task 
+                            li moderately knowledgeable on the method or procedures for completing the task, or that my degree of knowledge on the method/procedures depends on specific situations 
+                            li unknowlegable on the method or procedures for completing the task
+                        .bs-callout.bs-callout-primary.answers#task_knowledge_procedure
+
+                    .question 
+                        p 15. For the following tasks, I was
+                        ol.postq-options(type="a")
+                            li able to find the information I need and satisfied with the information I found
+                            li having difficulty to find the information I need, but still satisfied with the informaiton I found
+                            li was not able to find the information I need 
+                        .bs-callout.bs-callout-primary.answers#task_satisfaction
 
 

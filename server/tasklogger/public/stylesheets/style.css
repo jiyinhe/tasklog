@@ -494,3 +494,64 @@ float: left !important;
 float: right!important;
 }
 
+/* Post quetionniare */
+.tasklist {
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.tasklist-entry {
+    margin-top: 10px;
+}
+
+.tasklist-taskname {
+    font-size: 16px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.tasklist-helper {
+    font-size: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.tasklist-history {
+    width: 600px;
+    max-height: 400px;
+    overflow: auto;
+    margin-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    border-style: solid;
+    border-width: 1px;
+    
+}
+
+.history-item {
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+.history-url {
+    margin-left: 20px;
+    color: green;
+    font-size: 10px;
+}
+
+.history-text {
+    margin-left: 10px;
+}
+
+.question {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-size: 21px;
+    font-weight: 200;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    
+}
+.postq-options {
+    margin-left: 20px;
+}
