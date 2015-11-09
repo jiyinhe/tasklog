@@ -26,6 +26,7 @@ $('#mobile_search_for_other').click(function(){
 
 function validate_registration_form(){
 	rules = {
+        'consent': {'required': true, 'terms': true, 'checkbox': true, 'order': 0},
 		'user': {'required': true, 'order': 1},
 		'email': {'required': true, 'email': true, 'order': 2},
 		'pass1': {'required': true, 'order': 3},

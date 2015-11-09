@@ -20,6 +20,109 @@ html( leng="en" )
                 span(class="text-danger")=" * "
                 span ) are required.
             form(class=["form-horizontal"])
+
+                .well
+                    .col-sm-12
+                        h3.text-center Information and consent
+                        .blockquote.infosheet
+                            p.lead Thank you for helping out with our research! Please read the information below about the study and provide your consent under the condition that you agree with the content and your involvement of the study.  
+                            h4 Title of Project: Task identification in everyday use of computing devices
+                            p 
+                                strong Name, Address and Contact Details of Investigators: 
+                                span Dr Emine Yilmaz, Dr Jiyin He, Timothy Cowlishaw 
+                                br
+                                span Dept. of Computer Science, University College London
+                                br 
+                                span One Euston Square, 40 Melton Street, London NW1 2FD, United Kingdom
+                                br 
+                                span Telephone: 07904273331
+                                br 
+                                span E-mail: research.mediafutures.ucl@gmail.com, t.cowlishaw@cs.ucl.ac.uk
+                             
+                            h4 Goal of the study
+                            p We are a research team from the Media Futures group at University College London, and would like to invite daily computer users to take part in this research project, investigating people’s everyday computing habits.
+                            p  We are investigating how the specific resources you access on your computer (documents, web pages, pictures, programs), as well as the search queries you issues and the results you choose, are related to your overall goals, tasks and needs in using the computer. Our findings will help us to design better systems for searching and organising information online; systems which are better able to support users through understanding their needs and intentions.
+ 
+                            h4 Your involvement in the study
+                            p  If you agree to participate, you will be asked to take the following sessions:
+
+                            h5
+                                strong 1. Introduction session (30 mins)
+                            p  What to expect: 
+                            ol 
+                                li You will fill in a short survey about basic information about yourself and about your computer usage habits. 
+                                li We will install the logging software on your computer which monitors your computing activities for the duration of the study.
+                                li We  will explain to you the procedure of the experiment, and you can ask any questions you may have about the study. 
+                            
+                            p Two loggers will be installed:
+                                dl
+                                    dt Chrome logger: 
+                                    dd which records your online search and browsing activities. 
+                                    dt Application logger: 
+                                    dd which logs your usage of computer applications. 
+
+                            p The introduction session takes approximately 30 minutes. It can be arranged to take place:
+                            ul
+                                li in our lab;
+                                li or at a location convinient for you;
+                                li or at home. In this case, please contact us for any help you might need, and  to confirm whether everything is setup correctly. 
+                            
+                            h5 
+                                strong 2. Diary study (15 - 20 mins daily, for 5 days)
+                            p What to expect: The diary study lasts for 5 days, during which you will 
+                            ol 
+                                li Use your computer and browse online as you normally do, while
+                                    ul 
+                                        li Keeping the logger running,
+                                        li Using Chrome as your main browser.
+                                li Write down a list of tasks and goals that you are working on during this period.
+                                li Review your online activity log and your daily information goals and working tasks every day.
+
+                            p To review your log, you will be asked to associate your recorded online activities with the work tasks or information need you have written down. Meanwhile, you have the option to remove any log entries that you do not wish to share.  This is a light weight annotation task. A dedicated online tool is developed to facilitate this process. 
+
+                            p In addition, information about your more general computer activity will be logged by the Application Logger - the title and open filename of the focused window will be sampled every ten seconds. This informationi will not be shared with the researchers, but will be stored on your own computer and will be used as part of review activity in the debrief session (see below). You may pause and resume this logging process at any time.
+
+                            h5
+                                strong 3. Debrief session (About 30 mins)
+                            p After the 5 day diary study period, you will be invited to a debrief session.
+                            p What to expect: 
+                                ol
+                                    li You will be asked to complete a short questionnaire about your work tasks and goals during the study, and take part in a short task in which you will review your log of general computer use activity.
+                                    li Anonymous summary statistics about your use of your computer will be calculated and shared with the researchers. 
+                                    li We will assist you to remove the software from your computer.  
+
+                            p This process should take about 30 mins. It can be arranged:
+                            ul 
+                                li in our lab;
+                                li or at a location convinient for you;
+                                li or at home. In this case, please contact us for any help you might need, and to confirm whether everything works out correctly. 
+
+                            h4 Receiving your "Thank you" gift voucher
+                            p In the debrief session, upon complelting the above outlined tasks, you will receive the "Thank you" gift, a £20 Amazon voucher. If you choose to do the debrief session remotely, we will send the voucher via email upon completing the study.
+ 
+                            h4 Your participation
+                            p You should only participate if you want to; choosing not to take part will not disadvantage you in any way. Before you decide whether you want to task part, you can ask us if there is anything that is not clear or you would like more information. You can also discuss it with others if you wish. 
+
+                            p You also have the option to withdraw from the study at any time without giving reason. If you do decide to participate then you are still free to withdraw from the study at any time. In case of withdrawal, no further data will be gathered and any previous data provided will not be used and will be destroyed within two working days after you have informed us about your exit.
+
+
+                            h4 Your log data
+                            p Your web browsing and search data will be stored pseudonymously on a secure, encrypted server and will be accessible only to the researchers. It will be used to investigate the relationship between individual computer activities and search queries and broader goals and objectives in everyday life. Our findings will be written in the form of scientific reports or publications — no raw log data will be included in any publications, and no participants will be identified. You are welcome to request a copy of this report/publication if you wish.
+
+
+                            p All data will be collected and stored in accordance with the Data Protection Act 1998, and will be destroyed at the end of the study, which will be no later than the 31st of December 2016.
+                            p This study is being carried out in collaboration with a researcher from CWI Amsterdam (http://www.cwi.nl), who will be arranging compensation for participants. As a result, participants names and email addresses will be shared with their finance department. However, no internet usage data gathered in the study will be shared with anyone outside the immediate research team at UCL.
+
+                    .form-group
+                        .col-sm-12
+                            label(for="consent")
+                                input#consent(name="consent", type="checkbox" value="Agreed") 
+                                =" I declare that I have read and understood the above information about the study; the research project has been explained to me to my satisfaction and I agree to task part in this study. "
+                                
+                     
+                    .col-sm-6 
+                        div#err_consent(class="err")
+
                 .jumbotron
                     .form-group
                         .col-sm-6
@@ -414,6 +517,7 @@ html( leng="en" )
                         button#reg_btn(type="button", class=["btn", "btn-primary", "btn-lg", "btn-block"]) Register
                         div#err_db(class="err")
 
+                                       
 
             form#login_form(class=["form-horizontal"], method="post", action="/users/login")
                 .form-group

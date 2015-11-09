@@ -555,3 +555,11 @@ float: right!important;
 .postq-options {
     margin-left: 20px;
 }
+
+.infosheet {
+    background-color: white;
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 20px;
+}
