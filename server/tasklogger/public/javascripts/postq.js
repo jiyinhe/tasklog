@@ -284,8 +284,13 @@ function make_history_entry(entry){
     ele.appendChild(icon);
     //Text
     var text = document.createElement('span');
-    text.setAttribute('class', 'text-info history-text')
-    text.innerHTML = decodeURIComponent(entry._id.text.replace(/\+/g, ' '));
+    text.setAttribute('class', 'text-info history-text');
+    try{
+        text.innerHTML = decodeURIComponent(entry._id.text.replace(/\+/g, ' '));
+    }
+    catch(err) {
+        text.innerHTML = entry._id.text.replace(/\+/g, ' '); 
+    }
     ele.appendChild(text);
     //URLs
     for(var i = 0; i< entry.urls.length; i++){

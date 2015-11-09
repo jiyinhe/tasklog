@@ -23,8 +23,10 @@ router.get('/dld_log', function(req, res){
         res.redirect('/admin/login');
     }
     else{
-        var filename = __dirname + '../bak/db_tasklog.zip';
-        res.download(filename);
+        var filename = __dirname + '/../bak/db_tasklog.zip';
+        res.download(filename, function(){
+		res.send('Downloaded db_tasklog.zip');
+	});
     }    
 });
 
