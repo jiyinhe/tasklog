@@ -809,7 +809,7 @@ function send_registration_email(username, useremail, userid){
             ' - Use Google chrome as your Web browser; \n' + 
             ' - Keep the chrome search activity logger running;\n' + 
             ' - Keep the application logger running; \n' + 
-            ' - Work on at least 5 information goals; \n' + 
+//            ' - Work on at least 5 information goals; \n' + 
             ' - Review and perform a light weight annotation of your search and browsing history every day. \n\n' + 
             'To review and annotate your search history, please login at http://tasklog.cs.ucl.ac.uk/users/login \n\n' + 
             'If you have any questions or problems during the experiment period, please do not hesitate to contact us with this email address. \n\n' + 
