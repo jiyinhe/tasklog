@@ -91,7 +91,32 @@ $(document).ready(function(){
 
     //submit the done button 
     $('#postq_done').click(function(){
+        //First clear all the err messages if there were any
+        $('#done_thankyou').html('');
+
         //Check if it's really done
+        var undone = []; 
+        $('.answers').find('.btn-group').each(function(index){
+            var qid = $(this).attr('id').split(':')[0];
+            $('#err_' + undone[i]).html('');
+            if ($(this).find('.btn-success').length == 0){
+               undone.push(qid) 
+            }
+        });
+        //All done
+        if (undone.length == 0){
+            $('#done_thankyou').html('Great job! Thank you!');
+        } 
+        else {
+            for (var i = 0; i < undone.length; i++){
+                $('#err_' + undone[i]).html('This question is not completed. ')
+                $('#done_thankyou').html([
+                    '<span class="err">Are you sure?', 
+                    undone.length, 
+                    'of the questions are not completed. Please check.',
+                    '</span>'].join(' '))
+            } 
+        }
     });
 });
 
@@ -359,6 +384,7 @@ function make_question_entry(questionnaire, qid, options){
     bg.setAttribute('class', 'btn-group');
     bg.setAttribute('role', 'group');
     bg.setAttribute('data-toggle', 'buttons');
+    bg.setAttribute('id', qid + ':' + questionnaire.taskid)
     for(var i = 0; i < options.length; i++){
         var label = document.createElement('label');
         label.setAttribute('class', 'btn '+qid+'-'+questionnaire.taskid);

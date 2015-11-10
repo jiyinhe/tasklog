@@ -563,3 +563,10 @@ float: right!important;
     margin-bottom: 10px;
     padding: 20px;
 }
+
+.done_thankyou {
+    font-size: 18px;
+    font-style: italic;
+    margin-top: 10px;
+    text-align: center;
+}
