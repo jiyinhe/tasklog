@@ -89,6 +89,10 @@ $(document).ready(function(){
         });
     }); 
 
+    //submit the done button 
+    $('#postq_done').click(function(){
+        //Check if it's really done
+    });
 });
 
 
