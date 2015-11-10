@@ -100,7 +100,8 @@ $(document).ready(function(){
             var qid = $(this).attr('id').split(':')[0];
             $('#err_' + undone[i]).html('');
             if ($(this).find('.btn-success').length == 0){
-               undone.push(qid) 
+                if (undone.indexOf(qid) == -1)
+                   undone.push(qid) 
             }
         });
         //All done
