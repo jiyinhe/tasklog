@@ -28,378 +28,310 @@ block content
                         li 
                             a(href="#reward") Final Step:  Getting the "Thank you" gift voucher
   
-                        -/*
-                        li
-                            a(href="#log") What do we log? 
-
-                        li
-                            a(href="#blacklist") Setup a logger blacklist
-
-                        li
-                            a(href="#account") Find back your userid
-                        -*/
 
             .page-header
                 h2#procedure What to expect
-                p.lead You will take the following steps to accomplish the study. 
+                p.lead You will take the following steps while completing the study. 
                 img(src="/images/flowchart.png", width="800") 
 
 
             .page-header
                 h2#software Step 1: Registration and Setup loggers
-            .alert.alert-info 
-                p Normally you would have an in-person appointment with us, during which we help you to register and setup the loggers, and explain how to complete the study. It can be arranged in our lab or in a location which is convinient for you.  
+            .bs-callout.bs-callout-danger
+                h4 In case of in-person introduction
+                p Normally you would have an in-person appointment with us, during which we help you to register and setup the loggers, and explain how to complete the study. It can be arranged in our lab or in a location which is convenient for you. In this case, you can skip this step, as everything should already be settled. 
+
+                h4 In case of self-registration  
                 p If you choose to perform this step at home, you can follow the following instructions. In this case, please contact us for any problems, and to confirm that everything is working fine. 
   
-            
-            
-            -/*
-            p.lead The softwares are configured during the introduction session. If for some reason you need to re-install/configure them, below is a list of things you need to setup:
-            -*/
-            
-            .bs-callout.bs-callout-success
-                h4 Registration
-                p You can register by filling in a registration form 
-                    a(href="http://tasklog.cs.ucl.ac.uk/users/registration") Here.
-                p Upon successful registration, you will login to your personal workspace. At the right corner of this page, you can see your unique 
-                    strong UserID:
-                img(src="/images/nav_bar.jpg", height=40)
+           
+            .panel-group#accordion(role="tablist", aira-multiselectable="true")
+                .panel.panel-info
+                    .panel-heading#headingRegistration(role="tab")
+                        h4.panel-title
+                            a(role="button", data-toggle="collapse", data-parent="#accordion", 
+                                href="#registration", aria-expanded="true",
+                                aria-controls="registration") Registration
+                           
+                    .panel-collapse.collapse.in#registration(role="tabpanel",
+                        aria-lablledby="headingRegistration") 
+                        .panel-body
+                            p You can register by filling in a registration form 
+                                a(href="http://tasklog.cs.ucl.ac.uk/users/registration") Here.
+                            p Upon successful registration, you will login to your personal workspace. At the right corner of this page, you can see your unique 
+                                strong UserID:
+                            img(src="/images/nav_bar.jpg", height=40)
                 
+                .panel.panel-info
+                    .panel-heading#headingSoftware(role="tab")
+                        h4.panel-title
+                            a(role="button", data-toggle="collapse", data-parent="#accordion", 
+                                href="#toInstall", aria-expanded="false",
+                                aria-controls="toInstall") Software to be installed
+                           
+                    .panel-collapse.collapse#toInstall(role="tabpanel",
+                        aria-lablledby="headingSoftware") 
+                        .panel-body
+                            p In order to record your computer usage activities, two pieces of loggers are to be installed. 
+                            ol 
+                                li A 
+                                    a(href="#chrome_logger") chrome extension
+                                    span  that records your online searching and browsing activites; 
+                                li An 
+                                    a(href="#application_logger") application logger 
+                                    span that records the application usage on your computer. 
+                            p Our goal is to investigate how people's online activities and computer application usage is associated with their daily information need or working tasks.  
 
-            .bs-callout.bs-callout-success
-                h4 Software setup
-               
-                p In order to record your computer usage activities, two pieces of loggers are to be installed. 
-                ol 
-                    li A 
-                        a(href="#chrome_logger") chrome extension
-                        span  that records your online searching and browsing activites; 
-                    li An 
-                        a(href="#application_logger") application logger 
-                        span that records the application usage on your computer. 
-                p Our goal is to investigate how people's online activities and computer application usage is associated with their daily information need or working tasks.  
+                .panel.panel-info
+                    .panel-heading#headingChromeLogger(role="tab")
+                        h4.panel-title
+                            a(role="button", data-toggle="collapse", data-parent="#accordion", 
+                                href="#chromeLogger", aria-expanded="false",
+                                aria-controls="chromeLogger") Setup the chrome logger              
+                           
+                    .panel-collapse.collapse#chromeLogger(role="tabpanel",
+                        aria-lablledby="headingChromeLogger") 
+                        .panel-body
+                            h5
+                                strong Downloads  
+                            p In case you do not have chrome as your primary browser, you can download and install it at 
+                                a(href="https://www.google.com/chrome/") https://www.google.com/chrome/.
 
-            .bs-callout.bs-callout-success#chrome_logger
-                h4 Setup the chrome logger              
-                
-                h5
-                    strong Downloads  
-                p In case you do not have chrome as your primary browser, you can download and install it at 
-                    a(href="https://www.google.com/chrome/") https://www.google.com/chrome/.
+                            p Download the chrome logger: 
+                                a(href="/download_chromelogger") chrome logger
 
+                            h5
+                                strong Installation
+                            ol
+                                li Unzip the downloaded logger package.
+                                p
+                                li Click on the setting icon on the right end of the chrome browser tool bar:
+                                img(src="/images/chrome_extension_menu.png", height=40)
+                                p
+                                li On the dropdown menu, select "Settings".
+                                p
+                                li A new tab will then open showing the chrome setting page. Select "Extensions" on the left side of the page:
+                                img(src="/images/chrome_extension_page.png", height=200)
+                                p
+                                li Click on "Load unpacked extension"; select the directory that contains the chrome logger that you have downloaded. This installs the chrome logger.
+                                p
+                                li Upon successfully install the logger, you will see a new chrome extension showing up:
+                                   img(src="/images/chrome_logger_install.png", height=200)
 
-                p Download the chrome logger:
-                    =" "
-                    a(href="/download_chromelogger") chrome logger
+                            h5 
+                                strong Set UserID in the chrome logger 
 
-                h5
-                    strong Installation
-                ol
-                    li Unzip the downloaded logger package.
+                            p   When the chrome logger is running for the first time, it will ask for your UserID. It looks like this:
+                            img(src="/images/userid_warning.jpg", height=70, style="margin-left: 50px;")
 
-                    li Click on the setting icon on the right end of the chrome browser tool bar:
-                        img(src="/images/chrome_extension_menu.png", height=40)
-                    p
+                            p   To set your userid, click the icon
+                                img(src="/images/icon_19.png")
+                                =" on the toolbar on your chrome browser. A popup will show up in which you can input your UserID:"
+                                img(src="/images/chrome_logger_userid_input.png", height=200, style="margin-left: 50px;")
 
-                    li On the dropdown menu, select "Settings".
-                    p
+                            h5
+                                strong Setup a logger blacklist (optional)
 
-                    li A new tab will then open showing the chrome setting page. Select "Extensions" on the left side of the page:
-                    img(src="/images/chrome_extension_page.png", height=200)
-                    p
-
-                    li Click on "Load unpacked extension"; select the directory that contains the chrome logger that you have downloaded. This installs the chrome logger.
-                    p
-
-                    li Upon successfully install the logger, you will see a new chrome extension showing up:
-                    img(src="/images/chrome_logger_install.png", height=200)
-
-                -/*
-                p  You may also need to reset your userid. In this case, please follow the instruction in
-                    =" "
-                    a(href="#account") Find back your userid.
-                -*/
-                h5 
-                    strong Set UserID in the chrome logger 
-
-                p   When the chrome logger is running for the first time, it will ask for your UserID. It looks like this:
-                img(src="/images/userid_warning.jpg", height=70, style="margin-left: 50px;")
-
-                p   To set your userid, click the icon
-                    img(src="/images/icon_19.png")
-                    =" on the toolbar on your chrome browser. A popup will show up in which you can input your UserID:"
-                    img(src="/images/chrome_logger_userid_input.png", height=200, style="margin-left: 50px;")
-
-
-                h5
-                    strong Setup a logger blacklist (optional)
-
-                p In the same popup, You can setup a blacklist that filters out urls that you do not want to be logged. It looks like this:
-                img(src="/images/blacklist.png", height="180", style="margin-left: 50px") 
+                            p In the same popup, You can setup a blacklist that filters out urls that you do not want to be logged. It looks like this:
+                            img(src="/images/blacklist.png", height="180", style="margin-left: 50px") 
             
-                p You can input the blacklist like this:  
-                ul 
-                    li  Write one url per line;
-                    li  Exact match: By default, the filter will filter out urls that match exactly an item in the blacklist.
-                    li  URL prefix: To filter out urls that match an item as prefix, end the item with a *. For example, 'http://www.example.com/*' filters out all urls under the domain "www.example.com/"  
+                            p You can input the blacklist like this:  
+                            ul 
+                                li  Write one url per line;
+                                li  Exact match: By default, the filter will filter out urls that match exactly an item in the blacklist.
+                                li  URL prefix: To filter out urls that match an item as prefix, end the item with a *. For example, 'http://www.example.com/*' filters out all urls under the domain "www.example.com/"  
 
 
-            .bs-callout.bs-callout-success#application_logger
-                h4 Setup the application logger
+                .panel.panel-info
+                    .panel-heading#headingAppLogger(role="tab")
+                        h4.panel-title
+                            a(role="button", data-toggle="collapse", data-parent="#accordion", 
+                                href="#appLogger", aria-expanded="false",
+                                aria-controls="appLogger") Setup the Application logger              
+                           
+                    .panel-collapse.collapse#appLogger(role="tabpanel",
+                        aria-lablledby="headingAppLogger") 
+                        .panel-body
+                            h5
+                                strong Downloads
+                            p For Mac OS X: 
+                                a(href="/ucl_logger_mac.zip") OSX Logger
+                            p For Windows: 
+                                a(href="/ucl_logger_win.zip") Windows Logger
 
-                h5
-                    strong Downloads
-                    p For Mac OS X: 
-                        a(href="/ucl_logger_mac.zip") OSX Logger
-                    p For Windows: 
-                        a(href="/ucl_logger_win.zip") Windows Logger
-                       
+                            h5 
+                                strong Installation 
+                            p For MAC OS X:
+                            ol
+                                li Expand the downloaded zip file by double clicking it, and copy "UCLTaskLog.app" to your Applications folder.
+                                li Open "System Preferences", and click "Security and Privacy".
+                                li Select the "Privacy" tab, and choose "Accessibility" from the left-hand menu.
+                                li Under the "Allow the apps below to control your computer" list, click the plus icon and choose 'UCLTaskLog.app' in your Applications folder.
+                                li Launch 'UCLTaskLog.app' and enter your userid. Leave this running for the duration of the study. You may temporarily pause the logging process with the 'pause' button if necessary.
+                
+                            p  For Windows: 
+                            ol 
+                                li Expand the downloaded zip file by right-clicking it and choosing 'Extract all'
+                                li Choose where to extract the software, and press the 'Extract' button.
+                                li Inside the 'Release' folder in the extracted files, double click  the 'Vanever' application.
+                                li Windows may issue a security warning at this point. Click 'More information' then 'Run anyway' if so.
+                                li In the logger user interface, select 'CSV file from the 'Backend' menu, and select a location for your log file.
 
-                h5 
-                    strong Installation 
-
-                p For MAC OS X:
-                     
-                  ol
-                    li Expand the downloaded zip file by double clicking it, and copy "UCLTaskLog.app" to your Applications folder.
-
-                    li Open "System Preferences", and click "Security and Privacy".
-
-                    li Select the "Privacy" tab, and choose "Accessibility" from the left-hand menu.
-
-                    li Under the "Allow the apps below to control your computer" list, click the plus icon and choose 'UCLTaskLog.app' in your Applications folder.
-
-                    li Launch 'UCLTaskLog.app' and enter your userid. Leave this running for the duration of the study. You may temporarily pause the logging process with the 'pause' button if necessary.
-
-                p  For Windows: 
-                    ol 
-                        li Expand the downloaded zip file by right-clicking it and choosing 'Extract all'
-
-                        li Choose where to extract the software, and press the 'Extract' button.
-
-                        li Inside the 'Release' folder in the extracted files, double click  the 'Vanever' application.
-
-                        li Windows may issue a security warning at this point. Click 'More information' then 'Run anyway' if so.
-
-                        li In the logger user interface, select 'CSV file from the 'Backend' menu, and select a location for your log file.
-
-                        li  Leave this running for the duration of the study. You may temporarily pause the logging process with the 'pause' button if necessary.
+                                li  Leave this running for the duration of the study. You may temporarily pause the logging process with the 'pause' button if necessary.
 
 
             .page-header
                 h2#diaryhowto Step 2: The diary study
 
-            .alert.alert-info
+            .bs-callout.bs-callout-info
                 p The diary study lasts for 5 days. During this period, you will:
-                    ul 
-
-                       li Use your computer and browse online as you normally do, while
-                            ul.s 
-                                li Keeping the logger running,
-                                li Using Chrome as your main browser.
+                ul 
+                   li Use your computer and browse online as you normally do, while
+                        ul.s 
+                            li Keeping the logger running,
+                            li Using Chrome as your main browser.
  
-                       li Write down a list of tasks and goals that you are working on during this period.
-                       li Review your online activity log and your daily information goals and working tasks every day.
+                   li Use our online task planner to create a list of tasks and goals that you are working on during this period.
+                   li Review your online activity log and your daily information goals and working tasks each day.
                         
             .bs-callout.bs-callout-danger
+                p If you have attended the in-person introduction session, you should have already been familiar with the online tool for task planning and the log review. In case you have not attended the introduction session, you can follow the instructions below to perform the diary study.        
+ 
                 p To conduct the diary study, please use the online tool:   
                     a(href="http://tasklog.cs.ucl.ac.uk/users/annotation") http://tasklog.cs.ucl.ac.uk/users/annotation
 
             .bs-callout.bs-callout-danger
-                p !Tip: You can greatly reduce the amount of work and speed up the process of conducting the diary study by making use of the  
+                h4 !Tips:
+                p You can greatly reduce the amount of work and speed up the process of conducting the diary study by making use of the  
                     a(href="#batch")=" Batch operations."
 
 
-            
-            -/*
-                p.lead It consists of 3 steps:
-                    ul.lead.u
-                        li
-                            a(href="#step1") Step1: Review your log
-                        li
-                            a(href="#step2") Step2: Indicate your information goals
-                        li
-                            a(href="#step3") Step3: Associate your search and browing activites with your information goals
-            -*/
-            -/*
-            .bs-callout.bs-callout-warning
-                h4 The diary study interface
-
-                p The diary study interface consists of two parts. On the left side, you can view your search and browsing activities performed with the chrome browser. On the right side, you can create a list of information goals that you plan to achieve or have already achieved with your search/browsing activities during the study period.
-                img(src="/images/annotation_ui.png", height=400)
-
-            .bs-callout.bs-callout-warning
-                h4 Log toolbar
-                p Above the log area, you can see a toolbar, which allows you to perform a number of batch operations. It also shows your progress on a selected day. See also
-                    a(href="#batch")=" Batch operations."
-
-                img(src="/images/global_tools.png", height=50)
-            -*/
+            .panel-group#accordion2(role="tablist", aira-multiselectable="true")
+                .panel.panel-info
+                    .panel-heading#headingTaskPlanner(role="tab")
+                        h4.panel-title
+                            a(role="button", data-toggle="collapse", data-parent="#accordion2", 
+                                href="#taskPlanner", aria-expanded="false",
+                                aria-controls="taskPlanner") Managing your information tasks and goals
+                           
+                    .panel-collapse.collapse#taskPlanner(role="tabpanel",
+                        aria-lablledby="headingTaskPlanner") 
+                        .panel-body
+                            h5 
+                                strong What are information goals
+                            p Information goals are goals/tasks that involve searching the Web or browsing web sites. 
+                            p Examples:
+                                ul.s
+                                    li searching/browsing for a specific purpose, e.g., find out potential side effects of flu shots.
+                                    li searching/browsing without a specific purpose, e.g, browsing for entertainment, for getting news updates, etc.
+                                    li search/browsing within the context of a work task, e.g., planning a trip/party, looking for information for writing a report.
 
 
-            -/*     
-            h3#step1 Step 1: Review your log
-            .bs-callout.bs-callout-danger
-                h4 What do I do when reviewing my log?
-                p By reviewing your log, you can remove any log items that contain private or sensitive information, and anything that you feel should not be recorded.
-            -*/
+                            h5 
+                                strong Write down your information goals or tasks 
+                            p To indicate your information goals, you work with the task planner panel, located on the right side of the diary study online tool:
+                            img(src="/images/task_ui.png", height=250)
 
-            -/*
-            h3#step2 Step 2: Indicate your information goals
-            -*/
+                            p The information goal list works like a to-do list. You can
+                            ul.s
+                                li
+                                    span.text-strong Create an information goal:
+                                    =' by typing it in the text input, and press "Enter".'
+                                li
+                                    span.text-strong Create a sub goal (if necessary):
+                                    =' by clicking on the "+" sign.'
 
-            .bs-callout.bs-callout-primary
-                h4 Managing your information tasks and goals
+                                li
+                                    span.text-strong Remove a goal or sub goal:
+                                    =' by clicking on the'
+                                    =" "
+                                    span.glyphicon.glyphicon-trash
+                                    =" sign."
+                                li
+                                    span.text-strong Strike out a finished goal:
+                                    =" by checking the checkbox."
+                                li
+                                    span.text-strong Archive your finished goals:
+                                    =' click on "options", and select "Archive finished items". Goals that have been finished will be moved to the "Items done" section.'
 
-                h5 
-                    strong What are information goals
-                p Information goals are goals/tasks that involve searching the Web or browsing web sites. 
-                p Examples:
-                ul.s
-                    li searching/browsing for a specific purpose, e.g., find out potential side effects of flu shots.
-                    li searching/browsing without a specific purpose, e.g, browsing for entertainment, for getting news updates, etc.
-                    li search/browsing within the context of a work task, e.g., planning a trip/party, looking for information for writing a report.
-
-
-                h5 
-                    strong Write down your information goals or tasks 
-
-                p To indicate your information goals, you work with the information goal panel, located on the right side of the diary study online tool:
-                img(src="/images/task_ui.png", height=250)
-
-                p The information goal list works like a to-do list. You can
-                ul.s
-                    li
-                        span.text-strong Create an information goal:
-                        =' by typing it in the text input, and press "Enter".'
-                    li
-                        span.text-strong Create a sub goal (if necessary):
-                        =' by clicking on the "+" sign.'
-
-                    li
-                        span.text-strong Remove a goal or sub goal:
-                        =' by clicking on the'
-                        =" "
-                        span.glyphicon.glyphicon-trash
-                        =" sign."
-                    li
-                        span.text-strong Strike out a finished goal:
-                        =" by checking the checkbox."
-
-                    li
-                        span.text-strong Archive your finished goals:
-                        =' click on "options", and select "Archive finished items". Goals that have been finished will be moved to the "Items done" section.'
-                    -//img(src="/images/task_options.png", height=200)
-
-                p After you have entered an information goal, it will appear as a candidate label, and you can associate it with your search and browsing activities during the log review. (See below).
+                            p After you have entered an information goal, it will appear as a candidate label, and you can associate it with your search and browsing activities during the log review. (See below).
 
 
-               
+                 .panel.panel-info
+                    .panel-heading#headingLogReview(role="tab")
+                        h4.panel-title
+                            a(role="button", data-toggle="collapse", data-parent="#accordion2", 
+                                href="#logReview", aria-expanded="false",
+                                aria-controls="taskPlanner") Review your online activity log and your information tasks/goals
+                    .panel-collapse.collapse#logReview(role="tabpanel",
+                        aria-lablledby="headingLogReview") 
+                        .panel-body
+                            h5 
+                                strong How to review? 
+                            p There are two important things you need to do for log review:  
+                            ol 
+                                li Check if there are log items that you do not want to be recorded, and remove them from the log.
+                                li Associate the remaining log items with the goals and tasks you have written down. You can modify or add tasks/goals as you wish during this process.  
 
-            .bs-callout.bs-callout-primary
-                h4 Review your online activity log and your information tasks/goals
-        
-                h5 
-                    strong How to review? 
-                p There are two important things you need to do for log review:  
-                    ol 
-                        li Check if there are log items that you do not want to be recorded, and remove them from the log.
-                        li Associate the remaining log items with the goals and tasks you have written down. You can modify or add tasks/goals as you wish during this process.  
+                            h5
+                                strong Operating a log item 
+                            p A log item of search/browsing activities looks like this: 
+                            img(src="/images/logitem_search.png", height=150, width=500)
 
-                h5
-                    strong Operating a log item 
-
-                p A log item of search/browsing activities looks like this: 
-                img(src="/images/logitem_search.png", height=150, width=500)
-
-                -/*
-
-                p There are two types of log items:
-                    span.todo=" search history"
-                    ="  and "
-                    span.todo=" browsing history"
-                    ="."
-
-                p An item of search query history starts with a symbol
-                    =" "
-                    span.glyphicon.glyphicon-search.glyphicon-global
-
-                img(src="/images/logitem_search.png", height=150, width=500)
-
-                p An item of browsing history starts with a symbol
-                    =" "
-                    span.glyphicon.glyphicon-globe.glyphicon-global
-                    ="."
-
-                img(src="/images/log_item.png", height=200, width=500)
-                -*/
-
-                ul
-                    li In the header of each log item, you can see either the query you have issued or the title (link) of the Web page you have browsed. 
+                            ul
+                                li In the header of each log item, you can see either the query you have issued or the title (link) of the Web page you have browsed. 
     
-                    li Below the header, you can see a list of the 
-                        span.todo=" candidate information goals "
-                        span=" that you have entered in the information goal panel."
+                                li Below the header, you can see a list of the 
+                                    span.todo=" candidate information goals "
+                                    span=" that you have entered in the information goal panel."
 
-                    li When you finish labelling a log item, its frame turns green.
+                                li When you finish labelling a log item, its frame turns green.
 
-            -/*
-            .bs-callout.bs-callout-primary
-                h4 Annotating a search query log item
-                p To annotate a search log item, think about in which context you issued that search query. Select one of the information goals you have previously entered, or create a new information goal if necessary.
-                p To create a new information goal, follow the instructions listed in
-                    =" "
-                    a(href="#step1") Step 2: Indicate your information goal.
-                    =" The newly created goal will show up as candidate labels for your log items."
+                 .panel.panel-info
+                    .panel-heading#headingBatchOperation(role="tab")
+                        h4.panel-title
+                            a(role="button", data-toggle="collapse", data-parent="#accordion2", 
+                                href="#batchOperation", aria-expanded="false",
+                                aria-controls="batchOperation") Use of batch operations
 
+                    .panel-collapse.collapse#batchOperation(role="tabpanel",
+                        aria-lablledby="headingBatchOperation") 
+                        .panel-body
+                            p To speed up the review and annotation process, you can use the batch operations provided in the tool bar above the log items. It looks like this:
+                            img(src="/images/global_tools.png", height=40)
 
-            .bs-callout.bs-callout-primary
-                h4 Annotating a browsing history item
-                p To annotate a browsing history item, apart from associating a browsed page to one of your information goals, we would also like to know whether or not that page is useful for approaching that goal. 
-                p
-                p.todo Useful, not useful, or not applicable
-                p Of course, not all entries can be classified as "useful" or "not useful". In case you feel it is not appropriate to describe a browsing history item in its usefulness, you can assign it to "Not applicable". By default, we consider browsing activities dedicated to predefined information goals such as "entertainment, emailing" as "Not applicable" cases. However, depending on your specific situation, they may still be classified as "useful" or "not useful". 
+                            ul.s
+                                li Checkbox: you can batch select/deselect the log items to perform an operation on.
 
-            -*/
-
-            .bs-callout.bs-callout-warning#batch
-                h4 Use of batch operations
-                p To speed up the review and annotation process, you can use the batch operations provided in the tool bar above the log items. It looks like this:
-                img(src="/images/global_tools.png", height=40)
-
-                ul.s
-                    li Checkbox: you can batch select/deselect the log items to perform an operation on.
-
-                    li
-                        span.glyphicon.glyphicon-eye-open.glyphicon-global
-                        =" : you can use it to hide/show labelled items."
-
-                    li String filter: you can filter the log items that contain a specific string in its URL. E.g., you can type 'amazon' to find all pages you have viewed on Amazon.
-                    li
-                        span.glyphicon.glyphicon-trash.glyphicon-global
-                        =" : allows you to remove all selected items from the log."
-                    li
-                        span.glyphicon.glyphicon-tag.glyphicon-global
-                        =" : You can use it to assign the same information goal to all selected log items."
-                    li  Date option: allows you to select a day to review the logs.    
+                                li
+                                    span.glyphicon.glyphicon-eye-open.glyphicon-global
+                                    =" : you can use it to hide/show labelled items."
+                                li String filter: you can filter the log items that contain a specific string in its URL. E.g., you can type 'amazon' to find all pages you have viewed on Amazon.
+                                li
+                                    span.glyphicon.glyphicon-trash.glyphicon-global
+                                    =" : allows you to remove all selected items from the log."
+                                li
+                                    span.glyphicon.glyphicon-tag.glyphicon-global
+                                    =" : You can use it to assign the same information goal to all selected log items."
+                                li  Date option: allows you to select a day to review the logs.    
 
 
             .page-header
                 h2#postQ Step 3: Post study Questionnaire
  
-            .alert.alert-info
+            .bs-callout.bs-callout-primary
                 p After the diary study, we would invite you for a post-study appointment in order to: 
                 ol
                     li Remove the loggers and clean up any local data that remains in your computer.
                     li Complete a post-study questionnaire about your search activities, application usage,  and information tasks/goals.
 
-                p This can be arranged in our lab or a location that is convinient for you. 
+                p This can be arranged in our lab or a location that is convenient for you. 
                 p If you choose to do it at home, you can contact us to remotely assist you in removing the loggers. 
 
             .page-header
                 h2#reward Getting the "Thank you" gift voucher
 
-            .alert.alert-info
+            .bs-callout.bs-callout-primary
                 p In the post-study appointment, you will receive the "Thank you" gift, a £20 Amazon voucher. 
                 p If you choose to do the post-study remotely, we will send the voucher via email upon completing the study. 
 
@@ -424,136 +356,3 @@ block content
                 h4 Application logger
             -*/
 
-            -/*
-            .page-header
-                h2#blacklist Setup a logger blacklist
-
-                p.lead Within the 
-                    span.todo=" chrome logger"
-                    span=", you can setup a blacklist that filters out urls that you do not want to be logged. "
-                    span="The blacklist UI element looks like this:"
-                img(src="/images/blacklist.png", height="200") 
-            
-            .bs-callout.bs-callout-warning
-                h4 How to setup the blacklist
-                ul 
-                    li  Write one url per line;
-                    li  Exact match: By default, the filter will filter out urls that match exactly an item in the blacklist.
-                    li  URL prefix: To filter out urls that match an item as prefix, end the item with a *. For example, 'http://www.example.com/*' filters out all urls under the domain "www.example.com/"  
-
-            -*/
-            -/*
-            .page-header
-                h2#account Find back your userid
-
-                p.lead At the introduction session, we have set up the userid for your loggers. If for any reason that this userid is lost or needs to be reset, you can find your userid by logging in at
-                    =" "
-                    a(href="http://tasklog.cs.ucl.ac.uk") http://tasklog.cs.ucl.ac.uk
-
-                p.lead Your userid is shown at the right corner of the navigation bar:
-                img(src="/images/nav_bar.jpg", height=50)
-
-            .bs-callout.bs-callout-warning
-                h4 Set userid in chrome logger
-                p   When your userid is not set in the chrome logger, an alert will show up on the upper right corner of your screen. It looks like this:
-                img(src="/images/userid_warning.jpg", height=70)
-
-                p   To set your userid, click the icon
-                    img(src="/images/icon_19.png")
-                    =" on the toolbar on your chrome browser. A popup will show up in which you can input your userid:"
-                    img(src="/images/chrome_logger_userid_input.png", height=200)
-            -*/
-
-
--/*
-            .bs-callout.bs-callout-info
-                h4#intro Introduction session
-                p By now you should have already attended the introduction session. The introduction session includes the following steps:
-                ol
-                    li A brief introduction of the purpose of the study, and your tasks.
-                    li Participant registration, including filling an in-take questionnaire, and signing a participation agreement.
-                    li Setup softwares on your computer that are necessary for the study.
-                    li A training session to familiarize you with the softwares and tools to complete the study.
-
-            .bs-callout.bs-callout-info
-                h4
-                    strong Chrome logger
-
-                p Download the chrome search and browsing activity logger:
-                    =" "
-                    a(href="/download_chromelogger") chrome logger
-
-                p To install the logger, take the following steps:
-                ol
-                    li Unzip the downloaded logger package.
-
-                    li Click on the chrome setting icon on the right end of the browser tool bar:
-                    img(src="/images/chrome_extension_menu.png", height=50)
-                    p
-
-                    li On the dropdown menu, select "Settings".
-                    p
-
-                    li A new tab will then open showing the chrome setting page. Select "Extensions" on the left side of the page. The extension page looks like this:
-                    img(src="/images/chrome_extension_page.png", height=200)
-                    p
-
-                    li Click on "Load unpacked extension"; select the directory that contains the chrome logger that you have downloaded. This installs the chrome logger.
-                    p
-
-                    li Upon successfully install the logger, you will see a new chrome extension showing up:
-                    img(src="/images/chrome_logger_install.png", height=200)
-
-                p  You may also need to reset your userid. In this case, please follow the instruction in
-                    =" "
-                    a(href="#account") Find back your userid.
-
-
-
-            .bs-callout.bs-callout-info
-                h4#diary Diary study
-                p The diary study lasts for
-                    span.todo=" 5"
-                    =" days. During this period, you are requested to perform the following tasks:"
-
-                ol
-                    li Use
-                        span.todo=" chrome"
-                        img(src="/images/Googlechromeflatlogo.png", height=20)
-                        =" as your primary Web browser."
-
-                    li Having your search and browsing activities recorded by the
-                        span.todo=" chrome logger"
-                        ="."
-                    li Having your computer usage activities recorded by the
-                        span.todo=" application logger"
-                        ="."
-                    li
-                        By the end of each day,
-                        span.todo=" review "
-                        ="your search log and "
-                        span.todo=" annotate"
-                        =" your search activities with your daily information goals."
-
-                p For step 4, you have received a training session during the introduction session in how to perform the log review. In case you need a reminder for the instructions, please refer to the section
-                    a(href="#diaryhowto")=" How to perform the diary study."
-                p If you encounter any further questions, please
-                    a(href="mailto:research.mediafutures.ucl@gmail.com")=" contact us."
-
-                -/*
-                .alert.alert-danger
-                    p  Note: During the experiment period, you will need to work on at least 5 information goals. For example, they can be the 5 goals that you have named during the introduction session.
-                -*/
-
-            .bs-callout.bs-callout-info
-                h4#debrief Debrief session
-                p In the debrief session, you will meet our researchers again. The goals of this session include:
-                ul.s
-                    li Remove the softwares from your laptop.
-                    li You will fill in a post-study questionnaire about your information seeking activities during the diary study.
-                    li You will receive a brief interview about your computer usage activities with our researchers.
-                p This session should take approximately
-                    span.todo=" 1 hour"
-                    ="."
-
--*/
