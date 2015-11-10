@@ -43,8 +43,9 @@ block content
 
                 h4 In case of self-registration  
                 p If you choose to perform this step at home, you can follow the following instructions. In this case, please contact us for any problems, and to confirm that everything is working fine. 
-  
-           
+ 
+                p.text-primary We strongly suggest that you attend the in-person appointment. It will save you a lot of effort to set things up correctly. 
+ 
             .panel-group#accordion(role="tablist", aira-multiselectable="true")
                 .panel.panel-info
                     .panel-heading#headingRegistration(role="tab")
@@ -106,17 +107,23 @@ block content
                                 li Unzip the downloaded logger package.
                                 p
                                 li Click on the setting icon on the right end of the chrome browser tool bar:
-                                img(src="/images/chrome_extension_menu.png", height=40)
-                                p
-                                li On the dropdown menu, select "Settings".
-                                p
-                                li A new tab will then open showing the chrome setting page. Select "Extensions" on the left side of the page:
-                                img(src="/images/chrome_extension_page.png", height=200)
-                                p
-                                li Click on "Load unpacked extension"; select the directory that contains the chrome logger that you have downloaded. This installs the chrome logger.
-                                p
-                                li Upon successfully install the logger, you will see a new chrome extension showing up:
-                                   img(src="/images/chrome_logger_install.png", height=200)
+                                img(src="/images/chrome_extension_menu.png", height=40, width=400)
+                                .row
+                                    .col-sm-6
+                                        p 
+                                        li On the dropdown menu, select "Settings".
+                                        p
+                                        li A new tab will then open showing the chrome setting page. Select "Extensions" on the left side of the page:
+                                        p
+                                        li Click on "Load unpacked extension"; select the directory that contains the chrome logger that you have downloaded. This installs the chrome logger.
+ 
+                                    .col-sm-6
+                                        p
+                                        img(src="/images/chrome_extension_page.png", height=200)
+                                .row
+                                    p
+                                    li Upon successfully install the logger, you will see a new chrome extension showing up:
+                                    img(src="/images/chrome_logger_install.png", height=180)
 
                             h5 
                                 strong Set UserID in the chrome logger 
@@ -129,17 +136,6 @@ block content
                                 =" on the toolbar on your chrome browser. A popup will show up in which you can input your UserID:"
                                 img(src="/images/chrome_logger_userid_input.png", height=200, style="margin-left: 50px;")
 
-                            h5
-                                strong Setup a logger blacklist (optional)
-
-                            p In the same popup, You can setup a blacklist that filters out urls that you do not want to be logged. It looks like this:
-                            img(src="/images/blacklist.png", height="180", style="margin-left: 50px") 
-            
-                            p You can input the blacklist like this:  
-                            ul 
-                                li  Write one url per line;
-                                li  Exact match: By default, the filter will filter out urls that match exactly an item in the blacklist.
-                                li  URL prefix: To filter out urls that match an item as prefix, end the item with a *. For example, 'http://www.example.com/*' filters out all urls under the domain "www.example.com/"  
 
 
                 .panel.panel-info
@@ -180,6 +176,25 @@ block content
                                 li  Leave this running for the duration of the study. You may temporarily pause the logging process with the 'pause' button if necessary.
 
 
+                .bs-callout.bs-callout-success
+                    h4 !Tips: Setup a logger blacklist (optional)
+
+                    .row
+                        .col-sm-6
+                            p For the chrome logger, You can setup a blacklist that filters out urls that you do not want to be logged. It looks like this (see right):
+          
+                            p You can input the blacklist like this:  
+                            ul 
+                                li  Write one url per line;
+                                li  Exact match: By default, the filter will filter out urls that match exactly an item in the blacklist.
+                                li  URL prefix: To filter out urls that match an item as prefix, end the item with a *. For example, 'http://www.example.com/*' filters out all urls under the domain "www.example.com/"  
+
+                        .col-sm-6    
+                            img(src="/images/blacklist.png", height="180", style="margin-left: 50px") 
+ 
+
+
+
             .page-header
                 h2#diaryhowto Step 2: The diary study
 
@@ -200,7 +215,7 @@ block content
                 p To conduct the diary study, please use the online tool:   
                     a(href="http://tasklog.cs.ucl.ac.uk/users/annotation") http://tasklog.cs.ucl.ac.uk/users/annotation
 
-            .bs-callout.bs-callout-danger
+            .bs-callout.bs-callout-success
                 h4 !Tips:
                 p You can greatly reduce the amount of work and speed up the process of conducting the diary study by making use of the  
                     a(href="#batch")=" Batch operations."
@@ -226,33 +241,40 @@ block content
                                     li searching/browsing without a specific purpose, e.g, browsing for entertainment, for getting news updates, etc.
                                     li search/browsing within the context of a work task, e.g., planning a trip/party, looking for information for writing a report.
 
+                            p
+                            .row
+                                .col-sm-6
+                                    h5 
+                                        strong Write down your information goals or tasks 
+ 
+                                    p To indicate your information goals, you work with the task planner panel, located on the right side of the diary study online tool:
 
-                            h5 
-                                strong Write down your information goals or tasks 
-                            p To indicate your information goals, you work with the task planner panel, located on the right side of the diary study online tool:
-                            img(src="/images/task_ui.png", height=250)
+                                    p The information goal list works like a to-do list. You can
+                                    ul.s
+                                        li
+                                            span.text-strong Create an information goal:
+                                            =' by typing it in the text input, and press "Enter".'
+                                        li
+                                            span.text-strong Create a sub goal (if necessary):
+                                            =' by clicking on the "+" sign.'
 
-                            p The information goal list works like a to-do list. You can
-                            ul.s
-                                li
-                                    span.text-strong Create an information goal:
-                                    =' by typing it in the text input, and press "Enter".'
-                                li
-                                    span.text-strong Create a sub goal (if necessary):
-                                    =' by clicking on the "+" sign.'
+                                        li
+                                            span.text-strong Remove a goal or sub goal:
+                                            =' by clicking on the'
+                                            =" "
+                                            span.glyphicon.glyphicon-trash
+                                            =" sign."
+                                        li
+                                            span.text-strong Strike out a finished goal:
+                                            =" by checking the checkbox."
+                                        li
+                                            span.text-strong Archive your finished goals:
+                                            =' click on "options", and select "Archive finished items". Goals that have been finished will be moved to the "Items done" section.'
 
-                                li
-                                    span.text-strong Remove a goal or sub goal:
-                                    =' by clicking on the'
-                                    =" "
-                                    span.glyphicon.glyphicon-trash
-                                    =" sign."
-                                li
-                                    span.text-strong Strike out a finished goal:
-                                    =" by checking the checkbox."
-                                li
-                                    span.text-strong Archive your finished goals:
-                                    =' click on "options", and select "Archive finished items". Goals that have been finished will be moved to the "Items done" section.'
+                                .col-sm-6
+                                    p
+                                    img(src="/images/task_ui.png", height=250)
+
 
                             p After you have entered an information goal, it will appear as a candidate label, and you can associate it with your search and browsing activities during the log review. (See below).
 
