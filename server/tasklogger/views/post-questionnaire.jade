@@ -46,35 +46,48 @@ html
 
                 hr
                 .questionnaire.hidden#questionnaire
-                    h3 Please fill in the following questionnaire by categorising your selected tasks into the categories as specified in each question.  
+                    h3 Please fill in the following questionnaire by categorising your selected tasks into the categories as specified in each question.  (13 questions)
                   
                     .question
-                        p 1. How often do you search for information for the following tasks? (Not limited to the experiment period)
-
+                        p 1. How frequent do you see the following tasks have occurred? (Not limited to the experiment period, think about e.g., in the last year)
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (extremely infrequent, or that it is a one-time task) --- 5 (extremely frequent, as a routine)  
+                        -/*
                         ol.postq-options(type="a")
                             li it is a one time task
                             li multiple times, but not frequently
                             li frequently, as a routine (e.g., daily or weekly)
+                        -*/
 
                         .err#err_task_frequency
                         .bs-callout.bs-callout-primary.answers#task_frequency
 
                     .question
-                        p 2. The following tasks 
+                        p 2. How fast do you think the following tasks can be finished?
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (can be finished in a short period, e.g., within a day) --- 5 (takes a long time, e.g., one month or longer)  
+                        -/*
                         ol.postq-options(type="a")
                             li could be finished in a short period (e.g., within a day)
                             li need some time (e.g., within one or two weeks)
                             li take a long time to finish (e.g., take more than two weeks) 
+                        -*/
 
                         .err#err_task_length
                         .bs-callout.bs-callout-primary.answers#task_length
 
+
                     .question
-                        p 3. During the experiment period, the following tasks
+                        p 3. During the experiment period, how close were you at completing the following tasks?
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (Just started) --- 5 (Completed)
+
+                        -/*
                         ol.postq-options(type="a")
                             li were just starting
                             li have already been running for a while before the experiment period, and is still in the mid-way when the experiment period ended
                             li were completed or near completion  
+                        -*/
 
                         .err#err_task_stage
                         .bs-callout.bs-callout-primary.answers#task_stage
@@ -113,108 +126,173 @@ html
                         .bs-callout.bs-callout-primary.answers#task_goals_quantity
 
                     .question
-                        p 5. Which type of cognitive activities do the following tasks involve? (From a to f, the cognitive complexity increases. Please select the highest level that applies.)
-                        ol.postq-options(type="a")
-                            li 
-                                strong Remember: 
-                                span retrieving, recognizing, and recalling relevant knowledge from long-term memory
-                            li 
-                                strong Understand: 
-                                span constructing meaning from oral, written, and graphic messages through interpreting, exemplifying, classifying, summarizing, inferring, comparing, and explaining
-                            li 
-                                strong Apply: 
-                                span carrying out or using a procedure through executing or implementing
-                            li 
-                                strong Analyse: 
-                                span breaking material into constituent parts, determining how the parts relate to one another and to an overall structure or purpose through differentiating, organizing, and attributing
-                            li 
-                                strong  Evaluate: 
-                                span making judgments based on criteria and standards through checking and critiquing 
-                            li 
-                                strong Create: 
-                                span putting elements together to form a coherent or functional whole; reorganizing elements into a new pattern or structure through generating, planning, or producing.  
+                        p 5. Different tasks involve cognitive activities of different levels of complexity (see the chart). At which level would you rate the activities involved to complete the following tasks? 
+                        .row
+                            .col-sm-8
+                                ol.postq-options(type="a")
+                                    li 
+                                        strong Remember: 
+                                        span.text-info Recalling facts, terms, basic concepts, and answers.
+                                    li 
+                                        strong Understand: 
+                                        span.text-info Demonstrate understanding of facts and ideas by organizing, comparing, translating, interpreting, giving descriptions, and stating the main ideas.
 
+                                    li 
+                                        strong Apply: 
+                                        span.text-info  Solve problems in new situations by applying acquired knowledge, facts, techniques and rules. 
+                                    li 
+                                        strong Analyse: 
+                                        span.text-info Examine and break information into parts by identifying motives or causes. Make inferences and find evidence to support generalizations.  
+
+                                    li 
+                                        strong  Evaluate: 
+                                        span.text-info Present and defend opinions by making judgments about information, validity of ideas or quality of work based on a set of criteria. 
+                                    li 
+                                        strong Create: 
+                                        span.text-info Compile information together in a different way by combining elements in a new pattern or proposing alternative solutions.
+
+                            .col-sm-4
+                                img(src="/images/blooms.png", height=350)                
+
+ 
                         .err#err_task_complexity_objective
                         .bs-callout.bs-callout-primary.answers#task_complexity_objective
 
                     .question
-                        p 6. The following tasks 
+                        p 6. How would you rate your responsibility for the following tasks? 
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (I was solely responsible for this task) --- 5 (I share responsibility with many people)  
+                        -/* 
                         ol.postq-options(type="a")
                             li were conducted through a group of people (>2 people)
                             li were conducted by yourself with suggestions or help from other people
                             li were conducted solely by yourself without help from others
+                        -*/
 
                         .err#err_task_collaboration
                         .bs-callout.bs-callout-primary.answers#task_collaboration
 
                     .question
-                        p 7. The following tasks
+                        p 7. How would you rate the 
+                            span
+                                strong importance 
+                            span of the following tasks?
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (It was unimportant) --- 5 (It was highly important)  
+                        -/* 
+ 
                         ol.postq-options(type="a")
                             li were very important
                             li were moderatedly important, or that their importance depends on its specific situation
                             li were not unimportant
+                        -*/
 
                         .err#err_task_sailence_subjective
                         .bs-callout.bs-callout-primary.answers#task_sailence_subjective
 
                     .question
-                        p 8. The following tasks
+                        p 8. How would you rate the 
+                            span
+                                strong urgency 
+                            span of the following tasks?
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (It was not urgent) --- 5 (It was highly urgent)  
+
+                        -/*
                         ol.postq-options(type="a")
                             li were highly urgent 
                             li were moderately important, or that its urgency depends on specific situations 
                             li were not urgent
-
+                        -*/
                         .err#err_task_urgency_subjective
                         .bs-callout.bs-callout-primary.answers#task_urgency_subjective
 
 
                     .question
-                        p 9. The following tasks
+                        p 9. How would you rate the 
+                            span 
+                                strong difficulty 
+                            span of the following tasks? (e.g., it may be difficult to find relevant information, or it requires a lot of cognitive effort for thinking/understanding).
+
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (It was easy) --- 5 (It was extremely difficult)  
+
+                        -/* 
                         ol.postq-options(type="a")
                             li were highly difficult (e.g., it was difficult to find relevant information, or it requires a lot of cognitive effort for thinking/understanding)
                             li were moderately difficult, or that its difficulty depends on specific situations
                             li were easy
+                        -*/
 
                         .err#err_task_difficulty_subjective
                         .bs-callout.bs-callout-primary.answers#task_difficulty_subjective
 
                     .question
-                        p 10. The following tasks 
+                        p 10. How would you rate the 
+                            span
+                                strong complexity
+                            span  of the following tasks? (e.g., a task may be complex as it it involves many steps, or subtasks in order to complete the task)
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (It was simple) --- 5 (It was extremely complex)  
+
+                        -/*
                         ol.postq-options(type="a")
-                            li were highly complex (e.g., it invovles many steps, or subtasks in order to complete the task)
+                            li were highly complex (e.g., it involves many steps, or subtasks in order to complete the task)
                             li were moderately complex, or that its complexity depends on specific situation
                             li were simple
+                        -*/
 
                         .err#err_task_complexity_subjective
                         .bs-callout.bs-callout-primary.answers#task_complexity_subjective
 
                     .question
-                        p 11. For the following tasks, I was
+                        p 11. How would you rate your knowledge on the 
+                            span 
+                                strong topic
+                            span  of the following tasks?
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (I known nothing about it) --- 5 (I was highly knowledgeable)  
+
+                        -/*
                         ol.postq-options(type="a")
                             li highly knowledgeable on the task related topics
                             li moderately knowledgeable on the task related topics, or that the degree of my knowledge on the task topic depends on specific situations
                             li unknowledgeable on the task related topics.  
+                        -*/    
 
                         .err#err_task_knowledge_topic
                         .bs-callout.bs-callout-primary.answers#task_knowledge_topic
 
                     .question
-                        p 12. For the following tasks, I was
+                        p 12. How would you rate your knowledge on the 
+                            span 
+                                strong method or procedure 
+                            span for completing the following tasks?
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (I known nothing about it) --- 5 (I was highly knowledgeable)  
+                       
+                        -/*
                         ol.postq-options(type="a")
                             li highly knowledgeable on the method or procedures for completing the task 
                             li moderately knowledgeable on the method or procedures for completing the task, or that my degree of knowledge on the method/procedures depends on specific situations (For example, it is an open ended task that I do not have a definite method/procedure yet)
-                            li unknowlegable on the method or procedures for completing the task
+                            li unknowledgable on the method or procedures for completing the task
 
+                        -*/
                         .err#err_task_knowledge_procedure
                         .bs-callout.bs-callout-primary.answers#task_knowledge_procedure
 
                     .question 
-                        p 13. For the following tasks, I was
+                        p 13. Were you satisfied with the result of information seeking activities for completing the following tasks? 
+                        p.text-info Please answer this question in a 1 - 5 point scale: 
+                        p.text-info 1 (Very unsatisfied, I couldn't find the information I need) --- 5 (very satisfied)  
+        
+                        -/*
                         ol.postq-options(type="a")
                             li able to find the information I need and satisfied with the information I found
-                            li having difficulty to find the information I need, but still satisfied with the informaiton I found
+                            li having difficulty to find the information I need, but still satisfied with the information I found
                             li was not able to find the information I need 
-
+                        -*/   
+ 
                         .err#err_task_satisfaction
                         .bs-callout.bs-callout-primary.answers#task_satisfaction
 
