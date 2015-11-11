@@ -40,6 +40,13 @@ $(document).ready(function(){
     $('#btn_userid').click(function(){
         submit_userid($('#input_userid').val());
     });
+    //Enter to submit userid
+    $('#input_userid').keyup(function(e){
+        if (e.keyCode == 13){
+            submit_userid($('#input_userid').val());
+        }
+    })
+
     //Click on view history for a task
     $('#task_selection').on('click', '.btn-select-task', function(){
         var task_id = $(this).attr('id').split('_')[1];
@@ -70,6 +77,10 @@ $(document).ready(function(){
 
         var userid = $('#input_userid').val();
         submit_tasklist(tasklist, userid);
+        //Jump to the questionnaire
+        var ele_top = $('#jumpToQ').offset();
+        window.scrollTo(ele_top.left, ele_top.top)
+
     });
 
     //Selecting answer for a task
@@ -220,6 +231,7 @@ function submit_answer(data){
 }
 
 function show_tasklist(tasklist){
+    document.getElementById('task_selection').innerHTML = '';
     for(var i = 0; i < tasklist.length; i++){
         var ele = make_task_entry(tasklist[i]);
         document.getElementById('task_selection').appendChild(ele);
@@ -280,7 +292,9 @@ function make_task_entry(task){
 
 function show_history(history, taskid){
     var history_div = $('#task_selection').find('#history_' + taskid)
-        .removeClass('hidden')
+        .removeClass('hidden');
+    //Clear existing history for reloading
+    history_div.html('');
     for(var i = 0; i < history.length; i++){
         var ele = make_history_entry(history[i]); 
         history_div.append(ele);
@@ -349,7 +363,7 @@ function update_questionnaire(q){
         th.innerHTML = 'Task';
         tr.appendChild(th);
         var th = document.createElement('th');
-        th.innerHTML = 'You answer';
+        th.innerHTML = 'Your answer';
         tr.appendChild(th);
         thead.appendChild(tr);
         table.appendChild(thead);
