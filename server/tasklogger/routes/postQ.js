@@ -303,7 +303,6 @@ router.post('/ajax_postq', function(req, res){
             function(user, callback){
                 var Q = user.postQ.questionnaire;
                 //Check data type
-                console.log(data)
                 if (data.pointscale)
                     data.answer = parseInt(data.answer)
                 //Task has some record already
