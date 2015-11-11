@@ -111,8 +111,6 @@ router.post('/ajax_postq', function(req, res){
                         for(var i = 0; i < tasklist.length; i++){
                             var t = tasklist[i]
                             //If task is not in taskmap, it may be deleted
-                            console.log(tasklist[i]._id)
-                            console.log((t._id.taskid in taskmap))
                             if (t._id.taskid in taskmap){
                                 var parent_id = t._id.taskid;
                                 //If it's a sub task
@@ -147,7 +145,6 @@ router.post('/ajax_postq', function(req, res){
                             tasks.push(parent_tasks[keys[i]]);
                         }
                         tasks.sort(function(a, b){return b.count - a.count});
-                        console.log(keys)
                         callback(err, tasks, progress, user);
                     }
                 });
@@ -305,6 +302,10 @@ router.post('/ajax_postq', function(req, res){
             //Set the questionnaire entry
             function(user, callback){
                 var Q = user.postQ.questionnaire;
+                //Check data type
+                console.log(data)
+                if (data.pointscale)
+                    data.answer = parseInt(data.answer)
                 //Task has some record already
                 if (data.taskid in Q){
                     //update/add the answer to this question

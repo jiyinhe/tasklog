@@ -13,23 +13,36 @@ var url_ajax_postq = 'postQ/ajax_postq';
 var option_index = 'abcdefghijklmnopqrstuvwxyz';
 //Options in questions
 var questions = {
-'task_frequency':  ['unique', 'intermittent', 'routine'],
-'task_length':  ['short', 'mid', 'long'],
-'task_stage':  ['beginning', 'middle', 'final'],
+'task_frequency':  {'name': [1, 2, 3, 4, 5], 'pointscale': true},
+//['unique', 'intermittent', 'routine'],
+'task_length':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['short', 'mid', 'long'],
+'task_stage':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['beginning', 'middle', 'final'],
 //'task_product':  ['physical', 'intellectual', 'decision', 'fact', 'image', 'mixed'],
 //'task_process':  ['one_time', 'multi_time'],
-'task_goals_quantity':  ['single', 'multiple'],
-'task_complexity_objective':  ['remember', 'understadn', 'apply', 'analyse', 'evaluate', 'create'],
-'task_collaboration':  ['group', 'supported', 'individual'],
-'task_sailence_subjective':  ['important', 'moderate_important', 'unimportant'],
-'task_urgency_subjective':  ['urgent', 'moderate_urgent', 'not_urgent'],
-'task_difficulty_subjective':  ['difficult', 'moderate_difficult', 'not_difficult'],
-'task_complexity_subjective':  ['complex', 'moderate_complex', 'not_complex'],
-'task_knowledge_topic':  ['knowledgeable', 'moderate_knowledgeable', 'not_knowledgeable'],
-'task_knowledge_procedure':  ['knowledgeable', 'moderate_knowledgeable', 'not_knowledgeable'],
-'task_satisfaction':  ['satisfied', 'satisfied_but_struggled', 'not_satisfied'],
-};
+'task_goals_quantity':  {'name': ['single', 'multiple'], 'pointscale': false},
 
+'task_complexity_objective':  {'name': 
+    ['remember', 'understadn', 'apply', 'analyse', 'evaluate', 'create'],
+'pointscale': false},
+'task_collaboration':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['group', 'supported', 'individual'],
+'task_sailence_subjective':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['important', 'moderate_important', 'unimportant'],
+'task_urgency_subjective':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['urgent', 'moderate_urgent', 'not_urgent'],
+'task_difficulty_subjective': {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['difficult', 'moderate_difficult', 'not_difficult'],
+'task_complexity_subjective':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['complex', 'moderate_complex', 'not_complex'],
+'task_knowledge_topic':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['knowledgeable', 'moderate_knowledgeable', 'not_knowledgeable'],
+'task_knowledge_procedure':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['knowledgeable', 'moderate_knowledgeable', 'not_knowledgeable'],
+'task_satisfaction':  {'name':[1, 2, 3, 4, 5], 'pointscale': true},
+//['satisfied', 'satisfied_but_struggled', 'not_satisfied'],
+};
 
 $(document).ready(function(){
     //Reset userid
@@ -92,11 +105,13 @@ $(document).ready(function(){
         $(this).removeClass('btn-default').addClass('btn-success');
         //submit selection 
         var userid = $('#input_userid').val();
+    
         submit_answer({
             'userid': userid,
             'qid': select[0], 
             'taskid': select[1],
             'answer': select[2],
+            'pointscale': questions[select[0]].pointscale,
         });
     }); 
 
@@ -397,7 +412,8 @@ function make_question_entry(questionnaire, qid, options){
     //Answer
     var answer_id = -1;
     if (qid in questionnaire.qa){
-        answer_id = options.indexOf(questionnaire.qa[qid]);
+        questionnaire.qa[qid];
+        answer_id = options.name.indexOf(questionnaire.qa[qid]);
     }
     //Options
     var td = document.createElement('td');
@@ -406,7 +422,16 @@ function make_question_entry(questionnaire, qid, options){
     bg.setAttribute('role', 'group');
     bg.setAttribute('data-toggle', 'buttons');
     bg.setAttribute('id', qid + ':' + questionnaire.taskid)
-    for(var i = 0; i < options.length; i++){
+
+    //get the right options
+    var option_labels = [];
+    if (options.pointscale == true){
+        option_labels = ['1', '2', '3', '4', '5'];
+    }
+    else{
+        option_labels = option_index;
+    }
+    for(var i = 0; i < options.name.length; i++){
         var label = document.createElement('label');
         label.setAttribute('class', 'btn '+qid+'-'+questionnaire.taskid);
         if (answer_id == i){
@@ -415,12 +440,12 @@ function make_question_entry(questionnaire, qid, options){
         else
             label.className += ' btn-default';
         var btn = document.createElement('input');
-        label.setAttribute('id', qid + ':' + questionnaire.taskid + ':' + options[i]);
+        label.setAttribute('id', qid + ':' + questionnaire.taskid + ':' + options.name[i]);
         btn.setAttribute('type', 'radio');
         btn.setAttribute('name', qid+'_options');
         label.appendChild(btn);
         var span = document.createElement('span');
-        span.innerHTML = option_index[i];
+        span.innerHTML = option_labels[i];
         label.appendChild(span);
         bg.appendChild(label);
     }
