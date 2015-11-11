@@ -26,7 +26,7 @@ router.post('/ajax_postq', function(req, res){
                     }
                 }); 
             },
-            //Check if the post-questionnaire has already started
+           //Check if the post-questionnaire has already started
             //If so, then return the answers so far
             //If not, create new answer session
             function(user, callback){
@@ -73,10 +73,10 @@ router.post('/ajax_postq', function(req, res){
                             }},
                         {$sort: {'count': -1}},
                     ], function(err, docs){
-                        for(var i = 0; i < docs.length; i++){
+                       for(var i = 0; i < docs.length; i++){
                             docs[i]['chosen'] = false;
-                        }
-                        callback(err, docs, progress, user)
+                       }
+                       callback(err, docs, progress, user)
                     });
                      
                 }
@@ -87,6 +87,72 @@ router.post('/ajax_postq', function(req, res){
                     callback(null, tasklist, progress, user);
                 }
             },
+            //Process the task list for only getting the  
+            //Top level tasks
+            function(tasklist, progress, user, callback){
+                var UserTasks = req.db.get('user_tasks');
+                UserTasks.find({'userid': user.userid}, {}, function(err, docs){
+                    if (err){
+                        return res.send({'err': true, 'emsg': 
+                            'An error has occured when retrieving the tasks.'})
+                    }
+                    else{
+                        var taskmap = {};
+                        for(var i = 0; i < docs.length; i++){
+                            var taskid =  docs[i]._id;
+                            var info = {};
+                            info['task_level'] = docs[i].task_level;
+                            info['parent_task'] = docs[i].parent_task;
+                            info['task_name'] = docs[i].task;
+                            taskmap[taskid] = info;
+                        }
+                        var parent_tasks = {};
+                        //For aggregting tasks to their parents
+                        for(var i = 0; i < tasklist.length; i++){
+                            var t = tasklist[i]
+                            //If task is not in taskmap, it may be deleted
+                            console.log(tasklist[i]._id)
+                            console.log((t._id.taskid in taskmap))
+                            if (t._id.taskid in taskmap){
+                                var parent_id = t._id.taskid;
+                                //If it's a sub task
+                                if (taskmap[t._id.taskid].task_level > 0 &&
+                                    //in case sub task is in annotation
+                                    //but parent was deleted at some point
+                                    taskmap[t._id.taskid].parent_task in taskmap
+                                    ){
+                                    parent_id = taskmap[t._id.taskid].parent_task; 
+                                }
+                                //check if the parent is already in parent_tasks
+                                if (parent_id in parent_tasks){
+                                    //Add this item in
+                                    var pt = parent_tasks[parent_id]
+                                    parent_tasks[parent_id].min_time = Math.min(pt.min_time, t.min_time);
+                                    parent_tasks[parent_id].max_time = Math.max(pt.max_time, t.max_time);
+                                    parent_tasks[parent_id].count = pt.count + t.count;
+                                }
+                                else {
+                                    if (t._id.taskid != parent_id){
+                                        t._id = {'taskid': parent_id,
+                                                'name': taskmap[parent_id].task_name,
+                                            }
+                                    }
+                                    parent_tasks[parent_id] = t;
+                                }
+                            }
+                        }
+                        var tasks = [];
+                        var keys = Object.keys(parent_tasks);
+                        for(var i = 0; i < keys.length; i++){
+                            tasks.push(parent_tasks[keys[i]]);
+                        }
+                        tasks.sort(function(a, b){return b.count - a.count});
+                        console.log(keys)
+                        callback(err, tasks, progress, user);
+                    }
+                });
+            },  
+ 
             //store the tasklist if it's new
             function(tasklist, progress, user, callback){
                 if (progress == 0){
