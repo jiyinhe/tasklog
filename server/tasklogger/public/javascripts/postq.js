@@ -109,7 +109,7 @@ $(document).ready(function(){
         var undone = []; 
         $('.answers').find('.btn-group').each(function(index){
             var qid = $(this).attr('id').split(':')[0];
-            $('#err_' + undone[i]).html('');
+            $('#err_' + qid).html('');
             if ($(this).find('.btn-success').length == 0){
                 if (undone.indexOf(qid) == -1)
                    undone.push(qid) 
@@ -164,6 +164,8 @@ function submit_userid(userid){
             $('#input_userid').prop('disabled', true);
             show_tasklist(response.tasklist);
             $('#tasklist').removeClass('hidden');
+            //Remove err msge if any
+            $('#err_userid').html('');
         }
     });
 }
@@ -185,6 +187,7 @@ function view_history(taskid, userid){
         }
         else{
             //If right, show correponsding content depending
+            $('#err_tasklist').html('')
             show_history(response.history, taskid)
         }
     });
@@ -206,6 +209,8 @@ function submit_tasklist(tasklist, userid){
             $('#err_submit_tasklist').html(response.emsg);
         }
         else{
+            //Remove any err msg if any
+            $('#err_submit_tasklist').html('');
             update_questionnaire(response.q);
         }
     });
@@ -225,6 +230,7 @@ function submit_answer(data){
         }
         else{
             //update_questionnaire(response.q);
+            $('#err_submit_tasklist').html('');
         }
     });
 
