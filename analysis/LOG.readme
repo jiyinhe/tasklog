@@ -1,0 +1,44 @@
+===== Log info ========
+affacted_tab_id: the tab where a user/browser action occurred
+
+Type 1:  
+Details: [u'senderTab', u'senderId'] + form/link_data
+
+form_submit
+link_click 	
+
+Type 2: 
+Details: [u'processId', u'tabId', u'transitionType', u'url', u'timeStamp', u'frameId', u'transitionQualifiers']
+
+navigation-link 
+navigation-link-forward_back 
+navigation-manual_subframe 	
+navigation-omni_query 	 
+navigation-omni_query-forward_back 
+navigation-omni_url 	
+navigation-omni_url-forward_back 	 
+navigation-reload 	 
+navigation-start_page 	
+
+Type 3:
+Details: []
+
+tab-close 
+
+Type 4: 
+Details: [u'previous_tab', u'current_tab']
+
+tab-close-switch 	
+tab-loaded 	
+tab-new     + 'new_tab'	
+tab-new-switch 	
+tab-open-in-new     + 'new_tab'	
+tab-replace-switch 
+tab-switch 	
+tab-search 	Details + [u'engine', u'media', u'start', u'query']
+
+Type 5: 	
+tab-replaced 	Details: [u'addedTabId', u'replacedTabId']
+
+
+

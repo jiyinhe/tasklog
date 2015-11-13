@@ -1,0 +1,19 @@
+===== Dependency ======
+Install pyMongo 
+
+with pip: 
+pip install pymongo
+pip install --upgrade pymongo
+
+with easy_install
+easy_install pymongo
+easy_install -U pymongo
+
+==== Data cleaning ====
+Cleanning:
+ - get only the valid userids and valid experiment period
+ - Remove items related to removed items (immediate items of same tab, same url)
+
+run clean.py to create a clean dataset: db_tasklog_clean
+
+
