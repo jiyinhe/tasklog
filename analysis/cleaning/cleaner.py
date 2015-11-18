@@ -77,6 +77,7 @@ extensions
 def cleanLog():
     # Record removed items for cleaning log_serp
     RM = [];
+    cleanL = [];
     for userid in userinfo.UserIDs:
         dates = userinfo.UserIDs[userid]
         if len(dates) > 0:
@@ -114,8 +115,6 @@ def cleanLog():
                     rm = True
 
             segs.append([rm, seg])
-            # Construct clean log
-            cleanL = []
             for rm, seg in segs:
                for s in seg:
                     # If removed, remove the url, details
@@ -126,9 +125,9 @@ def cleanLog():
                         s['url'] = 'removed'
                     cleanL.append(s)
 
-            #Store the cleaned Log
-            LogChromeClean.drop()
-            LogChromeClean.insert_many(cleanL)
+    #Store the cleaned Log
+    LogChromeClean.drop()
+    LogChromeClean.insert_many(cleanL)
 
     print 'Log entry removed:', len(RM) 
     return RM           
