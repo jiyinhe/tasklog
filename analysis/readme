@@ -16,4 +16,25 @@ Cleanning:
 
 run clean.py to create a clean dataset: db_tasklog_clean
 
+==== Manual analysis ====
+Data preperation for manual analysis
+
+
+
+==== Notebook scripts ====
+* For the purpose of testing and exploration
+under ./notebook/
+run
+jupyter notebook
+
+Exploration scripts:
+- DescriptiveStats: descriptive stats of the user data
+- TaskViewPostQ: answer distribution of postQ
+- LabelPropagation-exploration: exploring ways to propagate labels from answer events
+  to all events
+- LabelPropagation: implement the selected strategy for label propagation
+
+==== Extract patterns  ====
+
+
 

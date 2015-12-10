@@ -3,3 +3,6 @@
 *.log
 *.bak
 *.DS_Store
+*.pyc
+*.pdf
+*.pages
