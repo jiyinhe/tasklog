@@ -3,12 +3,16 @@ import userinfo
 from bson.objectid import ObjectId
 from datetime import datetime
 import itertools
+import re
 
 """
 Clean the chrome log data:
  - Only include valid user and experiment period
  - Remove items that are related to the removed items
  - Remove SERP related to removed search
+ - Entries related to certain tasks should be removed as the user indicated
+
+Correct pagination in tab-search events as SEs have changed pagination urls
 """
 # DB connection to localhost
 client = MongoClient()
@@ -79,6 +83,7 @@ def cleanLog():
     RM = [];
     cleanL = [];
     for userid in userinfo.UserIDs:
+        # Get all log valid entries
         dates = userinfo.UserIDs[userid]
         if len(dates) > 0:
             start_date = datetime(dates[0][0], dates[0][1], dates[0][2], 0, 0, 0)
@@ -104,6 +109,13 @@ def cleanLog():
             seg = [tab_group[0]]
             segs = [];
             rm = False
+            # If the first event is marked removed, then the segment should be removed
+            # or the first event falls into the tasks that should be removed
+            if seg[0]['removed']:
+                rm = True
+            elif 'task' in seg[0]['annotation']:
+                if seg[0]['annotation']['task']['taskid'] in userinfo.TaskToRM:
+                    rm = True
             for t in tab_group[1:]:
                 if t['url'] != current_url:
                     segs.append([rm, seg])
@@ -111,8 +123,14 @@ def cleanLog():
                     rm = False
                     current_url = t['url']
                 seg.append(t)
+                # If one of the event is associated with "removed"
+                # or a task that should be cleared, then the whole segment should be
+                # removed
                 if t['removed']:
                     rm = True
+                elif 'task' in seg[0]['annotation']:
+                    if seg[0]['annotation']['task']['taskid'] in userinfo.TaskToRM:
+                        rm = True
 
             segs.append([rm, seg])
             for rm, seg in segs:
@@ -148,6 +166,32 @@ def cleanSERP(RM):
     LogSERPClean.drop()
     LogSERPClean.insert_many(entries)
    
+def correct_pagination():
+    # In log_chrome, update it in tab-search events
+    entries = LogChrome.find({'event': 'tab-search'})
+    for e in entries:
+        to_update = {}
+        start = 0
+        if e['details']['engine'] == 'google':
+            pass
+        elif e['details']['engine'] == 'bing':
+            if 'first=' in e['url']:
+                reg = re.compile('first=\d+?[&$]')
+                tmp = reg.findall(e['url'])[0]
+                start = int(tmp.split('=')[1].split('&')[0])
+                to_update = {'_id': e['_id'], 'url': e['url']}
+        elif e['details']['engine'] == 'yahoo':
+            pass
+
+        if not to_update == {}:
+            LogChromeClean.update_one(
+                {'_id': to_update['_id']},
+                {'$set': {'details.start': start}}
+            )
+            # In log_serp, update it in every serp
+            LogSERPClean.update_one({'url': to_update['url']}, 
+                {'$set': {'start': start}}
+            )
 
 def clean():
     # Filter valid users 
@@ -159,6 +203,9 @@ def clean():
     # Filter serp
     cleanSERP(RM)
 
+    # Correct pagination info
+    correct_pagination()
+   
 if __name__ == "__main__":
     clean() 
 

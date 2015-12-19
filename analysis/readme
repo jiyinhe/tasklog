@@ -16,9 +16,12 @@ Cleanning:
 
 run clean.py to create a clean dataset: db_tasklog_clean
 
+==== Outputs ====
+manual/userTasks.py > tasklist.txt
+
+
 ==== Manual analysis ====
 Data preperation for manual analysis
-
 
 
 ==== Notebook scripts ====

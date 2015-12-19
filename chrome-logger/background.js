@@ -195,7 +195,7 @@ chrome.tabs.query({'active': true}, function(tabs){
 
 //function for send post request to store data
 function savedata(logdata){
-//    console.log(logdata)
+    console.log(logdata)
     //First check if the url is in the blacklist
     //console.log(blacklist)
     //console.log(logdata.url)
@@ -672,6 +672,7 @@ function check_searchEngine(url){
         query = url.split('p=')[1].split('&')[0];
         se = 'yahoo';
         search = true;
+        //It seems to be updated to pstart
         tmp = url.split('from=');
         if (tmp.length > 1)
             start = parseInt(tmp[1].split('&')[0]);
@@ -694,6 +695,7 @@ function check_searchEngine(url){
         query = url.split('q=')[1].split('&')[0];
         se = 'bing';
         search = true;
+        //It seems to be updated to 'first='
         tmp = url.split('b=');
         if (tmp.length > 1)
             start = parseInt(tmp[1].split('&')[0]);

@@ -21,3 +21,7 @@ UserIDs = {
 '3CIAB2': [(2015, 12, 1), (2015, 12, 3)],
 '23W4KT': [(2015, 11, 27), (2015, 12, 4)],
 }
+
+TaskToRM = [
+'562de88a0973e424691dfa79', # Restarting browser and all tabs reloaded
+]
