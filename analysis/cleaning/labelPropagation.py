@@ -38,8 +38,11 @@ User = db.user
 UserTask = db.user_tasks
 LogChrome = db.log_chrome
 
+# collection to store new data
+DataLabeled = db.data_labeled
+
 # Output
-outfile = '../output/labeled_data.json'
+# outfile = '../output/labeled_data.json'
 
 
 def check_serp(url):
@@ -219,6 +222,11 @@ def check_group(tabid, group, L, LC):
     ug = []
     G = []
     for e in group:
+        if 'current_tab' in e['details']:
+            del e['details']['current_tab']
+        if 'previous_tab' in e['details']:
+            del e['details']['previous_tab'] 
+
         url_clean = clean_url(e['url'])
         if not url_clean == current_url:
             if not current_url == '':
@@ -307,7 +315,7 @@ def get_tasklabels(u):
 if __name__ == '__main__':
     users = list(User.find())
     c = 0
-    data = {}
+    data = []
     for u in users:
         print u['userid']
         # skip admin
@@ -338,10 +346,14 @@ if __name__ == '__main__':
         # Group consecutive events by tabid
         TG = pass2(ulog, L, LC)
 
-        data[u['userid']] = TG
+        #data[u['userid']] = TG
+        data.append({'userid': u['userid'], 'data': TG})
 
 # save output
-out = open(outfile, 'w')
-sj.dump(data, out, default=json_util.default)
-out.close()
+#out = open(outfile, 'w')
+#sj.dump(data, out, default=json_util.default)
+#out.close()
+DataLabeled.drop()
+DataLabeled.insert_many(data)
+ 
 

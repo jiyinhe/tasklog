@@ -24,9 +24,10 @@ True", and their information such as details and urls are removed.
 
 - assign task labels to non-anchor events
 - identify different types of link_clicks, tab-search, and identify tab-load of SERPs
-- output format:
+- output stored in db: data_labeled
 
-{userid: userid, 
+[{userid: userid, 
+  data: 
  [{'index': index_of_tabgroup,
     'tabid': tabid,
     'tab_group': [{
@@ -34,15 +35,12 @@ True", and their information such as details and urls are removed.
             'url_group': url_group
         }...]
     } ...]
-}
+},]
 where a url group contains consecutive events sharing the same url,
 and a tab group contains consecutive events sharing the same tab
 
-Output: output/labeled_data.json
-
 ==== Outputs ====
 manual/userTasks.py > tasklist.txt
-cleaning/labelPropagation.py --> labeled_data.json
 
 ==== Manual analysis ====
 Data preperation for manual analysis
