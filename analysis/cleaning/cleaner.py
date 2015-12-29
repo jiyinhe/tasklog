@@ -31,6 +31,17 @@ UserTaskClean = db_clean.user_tasks
 LogChromeClean = db_clean.log_chrome
 LogSERPClean = db_clean.log_serp
 
+SkipURL = [
+'http://tasklog.cs.ucl.ac.uk/', 
+'chrome://extensions/',
+'chrome://settings/',
+'chrome-extension',
+'http://backyard.yahoo.com/',
+'https://by.bouncer.login.yahoo.com',
+'https://backyard3.yahoo.com/',
+]
+
+
 def cleanUsers():
     # Get valid users from the user collection
     validIDs = userinfo.UserIDs.keys()
@@ -141,7 +152,9 @@ def cleanLog():
                         s['details'] = 'removed'
                         s['removed'] = True
                         s['url'] = 'removed'
-                    cleanL.append(s)
+                    # Check if the url should be skipped
+                    if sum([int(s['url'].startswith(x)) for x in SkipURL]) == 0:
+                        cleanL.append(s)
 
     #Store the cleaned Log
     LogChromeClean.drop()

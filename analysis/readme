@@ -10,15 +10,39 @@ easy_install pymongo
 easy_install -U pymongo
 
 ==== Data cleaning ====
-Cleanning:
+1. Cleanning:
  - get only the valid userids and valid experiment period
  - Remove items related to removed items (immediate items of same tab, same url)
+ - Also remove items related to a certain taskid
 
 run clean.py to create a clean dataset: db_tasklog_clean
 
+Note: the items are not physically removed from the db, but marked as "removed:
+True", and their information such as details and urls are removed.
+
+2. Label propagation: labelPropagation.py
+
+- assign task labels to non-anchor events
+- identify different types of link_clicks, tab-search, and identify tab-load of SERPs
+- output format:
+
+{userid: userid, 
+ [{'index': index_of_tabgroup,
+    'tabid': tabid,
+    'tab_group': [{
+            'url': url_of_urlgroup,
+            'url_group': url_group
+        }...]
+    } ...]
+}
+where a url group contains consecutive events sharing the same url,
+and a tab group contains consecutive events sharing the same tab
+
+Output: output/labeled_data.json
+
 ==== Outputs ====
 manual/userTasks.py > tasklist.txt
-
+cleaning/labelPropagation.py --> labeled_data.json
 
 ==== Manual analysis ====
 Data preperation for manual analysis
