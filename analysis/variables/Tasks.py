@@ -20,7 +20,7 @@ class Tasks(object):
         for k, g in itertools.groupby(tasks, lambda x: x[0]):
             g = sorted(list(g), key=lambda x: x[1])
             # Get task length
-            T_length[k] = (g[-1][1] - g[0][1]).total_seconds()
+            T_length[k] = (g[-1][1] - g[0][1]).days + 1
         return T_length
 
 

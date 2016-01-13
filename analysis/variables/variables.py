@@ -24,8 +24,6 @@ from scipy.stats import pearsonr, kendalltau
 import simplejson as js
 from bson import json_util
 
-outputfile = '../output/variables.txt'
-
 # threshold for time based session split, in mins
 session_thresh = 30
 
@@ -34,10 +32,20 @@ gap_thresh = 10
 # Interruption happens within a fixed period, in mins
 period = 30
 
+# threshold for counting page view dwell time, in seconds
+# larger than 10 seconds to actually read something
+pv_thresh = 10
+
+
 # Partial observations of log time thresh (in min)
 # i.e., the first 5, 10 mins of a task
-time_thresh = [-1]
-#time_thresh = [5, 10, 20, -1]
+#t_thresh = 10
+#t_thresh = 20
+t_thresh = 30
+#t_thresh = -1 
+
+outputfile = '../output/variables_1st%smin.txt'%t_thresh
+
 
 # DB connection to localhost
 client = MongoClient()
@@ -99,6 +107,9 @@ def get_task_properties(u):
 if __name__ == '__main__':
     Task_properties = {} 
     User_data = {} 
+    X = []
+    Y = []
+    TA = []
     for u in users:
         data = list(DataLabeled.find({'userid': u['userid']}))[0]['data']
         events = event_stream(data)
@@ -123,32 +134,58 @@ if __name__ == '__main__':
         T_interruptions = T.count_task_interruptions(T_sessions, gap_thresh, period) 
       
         # Get the search stats
-        for t_thresh in time_thresh:
-            UA = UserActivity.UserActivity(data, to_include, t_thresh, session_thresh)
-
+        UA = UserActivity.UserActivity(data, to_include, t_thresh, session_thresh)
+        countQ = UA.number_of_queries()
+        countC = UA.number_of_SERPclicks()
+        countQbC = UA.number_of_QbC()
+        QP = UA.query_similarity()
+        PV = UA.pageview_stats(pv_thresh)  
  
+        # for test 
+        #TMP = PV
+        #key = 'from_external_link'
+        #X += [TMP[t][key] for t in TMP] 
+        #Y += [T_length[t] for t in TMP]            
+        #TA += [t for t in TMP]
+        
+        UD = []
         for task in u_tasks:
             D = {
                 'userid': u['userid'],
                 'duration': T_length[task],
-                'interruptions': T_interruptions[task]
+                'interruptions': T_interruptions[task],
+                'number_queries': countQ[task],
+                'number_clicks': countC[task],
+                'number_q_before_c': countQbC[task],
+                'query_similarity': QP.get(task, None),
+                'number_pageview': PV[task]['total_pv'],
+                'number_unique_pageview': PV[task]['unique_pv'],
+                'number_revisits': PV[task]['revisits'],
+                'from_SERP_view': PV[task]['from_SERP'],
+                'from_external_link': PV[task]['from_external_link'],
+                'from_omni_url': PV[task]['from_omni'],
             }
-            User_data[task] = D
-
-        # Test
-        interrupt = [T_interruptions[t] for t in T_interruptions]
-#        print u['userid'], len(T_prop), len(T_length), len(T_sessions), np.mean(interrupt), np.std(interrupt)
+            UD.append(D)
+        User_data[u['userid']] = D
 
     # Store data 
     DATA = {'task_properties': Task_properties, 
             'user_data': User_data,
         }
 
-    X = [User_data[task]['duration'] for task in User_data]
-    thresh = 600
-    print len(list(itertools.ifilter(lambda x: x> thresh, X)))
-    print len(User_data)
-    
+    # test
+    #r, p = kendalltau(X, Y)
+    #print r, p
+
+    #for prop in T_prop:
+    #    answers = Task_properties[prop]
+    #    Y = [answers[t] for t in TA]
+    #    k, p = kendalltau(X, Y)
+    #    print prop, k, p,
+    #    if p < 0.05:
+    #        print '*'
+    #    else:
+    #        print
 
     f = open(outputfile, 'w')
     js.dump(DATA, f, default=json_util.default)
