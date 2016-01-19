@@ -205,13 +205,14 @@ def assign_labels(tabid, current_url, ug, L, LC):
     else:
         # anchor events labled for differently, then for each event search for its
         # label 
+        print labels
         for e in ug:
             if e['taskid'] == 'NA':
                 l = L.get((tabid, e['url']), 'None')
                 if l == 'None':
                     # Try cleaned url
                     l= search_label_unexact(tabid, current_url, LC)
-            e['taskid'] = l 
+                e['taskid'] = l 
 
 
 # Group consecutive events sharing the same cleaned url within a tab group, and

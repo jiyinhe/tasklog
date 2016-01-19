@@ -41,10 +41,12 @@ pv_thresh = 10
 # i.e., the first 5, 10 mins of a task
 #t_thresh = 10
 #t_thresh = 20
-t_thresh = 30
-#t_thresh = -1 
+#t_thresh = 30
+t_thresh = -1 
 
-outputfile = '../output/variables_1st%smin.txt'%t_thresh
+#outputfile = '../output/variables_1st%smin.json'%t_thresh
+outputfile = '../output/variables_1st%smin_alltask.json'%t_thresh
+
 
 
 # DB connection to localhost
@@ -113,8 +115,11 @@ if __name__ == '__main__':
     for u in users:
         data = list(DataLabeled.find({'userid': u['userid']}))[0]['data']
         events = event_stream(data)
-        to_include = postQ[u['userid']]  
-        
+#        to_include = postQ[u['userid']]  
+      
+        # include all tasks including those without postQ 
+        to_include = list(set([e['taskid'] for e in events if e['taskid'] not in Filter]))
+
         u_tasks = list(set([e['taskid'] for e in events if e['taskid'] in to_include]))
  
         # Get task properties
@@ -127,7 +132,7 @@ if __name__ == '__main__':
         # Get task statistics
         T = Tasks.Tasks(events, to_include, session_thresh)
         # Task length
-        T_length = T.get_task_lengths()
+        T_length_day = T.get_task_lengths()
         # Task sessions
         T_sessions = T.get_task_sessions()
         # count task interruptions
@@ -140,6 +145,9 @@ if __name__ == '__main__':
         countQbC = UA.number_of_QbC()
         QP = UA.query_similarity()
         PV = UA.pageview_stats(pv_thresh)  
+
+        # Actual time spent on each task
+        T_time = UA.total_time_on_task()
  
         # for test 
         #TMP = PV
@@ -151,8 +159,10 @@ if __name__ == '__main__':
         UD = []
         for task in u_tasks:
             D = {
+                'taskid': task,
                 'userid': u['userid'],
-                'duration': T_length[task],
+                'duration_day': T_length_day[task],
+                'duration_time': T_time[task],
                 'interruptions': T_interruptions[task],
                 'number_queries': countQ[task],
                 'number_clicks': countC[task],
@@ -166,7 +176,7 @@ if __name__ == '__main__':
                 'from_omni_url': PV[task]['from_omni'],
             }
             UD.append(D)
-        User_data[u['userid']] = D
+        User_data[u['userid']] = UD
 
     # Store data 
     DATA = {'task_properties': Task_properties, 

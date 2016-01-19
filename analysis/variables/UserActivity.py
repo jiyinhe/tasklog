@@ -60,6 +60,7 @@ class UserActivity(object):
                 user_path.append((tab['tabid'], tab['on'], ug))
                 for event in ug['url_group']:
                     user_path_stream.append((event, tab['on']))
+                     
         return user_path, user_path_stream
 
     # Get first X mins user has spent on a task
@@ -117,7 +118,15 @@ class UserActivity(object):
 #            print task, len(stream), time, time < 10*60
 #            print task, [s[0]['event'] for s in stream]            
         return T_X
-           
+
+
+    def total_time_on_task(self):
+        T_X = self.get_firstXmins(-1)
+        T_time = {}
+        for task in T_X:
+            T_time[task] = T_X[task][1]
+        return T_time           
+
     # Count number of queries within the first X mins
     def number_of_queries(self):    
         T_Q = dict([(t, 0) for t in self.all_tasks])

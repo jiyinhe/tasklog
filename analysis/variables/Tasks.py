@@ -15,13 +15,15 @@ class Tasks(object):
 
     def get_task_lengths(self):
         T_length = {}
+        T_length_day = {}
         tasks = [(d['taskid'], d['timestamp_bson']) for d in self.events if d['taskid'] in self.T]
         tasks.sort(key=lambda x: x[0])
         for k, g in itertools.groupby(tasks, lambda x: x[0]):
             g = sorted(list(g), key=lambda x: x[1])
             # Get task length
-            T_length[k] = (g[-1][1] - g[0][1]).days + 1
-        return T_length
+            T_length_day[k] = (g[-1][1] - g[0][1]).days + 1
+            T_length[k] = (g[-1][1] - g[0][1]).total_seconds()
+        return T_length_day
 
 
     # If there is a 30 mins inactivity, split the session
