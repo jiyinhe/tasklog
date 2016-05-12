@@ -127,7 +127,6 @@ class Tasks(object):
                             gap = (next_session[0]['timestamp_bson']-s[-1]['timestamp_bson']).total_seconds()
                             if gap > gap_thresh:
                                 interruption[task] += 1
-
         return interruption
 
 

@@ -5,6 +5,7 @@ import simplejson as js
 import plot_corr as pc
 from scipy.stats import pearsonr, kendalltau
 import pylab 
+from sklearn.cluster import AffinityPropagation
 
 # thresh: first X mins user spend on a task
 time_thresh = [-1]
@@ -31,7 +32,7 @@ UD_nodes = {
 	'from_SERP_view': ('\\# Pageviews by search', 7),
 #	'from_external_link':'Pageviews from link',
 #	'from_omni_url':'Pageviews from URL navigation',
-#	'interruptions':'Multi-tasking',
+	'interruptions':'Multi-tasking',
 	'number_clicks': ('\\# Clicks', 4),
 	'number_pageview': ('\\# Pageviews', 5),
 	'number_q_before_c': ('\\# Queries before Click', 2),
@@ -50,10 +51,8 @@ def prepare_user_data(data):
                 if not prop in ['userid', 'taskid']:
                     tmp = D.get(prop, {})
                     tmp.update({d['taskid']:d[prop]})
-                    if prop == 'from_SERP_view':
-                        tmp.update({d['taskid']: 0 if 
-                            d['number_pageview']==0 else d[prop]/float(d['number_pageview'])})
                     D[prop] = tmp
+
                     
     return D
 
@@ -71,6 +70,62 @@ def corr_task_properties(TP):
             Y = [TP[prop2][t] for t in tasks]
             tau, p = kendalltau(X, Y)            
             C.append((prop1, prop2, tau, p))  
+
+    # Table print
+    data = dict([((c[0], c[1]), (c[2], c[3])) for c in C])
+    headers = sorted([(p, TP_nodes[p]) for p in props], key=lambda x: x[1])
+    print '\\begin{tabular}{l',
+    for i in range(len(props)):
+        print 'r@{}l',
+    print '}'
+
+    # Multicolumn to align numbers with '.'
+    for tp, name in headers:
+        print '&', 
+        print '\multicolumn{2}{c}{' + name + '}',
+    print '\\\\'
+
+    # Table rows
+    for tp1, name1 in headers:
+        # row header
+        print name1, '&',
+        i = 0
+        for tp2, name2 in headers:
+            # score
+            if tp1 == tp2:
+                print '-&-',
+                if i < len(headers) - 1:
+                    print '&',
+            else:
+                score = data.get((tp1, tp2))
+                if score == None:
+                    score = data.get((tp2, tp1))
+                tau, p = score
+                # prepare print out
+                sign = ''
+                if p < 0.01:
+                    sign = '$^{**}$'
+                elif p < 0.05:
+                    sign = '$^{*}$' 
+
+                score_p1, score_p2 = str('%.2f'%tau).split('.')
+                # Format score for aligning '.'
+                number = score_p1 + '.&' + score_p2
+                # Add decoration for significance
+                if p < 0.05:
+                    score_p1 = '\\textbf{' + score_p1 + '.' + '}'
+                    score_p2 = '\\textbf{' + score_p2 + '}'
+                    number = score_p1 +'&' + score_p2 + sign
+                print number,
+                if i < len(headers)-1:
+                    print '&',
+            i += 1
+        print '\\\\'
+        print '%'
+
+    print '\\end{tabular}'
+    print
+    print
     return C
 
 # Correlation between task properties and user activities
@@ -130,7 +185,6 @@ def corr_task_properties_user_data(TP, UD):
     return C
 
 
-
 if __name__ == '__main__':
 
     for t_thresh in time_thresh:
@@ -144,8 +198,38 @@ if __name__ == '__main__':
 
         UD = prepare_user_data(data['user_data'])
         C_TPU = corr_task_properties_user_data(TP, UD) 
+
+
+        # Run clustering
+        af = AffinityPropagation(affinity='precomputed', verbose=True)
+        x_label = sorted([p for p in TP])
+        data = dict([((tp[0], tp[1]), (tp[2])) for tp in C_TP])
+        X = []
+        for x in x_label:
+            row = []
+            for y in x_label:
+                if x == y:
+                    sim = 1
+                else:
+                    sim = data.get((x, y))
+                    if sim == None:
+                        sim = data[(y, x)]
+                row.append(abs(sim))      
+            X.append(row)
+
+        labels = af.fit_predict(X)
+        print
+        for l in range(len(x_label)):
+            print TP_nodes[x_label[l]], labels[l]
+
+        # positive correlation between task properties
+#        pylab.figure()
+#        pc.plot_corr_taskproperties(C_TP, 1)
+#        pylab.axis('off')
     
-#        pc.plot_corr_taskproperties(C_TP)
+        # negative correlation between task properties
+#        pylab.figure()
+#        pc.plot_corr_taskproperties(C_TP, -1)
 
 #        pylab.axis('off')
 #        pylab.show()

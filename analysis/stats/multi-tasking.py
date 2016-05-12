@@ -37,6 +37,8 @@ def multi_tasking_tasks(data):
     print
     print 'percentage of task with multi-tasking:', len(multi)/float(len(I)) 
 
+
+
 def multi_tasking_user(data):
     T = []
     G = []
@@ -51,10 +53,10 @@ def multi_tasking_user(data):
 
     G.sort(key=lambda x: x[0])
     G = [g[1] for g in G]
-
+    print len(G)
     # Kruskal-Wallis H-test (non-parametric ANOVA)
     h, p = st.kruskal(G[0], G[1], G[2], G[3], G[4], G[5], G[6], G[7], G[8], G[9],
-        G[10], G[11], G[12], G[13], G[14], G[15], G[16], G[17])
+        G[10], G[11], G[12], G[13], G[14], G[15], G[16], G[17], G[18], G[19])
     print 'Krusdal-Wallis H-test for difference between levels of multi-tasking of users'
     print 'H:', h, 'p-value:', p
 
@@ -79,5 +81,5 @@ if __name__ == '__main__':
 
     UD = prepare_user_data(data['user_data'])
     multi_tasking_tasks(UD)
-#    pylab.show()
+    pylab.show()
  

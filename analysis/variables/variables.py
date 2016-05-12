@@ -44,8 +44,8 @@ pv_thresh = 10
 #t_thresh = 30
 t_thresh = -1 
 
-#outputfile = '../output/variables_1st%smin.json'%t_thresh
-outputfile = '../output/variables_1st%smin_alltask.json'%t_thresh
+outputfile = '../output/variables_1st%smin.json'%t_thresh
+#outputfile = '../output/variables_1st%smin_alltask.json'%t_thresh
 
 
 
@@ -115,13 +115,16 @@ if __name__ == '__main__':
     for u in users:
         data = list(DataLabeled.find({'userid': u['userid']}))[0]['data']
         events = event_stream(data)
-#        to_include = postQ[u['userid']]  
       
+        to_include = postQ[u['userid']]  
         # include all tasks including those without postQ 
-        to_include = list(set([e['taskid'] for e in events if e['taskid'] not in Filter]))
+#        to_include = list(set([e['taskid'] for e in events if e['taskid'] not in Filter]))
 
+        # There may be a few tasks that are in postQ but not in the event stream 
+        # possible missing reasons:
+        # - conflicting labels, assigned to a general category
         u_tasks = list(set([e['taskid'] for e in events if e['taskid'] in to_include]))
- 
+
         # Get task properties
         T_prop = get_task_properties(u) 
         for prop in T_prop:

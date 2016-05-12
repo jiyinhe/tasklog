@@ -14,7 +14,8 @@ import pylab
 import scipy.stats.stats as st
 
 # thresh: first X mins user spend on a task
-inputfile = lambda x: '../output/variables_1st%smin_alltask.json'%x
+inputfile1 = lambda x: '../output/variables_1st%smin_alltask.json'%x
+inputfile2 = lambda x: '../output/variables_1st%smin.json'%x
 
 # DB connection to localhost
 client = MongoClient()
@@ -47,7 +48,7 @@ def prepare_user_data(data):
     return D
 
 def stats(data):
-    print data.keys()
+    #print data.keys()
     # number of queries
     Q = data['number_queries']
     num_q = [Q[q] for q in Q]
@@ -117,7 +118,10 @@ def stats_task():
 if __name__ == '__main__':
     t_thresh = -1
     # load data
-    f = open(inputfile(t_thresh))
+    print '--------------------------'
+    print 'Statistics using all tasks'
+    print '---------------------------'
+    f = open(inputfile1(t_thresh))
     data = js.load(f)
     f.close()
 
@@ -126,4 +130,20 @@ if __name__ == '__main__':
 
     stats_task()
 #    pylab.show()
+    print
+    print '----------------------------'
+    print 'Statistics using postQ tasks'
+    print '----------------------------'
+    f = open(inputfile2(t_thresh))
+    data = js.load(f)
+    f.close()
+
+    UD = prepare_user_data(data['user_data'])
+    stats(UD)      
+
+    stats_task()
+       
  
+
+
+
