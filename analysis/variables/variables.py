@@ -142,7 +142,7 @@ if __name__ == '__main__':
         T_interruptions = T.count_task_interruptions(T_sessions, gap_thresh, period) 
       
         # Get the search stats
-        UA = UserActivity.UserActivity(data, to_include, t_thresh, session_thresh)
+        ua = useractivity.useractivity(data, to_include, t_thresh, session_thresh)
         countQ = UA.number_of_queries()
         countC = UA.number_of_SERPclicks()
         countQbC = UA.number_of_QbC()

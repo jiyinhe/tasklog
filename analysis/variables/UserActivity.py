@@ -13,6 +13,10 @@ SETypes = ['tab-search-new', 'tab-search-verticle']
 
 class UserActivity(object):
     # Data contains tab groups, each tab group contains url groups
+    # to_include: the tasks to be included
+    # time_tresh: only look at the first X minutes of spent on the task
+    # session_thresh: in minutes, if a dwell time exceeds this thresh, consider that
+    # the session ends, user has left without closing the tab
     def __init__(self, data, to_include, time_thresh, session_thresh):
         self.data = data
         self.T = to_include
@@ -26,7 +30,14 @@ class UserActivity(object):
 
         self.pageviews = self.pageViews()
         
-    
+  
+    # user path is grouped by tab_id, with labels indicating whether or not the user
+    # is on that tab
+    # user_path_stream is a stream of events, with the label whether user is on that
+    # tab or not 
+    def get_user_path(self):
+        return self.user_path, self.user_path_stream
+ 
     # Assign tab groups whether or not user is on that tab
     def user_path(self, data):
         user_path = []
