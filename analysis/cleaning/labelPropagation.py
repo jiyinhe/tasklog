@@ -45,6 +45,25 @@ DataLabeled = db.data_labeled
 # outfile = '../output/labeled_data.json'
 
 
+# Prepare the mapping between taskid and tasknames
+# Only use top-level tasks
+# Adding 000-004 tasks
+tasks = UserTask.find({
+            'task_level': 0,
+        })
+Tnames = []
+for t in tasks:
+    Tnames.append((str(t['_id']), t['task']))
+Tnames += [('000', 'Not sure'),
+    ('001', 'Entertainment'),
+    ('002', 'Social networking'),
+    ('003', 'News update'),
+    ('004', 'Emailing')
+    ]
+Tnames = dict(Tnames)
+
+
+
 def check_serp(url):
     google_reg = re.compile('.+?\.google\..+?q=.+')
     yahoo_reg = re.compile('.+?\.search\.yahoo\..+?p=.+')
@@ -183,6 +202,7 @@ def assign_labels(tabid, current_url, ug, L, LC):
                 e['taskid'] = l
             else:
                 e['taskid'] = labels[0]
+            e['taskname'] = Tnames.get(e['taskid'], 'NA')
 
     elif len(labels) == 2 and 'NA' in labels: 
         # more than one tab-search/tab-loaded events, one of them are 'NA'
@@ -191,6 +211,7 @@ def assign_labels(tabid, current_url, ug, L, LC):
         labels = list(set(labels) - set(['NA']))
         for e in ug:
             e['taskid'] = labels[0]
+            e['taskname'] = Tnames.get(e['taskid'], 'NA')
 
     elif len(labels) == 0:
         # no label (no tab-search and tab-loaded)
@@ -202,6 +223,9 @@ def assign_labels(tabid, current_url, ug, L, LC):
                 # Try cleaned url
                 l = search_label_unexact(tabid, current_url, LC)
             e['taskid'] = l
+            e['taskname'] = Tnames.get(e['taskid'], 'NA')
+
+
     else:
         # anchor events labled for differently, then for each event search for its
         # label 
@@ -213,6 +237,8 @@ def assign_labels(tabid, current_url, ug, L, LC):
                     # Try cleaned url
                     l= search_label_unexact(tabid, current_url, LC)
                 e['taskid'] = l 
+                e['taskname'] = Tnames.get(e['taskid'], 'NA')
+
 
 
 # Group consecutive events sharing the same cleaned url within a tab group, and
@@ -275,7 +301,9 @@ def get_tasklabels(u):
         })
         T = []
         for t in tasks:
-            T.append((str(t['_id']), {'level': t['task_level'], 'parent': t['parent_task']})) 
+            T.append((str(t['_id']), {'level': t['task_level'], 
+                'parent': t['parent_task']},
+                )) 
         T = dict(T)
 
         tasklabels = LogChrome.aggregate([
