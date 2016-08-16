@@ -1,0 +1,22 @@
+=== Get raw data from server ===
+
+Dump MongoDB at server:
+mongodump -o outdir -d database
+
+Zip the log dir and put it in bak/
+
+Download it from /admin/dld_log
+
+The downloaded data is stored under tasklog/server/tasklogger/bak/
+Change the name of the data dir, so as to restore it as a different DB
+
+
+Restore the db with:
+mongorestore -path (or -dir) $inputdir -d $database
+
+
+To start mongodb to access the database:
+Start mongod, point to the data directory at tasklog/server/data/
+e.g.: mongod --dbpath server/data/
+
+
