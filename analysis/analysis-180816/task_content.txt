@@ -1,0 +1,135 @@
+apply	add compgc02 on calender and check with teams	add X on calender and check with teams	add X on calender and check with teams
+evaluate	find house to buy	find house to buy	buy house
+evaluate	Buying flat	Buying flat	buy house
+remember	call vodafone	call X	call X
+understadn	Check prolific.ac	Check X	Check a website
+remember	Checking for updates of courses	Checking for updates of X	Check update
+remember	stock update	stock update	check updates
+understadn	collect data on access control	collect data on X	collect data on X
+apply	Coursework	Coursework	coursework
+create	School Work	School Work	coursework
+evaluate	micro/macro assignment	X assignment	coursework
+apply	Do a job listing	Do a job listing	Do a job listing
+understadn	Bills to pay	Bills to pay	Do accounts
+apply	Do accounts	Do accounts	Do accounts
+evaluate	Planning new project	Planning new project	do/manage a project
+understadn	Project Management	Project Management	do/manage project
+apply	GIS project	project X	do/manage project
+apply	Current software project	project X	do/manage project
+evaluate	complex networks proj	project X	do/manage project
+evaluate	research project - ivf and age related births	Project X	do/manage project
+analyse	Algorithms proj	project X  	do/manage project
+remember	Downlaod Lecture Notes	Downlaod X	Download files
+apply	Download exam screenshots	Download X	Download files
+remember	Read Email	Read Email	emailing
+remember	Check Email	Check Email	emailing
+apply	experiments for money	experiments for money	experiments for money
+create	Facebook	Facebook	Facebook
+evaluate	find a book	find a book	find a book
+remember	check location of baby show	check location of X	find location
+remember	Find lunch place near work	Find lunch place near work	find location
+remember	Find some songs to practice	Find some songs to practice	Find some songs to practice
+apply	Finding Derivative Solution	Finding Derivative Solution	Finding Derivative Solution
+remember	Finish logging hours for isd pay.	Finish logging hours for X	Finish logging hours for X
+remember	follow cricket	follow cricket	follow cricket
+analyse	Internship applications	Internship applications	job hunting
+apply	Tutor jobs	Tutor jobs	job hunting
+create	Finding Job	Finding Job	job hunting
+evaluate	job hunt	job hunt	job hunting
+evaluate	job hunt	job hunt	job hunting
+evaluate	Look for an internship	Look for an internship	job hunting
+remember	Looking for jobs	Looking for jobs	job hunting
+analyse	learn about lambdarank	learn about X 	learn about X
+analyse	learn about good slides design in academic talks	learn about X	learn about X
+understadn	looking up information about software implementation	looking up information about X	looking up information about X
+remember	Make sure I'm registered to vote	Make sure ...	Make sure ...
+understadn	create trailer for software platform	create trailer for software platform	create trailer for software platform
+remember	demonstration	demonstration	demonstration
+remember	illustrate a poster	illustrate a poster	illustrate a poster
+apply	MNFN promtions	MNFN promtions	MNFN promtions
+remember	money for experiments	money for experiments	money for experiments
+apply	UCU organising	X organising	organising X
+evaluate	Walthamstow Labour organising	X organising	organising X
+evaluate	organizing teaching activities	organizing X activities	organising X
+understadn	learn new songs on the guitar	learn new songs on the guitar	learn new songs on the guitar
+understadn	listen to music scores	listen to music scores	listen to music scores
+create	prepare talk	prepare talk	prepare task
+create	Prepare 4 Haskell Test	Prepare for X test	prepare test
+apply	Professional Social Networking	Professional Social Networking	Professional Social Networking
+analyse	port ad feedback feature to java	... (programming)	programming
+analyse	complete ad feedback data join	... (programming)	programming
+analyse	Calculate features in client side logger	... (programming)	programming
+evaluate	relevance rating interface for logger	... programming	programming
+understadn	testing tasklog interface	... programming	programming
+understadn	read PhD thesis templates	read PhD thesis templates	read PhD thesis templates
+apply	find brownie recipe	find X recipe	recipe
+understadn	Cooking	Cooking	recipe
+analyse	Recruitment	Recruitment	recruitment
+remember	Renew library books	Renew library books	Renew library books
+analyse	General research for study	General research for study 	research
+apply	Research	Research	research
+apply	research	Research	research
+apply	Research	Research	research
+create	Tasklog user study	X study	research
+evaluate	mooting research	X research	research
+evaluate	Reviews	Reviews	Reviews
+remember	Revision for post lecture	Revision for post lecture	Revision for post lecture
+apply	Search for proper psychology experiments	Search for X experiments	Search for X experiments
+analyse	Baby products	Baby products	shopping
+analyse	Shopping	Shopping  	shopping
+analyse	Looking for a new bag	Looking for a new bag	shopping
+apply	sort out christmas decoration lights	sort out christmas decoration lights	shopping
+apply	Husbands present	Husbands present	shopping
+evaluate	Buy a dress for dec visit	Buy a dress for X	shopping
+evaluate	Buying contact lenses	Buying contact lenses	shopping
+evaluate	Search for a Internet Plan	Search for a Internet Plan	shopping
+remember	food shopping	food shopping	shopping
+remember	shopping	shopping	shopping
+remember	shoes	shoes	shopping
+remember	shop for speakers	shop for speakers	shopping
+remember	Prepare for Black Friday sales	Prepare for Black Friday sales	shopping
+remember	Shopping	Shopping	shopping
+remember	hair and skin-amazon	hair and skin-amazon	shopping
+remember	Check out graze-free box	Check out graze-free box	shopping
+remember	Amazon-Heater	Amazon-Heater	shopping
+remember	Hair things	Hair things	shopping
+analyse	Solving technical issues	Solving technical issues	solving X
+apply	Find solutions to my problem with the printer and ink cartridge	Find solutions to X	solving X
+create	Study logic	Study X	study X
+analyse	Flight home (Christmas)	Flight home ... 	travel planning/booking
+apply	Book trip to Berlin	Book trip to X	travel planning/booking
+create	Plan trip for next reading week	Plan trip for ...	travel planning/booking
+create	Arrange some journeys afterwards	Arrange some journeys afterwards	travel planning/booking
+evaluate	book tickets for wsdm	book tickets for X	travel planning/booking
+evaluate	Plan for reading week	Plan for X	travel planning/booking
+remember	Weekend Travel	Weekend Travel	travel planning/booking
+remember	Find travel information	Find travel information	travel planning/booking
+remember	plan vacation trip christmas	plan vacation trip christmas	travel planning/booking
+understadn	Reading week trip	X trip	travel planning/booking
+remember	Use of Online Services	Use of Online Services	Use of Online Services
+apply	Parents visa application	X visa application	visa application
+apply	visa application	visa application	visa application
+apply	apply for new born visa	visa application	visa application
+remember	Barcelona vs Real Madrid	Barcelona vs Real Madrid	watch X online
+analyse	binge watch London Spy	watch X	watch X online
+analyse	Binge watch outlander	watch X	watch X online
+analyse	watch Dr Who	watch X	watch X online
+remember	Youtube/Streaming	Youtube/Streaming	watch X online
+remember	work payment	work payment	work payment
+apply	Complete Econometrics Tutorial	Complete X Tutorial	writing report/paper/presentation
+apply	Complete IEP Presentation Slide	Complete X Presentation	writing report/paper/presentation
+create	SIGIR mobile apps paper	X paper	writing report/paper/presentation
+create	finish writing related work	... writing related work	writing report/paper/presentation
+create	background chapter of report	X chapter of report	writing report/paper/presentation
+create	writing academic article	writing academic article	writing report/paper/presentation
+evaluate	Tort Essay	X Essay	writing report/paper/presentation
+evaluate	EU Law Eassy Research	X Eassy Research	writing report/paper/presentation
+evaluate	Tort Law essay research	X essay research	writing report/paper/presentation
+evaluate	Paper writing	Paper writing	writing report/paper/presentation
+remember	compile BX paper	compile X paper	writing report/paper/presentation
+remember	wsdm funding application	X funding application	X funding application
+remember	Pregnancy health info	X health info	X health info
+understadn	stock knowledge/news	X knowledge/news	X knowledge/news
+evaluate	Maritime arb readings	X readings	X readings
+apply	PhD regulations nijmegen	X regulations ...	X regulations ...
+analyse	Eu tutorial	X tutorial	X tutorial
